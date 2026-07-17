@@ -6,3 +6,5 @@ https://cryptpad.fr/doc/#/2/doc/edit/Zf8Q4IIoWNT152xDX5ysraGl/ nieuwsbrief voor 
 
 https://vogala.org/tekst/hebban-olla-vogala // website
 
+https://cryptpad.fr/doc/#/2/doc/view/OXpsrYz-ngIsETWHdnsH2czD-0Uuyp2SLv+5RmRtQXw/
+
