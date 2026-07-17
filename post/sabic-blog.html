@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABIC Documentbeheer | WebRTC & IPFS</title>
+    <style>
+        :root {
+            --sabic-blue: #005A9C;
+            --sabic-dark: #003366;
+            --sabic-yellow: #FFD100;
+            --ipfs-teal: #38b2ac;
+            --bg-light: #F4F6F8;
+            --text-main: #333333;
+            --border-color: #E2E8F0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        header {
+            background-color: #FFFFFF;
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--sabic-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 28px; font-weight: 800; color: var(--sabic-blue); }
+        .logo span { color: var(--sabic-yellow); }
+        .hero {
+            background: linear-gradient(135deg, var(--sabic-dark) 0%, var(--sabic-blue) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .hero h1 { margin: 0 0 10px 0; font-size: 32px; }
+        .hero p { margin: 0; font-size: 18px; opacity: 0.9; }
+        
+        .container {
+            max-width: 1200px;
+            margin: -20px auto 40px auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        /* Panelen Algemeen */
+        .panel {
+            background: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+        h2 { color: var(--sabic-dark); margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        h3 { color: var(--sabic-blue); font-size: 16px; margin-top: 20px; margin-bottom: 10px; }
+        
+        /* Richtlijnen Styling */
+        ul { padding-left: 20px; margin-bottom: 15px; }
+        code { background: #E2E8F0; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: var(--sabic-dark); font-size: 14px; }
+        .folder-block { background: #F8FAFC; border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .ipfs-block { border-left: 4px solid var(--ipfs-teal); background-color: #E6FFFA; }
+
+        /* WebRTC & IPFS Styling */
+        .webrtc-panel { border-top: 4px solid var(--sabic-yellow); }
+        .btn {
+            background-color: var(--sabic-blue); color: white; border: none;
+            padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.2s;
+        }
+        .btn:hover:not(:disabled) { background-color: var(--sabic-dark); }
+        .btn:disabled { background-color: #A0AEC0; cursor: not-allowed; }
+        .btn-ipfs { background-color: var(--ipfs-teal); margin-top: 10px; }
+        .btn-ipfs:hover:not(:disabled) { background-color: #2c7a7b; }
+
+        input[type="text"] {
+            width: 100%; padding: 12px; margin-bottom: 5px; border: 1px solid var(--border-color);
+            border-radius: 4px; box-sizing: border-box; font-family: monospace;
+        }
+        
+        /* Aangepaste Ontvanger Box (Ondersteunt nu HTML voor IPFS links) */
+        .receive-box {
+            height: 180px; background-color: #F8FAFC; border: 1px solid var(--border-color);
+            border-radius: 4px; padding: 10px; overflow-y: auto; font-family: monospace; font-size: 13px;
+        }
+        .receive-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #eee; word-break: break-all; }
+        .ipfs-link { color: var(--ipfs-teal); font-weight: bold; text-decoration: none; }
+        .ipfs-link:hover { text-decoration: underline; }
+
+        .status-box {
+            background-color: #EBF8FF; border-left: 4px solid var(--sabic-blue);
+            padding: 10px 15px; margin-bottom: 20px; font-family: monospace; font-size: 13px;
+        }
+        .p2p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        
+        @media (max-width: 900px) {
+            .container, .p2p-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">SABIC <span>■</span></div>
+        <div style="color: #666; font-weight: 600;">Document Portal & Decentralized Storage</div>
+    </header>
+
+    <div class="hero">
+        <h1>Single Source of Truth</h1>
+        <p>Veilig P2P Delen & IPFS Document Registratie</p>
+    </div>
+
+    <div class="container">
+        
+        <!-- KOLOM 1: Documentbeheer Richtlijnen -->
+        <div class="panel">
+            <h2>Kennisblad & Richtlijnen</h2>
+            <p>Dit overzicht stelt alle engineers in staat om veilig documenten te beheren.</p>
+
+            <h3>📁 Mappenstructuur</h3>
+            <div class="folder-block">
+                <strong>01_Project_Management</strong><br>
+                <code>/Plannen</code>, <code>/Rapportages</code>
+            </div>
+
+            <h3>🌐 Decentrale Opslag (IPFS)</h3>
+            <div class="folder-block ipfs-block">
+                <strong style="color: var(--ipfs-teal);">Immutable Audit Trails</strong><br>
+                <p style="font-size: 13px; margin-top: 5px; color: #4a5568;">
+                    Kritieke veiligheidsdocumenten (SHE) en ISO-certificaten kunnen worden vastgelegd op het <strong>InterPlanetary File System (IPFS)</strong>. Dit genereert een unieke CID (Hash) waardoor het document onveranderlijk (immutable) wordt opgeslagen ter voorkoming van fraude.
+                </p>
+            </div>
+
+            <h3>📌 Naamgevingsconventies</h3>
+            <code>[ProjectCode]_[Discipline]_[Type]_[Datum].ext</code>
+        </div>
+
+        <!-- KOLOM 2: WebRTC Data Channel -->
+        <div class="panel webrtc-panel">
+            <h2>Veilig P2P Delen (WebRTC)</h2>
+            <p>Zet een lokaal datakanaal op. U kunt standaard links versturen of decentrale <strong>IPFS CIDs</strong> delen met uw partner.</p>
+
+            <button id="connectBtn" class="btn">1. Initialiseer P2P Verbinding</button>
+            <div id="statusLog" class="status-box" style="margin-top: 15px;">Status: Wachten op initialisatie...</div>
+
+            <div class="p2p-grid">
+                <!-- Verzender -->
+                <div style="background: #F8FAFC; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <h3>Verzender (Jij)</h3>
+                    
+                    <label style="font-size: 13px; color: #666; display: block; margin-top: 10px;">Standaard URL of Tekst:</label>
+                    <input type="text" id="dataInput" value="https://github.com/goija/WOO-sabic">
+                    <button id="sendBtn" class="btn" disabled style="background-color: var(--sabic-yellow); color: var(--sabic-dark);">Verstuur Link</button>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+
+                    <label style="font-size: 13px; color: #666; display: block;">IPFS Hash (CID):</label>
+                    <!-- Dit is een werkende, publieke IPFS Hash van een Wikipedia snapshot als demo -->
+                    <input type="text" id="ipfsInput" value="QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG">
+                    <button id="sendIpfsBtn" class="btn btn-ipfs" disabled>Verstuur IPFS CID</button>
+                </div>
+
+                <!-- Ontvanger -->
+                <div style="background: #F8FAFC; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <h3>Ontvanger (Partner)</h3>
+                    <label style="font-size: 13px; color: #666; display: block; margin-bottom: 5px;">Inkomende data (Inclusief Gateway routing):</label>
+                    <!-- Aangepast van textarea naar div om HTML links te kunnen renderen -->
+                    <div id="receiveBox" class="receive-box"></div>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <script>
+        let localConnection;
+        let remoteConnection;
+        let sendChannel;
+
+        const connectBtn = document.getElementById('connectBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const sendIpfsBtn = document.getElementById('sendIpfsBtn');
+        const dataInput = document.getElementById('dataInput');
+        const ipfsInput = document.getElementById('ipfsInput');
+        const receiveBox = document.getElementById('receiveBox');
+        const statusLog = document.getElementById('statusLog');
+
+        function updateLog(msg) {
+            statusLog.innerHTML = `<strong>Status:</strong> ${msg}`;
+            console.log(msg);
+        }
+
+        // Check of een string een IPFS Content Identifier is
+        function isIPFS(str) {
+            return str.startsWith('Qm') || str.startsWith('bafy');
+        }
+
+        connectBtn.onclick = async () => {
+            connectBtn.disabled = true;
+            updateLog("Bezig met opzetten WebRTC verbinding...");
+
+            localConnection = new RTCPeerConnection();
+            remoteConnection = new RTCPeerConnection();
+
+            // ICE Candidates uitwisselen (lokaal gesimuleerd)
+            localConnection.onicecandidate = e => {
+                if (e.candidate) remoteConnection.addIceCandidate(e.candidate);
+            };
+            remoteConnection.onicecandidate = e => {
+                if (e.candidate) localConnection.addIceCandidate(e.candidate);
+            };
+
+            // Data Channel Setup
+            sendChannel = localConnection.createDataChannel("sabicSecureChannel");
+            sendChannel.onopen = () => {
+                updateLog("✅ Datakanaal is OPEN! Klaar om te verzenden.");
+                sendBtn.disabled = false;
+                sendIpfsBtn.disabled = false;
+            };
+            sendChannel.onclose = () => {
+                updateLog("Datakanaal gesloten.");
+                sendBtn.disabled = true;
+                sendIpfsBtn.disabled = true;
+            };
+
+            // Ontvanger logic
+            remoteConnection.ondatachannel = (event) => {
+                const receiveChannel = event.channel;
+                receiveChannel.onmessage = (e) => {
+                    const time = new Date().toLocaleTimeString();
+                    let displayContent = "";
+                    const payload = e.data;
+
+                    // Slimme parsing van inkomende data
+                    if (isIPFS(payload)) {
+                        displayContent = `📦 <strong>IPFS Document:</strong><br>
+                                          <a href="https://ipfs.io/ipfs/${payload}" target="_blank" class="ipfs-link">Open in IPFS Gateway ➔</a><br>
+                                          <span style="color:#888; font-size:11px;">CID: ${payload}</span>`;
+                    } else if (payload.startsWith('http')) {
+                        displayContent = `🔗 <strong>Project Link:</strong><br>
+                                          <a href="${payload}" target="_blank" style="color:var(--sabic-blue);">${payload}</a>`;
+                    } else {
+                        displayContent = `💬 <strong>Bericht:</strong> ${payload}`;
+                    }
+
+                    // Voeg toe aan de UI
+                    const item = document.createElement('div');
+                    item.className = 'receive-item';
+                    item.innerHTML = `<span style="color:#A0AEC0;">[${time}]</span><br> ${displayContent}`;
+                    receiveBox.appendChild(item);
+                    
+                    // Auto-scroll naar beneden
+                    receiveBox.scrollTop = receiveBox.scrollHeight;
+                };
+            };
+
+            // WebRTC Signaling
+            try {
+                const offer = await localConnection.createOffer();
+                await localConnection.setLocalDescription(offer);
+                await remoteConnection.setRemoteDescription(offer);
+
+                const answer = await remoteConnection.createAnswer();
+                await remoteConnection.setLocalDescription(answer);
+                await localConnection.setRemoteDescription(answer);
+            } catch (error) {
+                updateLog(`Fout bij verbinden: ${error}`);
+            }
+        };
+
+        // Reguliere Data Verzenden
+        sendBtn.onclick = () => {
+            if (sendChannel && sendChannel.readyState === 'open') {
+                sendChannel.send(dataInput.value);
+                updateLog(`Verzonden: ${dataInput.value.substring(0, 25)}...`);
+            }
+        };
+
+        // IPFS CID Verzenden
+        sendIpfsBtn.onclick = () => {
+            if (sendChannel && sendChannel.readyState === 'open') {
+                sendChannel.send(ipfsInput.value);
+                updateLog(`IPFS CID Verzonden!`);
+            }
+        };
+    </script>
+</body>
+</html>

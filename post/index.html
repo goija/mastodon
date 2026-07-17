@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABIC Kennisportaal | Documenten & Richtlijnen</title>
+    <style>
+        :root {
+            --sabic-blue: #005A9C;
+            --sabic-dark-blue: #003366;
+            --sabic-yellow: #FFD100;
+            --bg-light: #F4F6F8;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        header {
+            background-color: #FFFFFF;
+            padding: 20px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 5px solid var(--sabic-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--sabic-blue);
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .logo-square { color: var(--sabic-yellow); }
+        .hero {
+            background: linear-gradient(135deg, var(--sabic-dark-blue) 0%, var(--sabic-blue) 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            opacity: 0.5;
+        }
+        .hero h1 { margin: 0 0 15px 0; font-size: 42px; font-weight: 300; position: relative; z-index: 1; }
+        .hero p { margin: 0; font-size: 20px; opacity: 0.9; font-weight: 300; position: relative; z-index: 1; }
+        .container {
+            max-width: 1100px;
+            margin: -50px auto 60px auto;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 40px;
+            position: relative;
+            z-index: 10;
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+        @media(max-width: 800px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+        .drive-card {
+            background: linear-gradient(to right, #ffffff, #f8fafc);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .drive-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .drive-icon {
+            font-size: 40px;
+            background: var(--sabic-yellow);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(255,209,0,0.3);
+        }
+        .drive-text h2 { margin: 0 0 8px 0; color: var(--sabic-dark-blue); font-size: 24px; }
+        .drive-text p { margin: 0; color: var(--text-muted); font-size: 15px; }
+        .btn-primary {
+            background-color: var(--sabic-blue);
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,90,156,0.3);
+            white-space: nowrap;
+        }
+        .btn-primary:hover { 
+            background-color: var(--sabic-dark-blue); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,90,156,0.4);
+        }
+        h3.section-title {
+            color: var(--sabic-dark-blue);
+            font-size: 22px;
+            border-bottom: 3px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .info-panel {
+            background-color: #F8FAFC;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid var(--sabic-blue);
+        }
+        .info-panel h4 { margin-top: 0; color: var(--sabic-dark-blue); }
+        .info-panel ul { padding-left: 20px; margin-bottom: 0; }
+        .info-panel li { margin-bottom: 10px; color: var(--text-main); font-size: 15px; }
+        
+        .quick-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .link-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .link-card:hover {
+            border-color: var(--sabic-blue);
+            background-color: #F0F7FF;
+        }
+        .link-icon { font-size: 24px; }
+        .link-text { font-weight: 600; font-size: 15px; }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">SABIC <span class="logo-square">■</span></a>
+        <div style="font-size: 15px; color: var(--text-muted); font-weight: 500;">Knowledge & Document Portal</div>
+    </header>
+
+    <div class="hero">
+        <h1>Centraal Kennis- & Documentenbeheer</h1>
+        <p>Gedeelde werkruimte voor projectdocumentatie, protocollen en technische bestanden.</p>
+    </div>
+
+    <div class="container">
+        <!-- Main Google Drive Access -->
+        <div class="drive-card">
+            <div class="drive-info">
+                <div class="drive-icon">📁</div>
+                <div class="drive-text">
+                    <h2>Project Drive Map</h2>
+                    <p>Toegang tot alle centrale bestanden, mappen en gedeelde assets.</p>
+                </div>
+            </div>
+            <a href="https://drive.google.com/drive/folders/174mEx1KKabA8QFewVfxFcoqwD_a91HAL?usp=drive_link" target="_blank" class="btn-primary">Map Openen in Drive ➔</a>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Column -->
+            <div>
+                <h3 class="section-title">Richtlijnen voor Documentbeheer</h3>
+                
+                <div class="info-panel" style="margin-bottom: 25px;">
+                    <h4>📌 Naming Conventions (Bestandsnamen)</h4>
+                    <p style="font-size: 15px; margin-bottom: 10px;">Het is cruciaal dat alle geüploade bestanden uniform benoemd worden om de zoekbaarheid te maximaliseren:</p>
+                    <code style="display: block; background: #E2E8F0; padding: 10px; border-radius: 4px; font-weight: bold; margin-bottom: 15px; color: var(--sabic-dark-blue);">[ProjectCode]_[Discipline]_[DocumentType]_[YYYYMMDD]_v[X].ext</code>
+                    <ul>
+                        <li><strong>ProjectCode:</strong> Bijv. <i>SAB-2026</i></li>
+                        <li><strong>Discipline:</strong> Bijv. <i>ENG</i> (Engineering), <i>SHE</i> (Safety), <i>FIN</i> (Finance)</li>
+                        <li><strong>Versie:</strong> Gebruik <i>_v01</i> voor drafts en <i>_FINAL</i> voor goedgekeurde versies.</li>
+                    </ul>
+                </div>
+
+                <div class="info-panel">
+                    <h4>🔒 Databeveiliging & Vertrouwelijkheid</h4>
+                    <ul>
+                        <li>Deel de Drive-link uitsluitend met teamleden die de vereiste autorisatie hebben (NDA getekend).</li>
+                        <li>Download bestanden met de classificatie "Confidential" uitsluitend naar versleutelde (BitLocker) SABIC bedrijfslaptops.</li>
+                        <li>Gebruik geen externe of onbeveiligde USB-sticks.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <h3 class="section-title">Kennisbladen & Referenties</h3>
+                <div class="quick-links">
+                    <a href="SABIC_Kennisblad_v2.md" target="_blank" class="link-card">
+                        <span class="link-icon">📘</span>
+                        <span class="link-text">SABIC Kennisblad (Markdown)</span>
+                    </a>
+                    <a href="#" class="link-card" style="opacity: 0.6; cursor: not-allowed;">
+                        <span class="link-icon">🛡️</span>
+                        <span class="link-text">SHE Veiligheidsvoorschriften (PDF)</span>
+                    </a>
+                    <a href="#" class="link-card" style="opacity: 0.6; cursor: not-allowed;">
+                        <span class="link-icon">📊</span>
+                        <span class="link-text">Project Planning Q3 (Excel)</span>
+                    </a>
+                    <a href="#" class="link-card" style="opacity: 0.6; cursor: not-allowed;">
+                        <span class="link-icon">👥</span>
+                        <span class="link-text">Contactlijst Projectteam</span>
+                    </a>
+                </div>
+                
+                <div style="margin-top: 30px; font-size: 13px; color: var(--text-muted); background: white; border: 1px dashed #ccc; padding: 15px; border-radius: 6px; text-align: center;">
+                    💡 <strong>Tip:</strong> Lees het "SABIC Kennisblad (Markdown)" voor een compleet overzicht van de mappenstructuur en procedures.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 SABIC Document Management System. All rights reserved.<br>
+        <i>Gegenereerd portaal — Chemistry that Matters™</i>
+    </footer>
+
+</body>
+</html>
