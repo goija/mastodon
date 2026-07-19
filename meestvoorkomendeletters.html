@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX - Multi-Language Frequency Matrix</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --panel-bg: #111115;
+            --text-main: #e2e2ec;
+            --text-muted: #6e6e80;
+            --accent: #00ffcc;
+            --accent-dim: rgba(0, 255, 204, 0.12);
+            --border-color: #22222b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95em;
+        }
+
+        /* Grid Layout voor Dashboard split */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            height: fit-content;
+        }
+
+        .panel h2 {
+            color: var(--accent);
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background-color: #09090c;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            font-family: inherit;
+            box-sizing: border-box;
+            resize: none;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 255, 204, 0.15);
+        }
+
+        /* Real-time Telemetrie Statistieken */
+        .stats-box {
+            background-color: #09090c;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .stat-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Matrix Tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: normal;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            padding-bottom: 15px;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: bold;
+            color: var(--text-muted);
+            width: 90px;
+        }
+
+        tr:hover td {
+            background-color: var(--accent-dim);
+        }
+
+        .highlight-custom {
+            color: var(--accent);
+            font-weight: bold;
+            background-color: rgba(0, 255, 204, 0.03);
+        }
+
+        .empty-slot {
+            color: #333344;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="container">
+        
+        <div class="header">
+            <h1>VORTEX // LEXICAL FREQUENCY MATRIX</h1>
+            <p>Real-time cryptografische distributie-analyse vs. taalkundige baselines (n=1 tot 26)</p>
+        </div>
+
+        <div class="grid-layout">
+            
+            <div class="panel">
+                <h2>Data Ingest</h2>
+                <textarea 
+                    v-model="rawText" 
+                    placeholder="Plak hier de te analyseren string, cipher of historische manuscripttekst..."
+                ></textarea>
+
+                <h2>Telemetrie</h2>
+                <div class="stats-box">
+                    <div class="stat-line">
+                        <span class="stat-label">Bruto Tekengrootte:</span>
+                        <span class="stat-value">{{ totalChars }}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">Gefilterde Letters:</span>
+                        <span class="stat-value">{{ parsedLettersCount }}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">Unieke Karakters:</span>
+                        <span class="stat-value">{{ uniqueCharsCount }} / 26</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Frequentie Matrix</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>n (Rang)</th>
+                            <th>NL / VLAM</th>
+                            <th>ENGELS</th>
+                            <th>FRANS</th>
+                            <th style="color: var(--accent)">JOUW TEKST</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in frequencyTable" :key="row.n">
+                            <td>n = {{ row.n }}</td>
+                            <td>{{ row.nl }}</td>
+                            <td>{{ row.en }}</td>
+                            <td>{{ row.fr }}</td>
+                            <td class="highlight-custom" :class="{ 'empty-slot': row.custom === '-' }">
+                                {{ row.custom }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                // Statische, gevestigde baselines (gesorteerd van meest naar minst frequent)
+                const freqNL = ['E', 'N', 'A', 'T', 'I', 'O', 'R', 'D', 'S', 'L', 'G', 'V', 'H', 'M', 'K', 'C', 'W', 'P', 'B', 'U', 'J', 'Z', 'F', 'X', 'Y', 'Q'];
+                const freqEN = ['E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'C', 'U', 'M', 'W', 'F', 'G', 'Y', 'P', 'B', 'V', 'K', 'J', 'X', 'Q', 'Z'];
+                const freqFR = ['E', 'A', 'S', 'I', 'T', 'N', 'R', 'U', 'L', 'O', 'D', 'C', 'P', 'M', 'V', 'Q', 'F', 'B', 'G', 'H', 'J', 'X', 'Y', 'Z', 'W', 'K'];
+
+                // Reactieve invoer-state
+                const rawText = ref('');
+
+                // Telemetrie computeds
+                const totalChars = computed(() => rawText.value.length);
+                
+                const cleanedText = computed(() => {
+                    return rawText.value.toUpperCase().replace(/[^A-Z]/g, '');
+                });
+
+                const parsedLettersCount = computed(() => cleanedText.value.length);
+
+                // Dynamische berekening van de letterrangorde op basis van de invoer
+                const customRanking = computed(() => {
+                    const counts = {};
+                    
+                    // Tel de incidenties van elke letter
+                    for (const char of cleanedText.value) {
+                        counts[char] = (counts[char] || 0) + 1;
+                    }
+
+                    // Sorteer dalend op basis van de telling. 
+                    // Bij gelijke stand wordt er alfabetisch gesorteerd om bit-flips in de UI te voorkomen.
+                    return Object.keys(counts).sort((a, b) => {
+                        if (counts[b] === counts[a]) {
+                            return a.localeCompare(b);
+                        }
+                        return counts[b] - counts[a];
+                    });
+                });
+
+                const uniqueCharsCount = computed(() => customRanking.value.length);
+
+                // Het samenstellen van de 5-koloms matrix (n=1 tot n=26)
+                const frequencyTable = computed(() => {
+                    const matrix = [];
+                    const sortedCustom = customRanking.value;
+
+                    for (let i = 0; i < 26; i++) {
+                        matrix.push({
+                            n: i + 1,
+                            nl: freqNL[i],
+                            en: freqEN[i],
+                            fr: freqFR[i],
+                            custom: sortedCustom[i] || '-'
+                        });
+                    }
+                    return matrix;
+                });
+
+                return {
+                    rawText,
+                    totalChars,
+                    parsedLettersCount,
+                    uniqueCharsCount,
+                    frequencyTable
+                };
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
