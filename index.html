@@ -3,88 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VORTEX | Repository Index</title>
+    <title>Systeem Index Gateway</title>
     <style>
-        body { 
-            font-family: monospace; 
-            background-color: #0d1117; 
-            color: #c9d1d9; 
-            padding: 20px; 
-            line-height: 1.6;
+        :root {
+            --bg-color: #090a0f;
+            --panel-bg: #12141c;
+            --text-main: #e2e4ed;
+            --text-muted: #6e7180;
+            --accent: #00ffcc;
+            --accent-hover: #00ccaa;
+            --border-color: #232533;
         }
-        .vortex-container { 
-            max-width: 650px; 
-            margin: 0 auto;
-            padding: 20px; 
-            border: 1px solid #30363d; 
-            border-radius: 6px; 
-            background-color: #010409;
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
         }
-        h1 { 
-            color: #ffffff; 
-            font-size: 1.5em; 
-            border-bottom: 1px solid #30363d; 
-            padding-bottom: 10px; 
-            margin-top: 0;
-        }
-        ul { 
-            list-style-type: none; 
-            padding: 0; 
-        }
-        li { 
-            margin: 10px 0; 
-            padding: 5px;
-            border-bottom: 1px dashed #21262d;
-        }
-        li:last-child {
-            border-bottom: none;
-        }
-        a { 
-            color: #58a6ff; 
-            text-decoration: none; 
-            display: inline-block; 
+
+        .container {
+            max-width: 1000px;
             width: 100%;
         }
-        a:hover { 
-            text-decoration: underline; 
-            color: #79c0ff; 
+
+        .header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
         }
-        .icon {
-            margin-right: 8px;
+
+        .header h1 {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 10px 0;
+            font-size: 2em;
         }
-        .external-link {
-            color: #8b949e;
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95em;
+        }
+
+        /* Grid layout voor de mappen */
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* Map / Kaart styling */
+        .folder {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .folder:hover {
+            border-color: rgba(0, 255, 204, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .folder-title {
+            color: var(--accent);
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .folder-title::before {
+            content: '📁';
+            font-size: 1.2em;
+        }
+
+        /* Lijst met bestanden */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        li::before {
+            content: '📄 ';
+            opacity: 0.5;
             font-size: 0.9em;
-            float: right;
+        }
+
+        /* Specifieke iconen op basis van extensie */
+        li.ext-html::before { content: '🌐 '; }
+        li.ext-md::before { content: '📝 '; }
+        li.ext-pdf::before { content: '🏛️ '; }
+        li.ext-json::before { content: '⚙️ '; }
+        li.ext-img::before { content: '🖼️ '; }
+
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 0.95em;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        .meta-data {
+            font-size: 0.75em;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+            margin-left: 22px;
         }
     </style>
 </head>
 <body>
 
-<div class="vortex-container">
-    <h1>📁 Repository Bestanden & Externe Links</h1>
-    
-    <ul>
-        <li><a href="3f7202e23fba4cf2.png"><span class="icon">🖼️</span>3f7202e23fba4cf2.png</a></li>
-        <li><a href="README.md"><span class="icon">📄</span>README.md</a></li>
-        <li><a href="Woo%20Informeren%20verzoek%20zienswijzen%20SABIC.pdf"><span class="icon">📑</span>Woo Informeren verzoek zienswijzen SABIC.pdf</a></li>
-        <li><a href="actor.json"><span class="icon">⚙️</span>actor.json</a></li>
-        <li><a href="alt-text-mastodon"><span class="icon">📝</span>alt-text-mastodon</a></li>
-        <li><a href="avatar.png"><span class="icon">🖼️</span>avatar.png</a></li>
-        <li><a href="bookmarks.json"><span class="icon">⚙️</span>bookmarks.json</a></li>
-        <li><a href="index.html"><span class="icon">🌐</span>index.html</a></li>
-        <li><a href="likes.json"><span class="icon">⚙️</span>likes.json</a></li>
-        <li><a href="outbox.json"><span class="icon">⚙️</span>outbox.json</a></li>
-        <li><a href="vortex351.html"><span class="icon">🌐</span>vortex351.html</a></li>
+    <div class="container">
         
-        <li>
-            <a href="https://infosec.exchange/@queen_fennec@bird.makeup" target="_blank" rel="noopener noreferrer">
-                <span class="icon">🔗</span>@queen_fennec@bird.makeup
-                <span class="external-link">↗ infosec.exchange</span>
-            </a>
-        </li>
-    </ul>
-</div>
+        <div class="header">
+            <h1>Systeem Index</h1>
+            <p>Lokale bestandsstructuur & Repository Navigatie</p>
+        </div>
+
+        <div class="directory-grid">
+
+            <div class="folder">
+                <h2 class="folder-title">VORTEX_Engine & Wiskunde</h2>
+                <ul>
+                    <li class="ext-html">
+                        <a href="vortex351.html">vortex351.html</a>
+                        <span class="meta-data">Toegevoegd: 4 hours ago</span>
+                    </li>
+                    <li class="ext-md">
+                        <a href="verstrengeling.md">verstrengeling.md</a>
+                        <span class="meta-data">Toegevoegd: 13 minutes ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
+                        <span class="meta-data">Update: 4 minutes ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">ActivityPub / Decentraal</h2>
+                <ul>
+                    <li class="ext-json">
+                        <a href="actor.json">actor.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="outbox.json">outbox.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="bookmarks.json">bookmarks.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="likes.json">likes.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-md">
+                        <a href="alt-text-mastodon">alt-text-mastodon</a>
+                        <span class="meta-data">Toegevoegd: 3 hours ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">Onderzoek & Archieven</h2>
+                <ul>
+                    <li class="ext-pdf">
+                        <a href="Woo Informeren verzoek zienswijzen SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a>
+                        <span class="meta-data">Toegevoegd: 2 days ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">Systeem & Media</h2>
+                <ul>
+                    <li class="ext-md">
+                        <a href="README.md">README.md</a>
+                        <span class="meta-data">Toegevoegd: 3 hours ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="index.html">index.html</a>
+                        <span class="meta-data">Huidig bestand</span>
+                    </li>
+                    <li class="ext-img">
+                        <a href="avatar.png">avatar.png</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-img">
+                        <a href="3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 </html>
