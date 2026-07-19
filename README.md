@@ -55,6 +55,8 @@ De introductie van de **13e boventoon** (de verhouding $13:8$ of $13:1$) creëer
 
 https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing
     https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html
+
+    https://github.com/goija/quantum/tree/main
 ---
 
 ## Systeemarchitectuur (Python)
