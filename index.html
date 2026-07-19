@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repository Index | VORTEX</title>
+    <title>Repository Index | VORTEX & Onderzoeksdossiers</title>
     <style>
         :root {
             --bg-base: #050914;
             --panel-bg: #0A1128;
             --cyan: #00F3FF;
             --gold: #FFD700;
+            --alert: #FF3366;
             --text-main: #E2E8F0;
             --text-muted: #64748B;
             --border-color: #1E293B;
@@ -28,31 +29,44 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
         }
 
         header {
             border-bottom: 2px solid var(--cyan);
-            padding-bottom: 15px;
+            padding-bottom: 20px;
             margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
 
-        h1 {
+        .header-text h1 {
             color: var(--cyan);
             margin: 0 0 5px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .subtitle {
+        .header-text p {
             color: var(--text-muted);
-            font-size: 0.9rem;
             margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .math-constant {
+            text-align: right;
+            color: var(--gold);
+            font-style: italic;
+            background: #000;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
         }
 
@@ -62,11 +76,16 @@
             border-radius: 4px;
             padding: 20px;
             box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.02);
+            transition: border-color 0.3s;
+        }
+        
+        .category:hover {
+            border-color: var(--cyan);
         }
 
         .category h2 {
             color: var(--gold);
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-transform: uppercase;
             margin-top: 0;
             margin-bottom: 15px;
@@ -84,6 +103,8 @@
             margin-bottom: 10px;
             display: flex;
             align-items: center;
+            font-size: 0.9rem;
+            word-break: break-all;
         }
 
         li::before {
@@ -105,9 +126,14 @@
         }
 
         .file-meta {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            margin-left: auto;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        
+        .ext-link {
+            color: var(--alert);
         }
 
         footer {
@@ -124,60 +150,99 @@
 
     <div class="container">
         <header>
-            <h1>Repository Index</h1>
-            <p class="subtitle">Lokale bestandsstructuur & Documentatie</p>
+            <div class="header-text">
+                <h1>Repository Index</h1>
+                <p>github.com/goija/mastodon/tree/main</p>
+                <p style="margin-top: 5px; color: #A78BFA;">Juridische correspondentie, Woo-documentatie & VORTEX Engine</p>
+            </div>
+            <div class="math-constant">
+                VORTEX Volume Constant<br>
+                <strong>&Sigma; n³ (n=1..26) = 123.201</strong>
+            </div>
         </header>
 
         <div class="grid">
             
-            <!-- Systeem & Architectuur -->
+            <!-- SABIC & Woo Dossiers -->
             <div class="category">
-                <h2>Systeem & Architectuur</h2>
+                <h2>SABIC / Woo-Dossiers</h2>
                 <ul>
-                    <li><a href="README.md">README.md</a> <span class="file-meta">Markdown</span></li>
-                    <li><a href="vortex351.html">vortex351.html</a> <span class="file-meta">HTML/JS</span></li>
+                    <li><a href="Woo%20Informeren%20verzoek%20zienswijzen%20SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="69.%20Zorgnotitie%20SABIC%2018%20november%202024%20(geanonimiseerd)%20(2)%20(Geanonimiseerd).pdf">69. Zorgnotitie SABIC 18 november 2024 (geanonimiseerd) (2).pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="sabiek_tijdlijn--zorgnotities--alle_dossiers.pdf">sabiek_tijdlijn--zorgnotities--alle_dossiers.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="SABIC_Kennisblad_v2.md">SABIC_Kennisblad_v2.md</a> <span class="file-meta">MD</span></li>
+                    <li><a href="woolinks.md">woolinks.md</a> <span class="file-meta">MD</span></li>
                 </ul>
             </div>
 
-            <!-- Media & Audio -->
+            <!-- Juridisch & Grondzaken -->
             <div class="category">
-                <h2>Media & Audio</h2>
+                <h2>Juridisch & Grondzaken (Platteweg)</h2>
                 <ul>
-                    <li><a href="audio/index.html">Audio Documentatie</a> <span class="file-meta">Directory/Link</span></li>
-                    <li><a href="avatar.png">avatar.png</a> <span class="file-meta">Image</span></li>
-                    <li><a href="3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a> <span class="file-meta">Image</span></li>
+                    <li><a href="Perceel%20SPN00%20E%201552%20-%20Platteweg%203%20en%205%20-%20Eigendom.pdf">Perceel SPN00 E 1552 - Platteweg 3 en 5 - Eigendom.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Taxatierapport%20-%20deel%20I.pdf.pdf">Taxatierapport - deel I.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Taxatierapport%20-%20deel%20II.pdf.pdf">Taxatierapport - deel II.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="grond.pdf">grond.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="platteweg">platteweg/</a> <span class="file-meta">DIR</span></li>
+                    <li><a href="Kopiebericht%20wederpartij%20.pdf">Kopiebericht wederpartij .pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Kopiebrief%20aan%20wederpartij%20.pdf">Kopiebrief aan wederpartij .pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Kopiemail%20van%2017%20maart%202026%20.pdf">Kopiemail van 17 maart 2026 .pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="stukken%20-%208%20janua%202026.pdf">stukken - 8 janua 2026.pdf</a> <span class="file-meta">PDF</span></li>
                 </ul>
             </div>
 
-            <!-- Dossiers & Onderzoek -->
+            <!-- Communicatie & Pers -->
             <div class="category">
-                <h2>Dossiers & Onderzoek</h2>
+                <h2>Communicatie & Pers</h2>
                 <ul>
-                    <li><a href="Woo Informeren verzoek zienswijzen SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a> <span class="file-meta">Document</span></li>
-                    <li><a href="woolinks.md">woolinks.md</a> <span class="file-meta">Markdown</span></li>
-                    <li><a href="drivelinks.md">drivelinks.md</a> <span class="file-meta">Markdown</span></li>
+                    <li><a href="Pitchformulier%20Follow%20the%20Money.pdf">Pitchformulier Follow the Money.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Verzonden%20_%20mjmmbout@proton.me%20_%20Proton%20Mail.pdf">Verzonden _ mjmmbout@proton.me _ Proton Mail.pdf</a> <span class="file-meta">PDF</span></li>
+                    <li><a href="Inbox%20_%20mjmmbout@proton.me%20_%20Proton%20Mail.html">Inbox _ mjmmbout@proton.me _ Proton Mail.html</a> <span class="file-meta">HTML</span></li>
                 </ul>
             </div>
 
-            <!-- Netwerk Data (JSON) -->
+            <!-- VORTEX Architectuur & Documentatie -->
             <div class="category">
-                <h2>Protocol & Netwerk Data</h2>
+                <h2>VORTEX Architectuur & Systeem</h2>
                 <ul>
+                    <li><a href="vortex351.html">vortex351.html</a> <span class="file-meta">HTML</span></li>
+                    <li><a href="README.md">README.md</a> <span class="file-meta">MD</span></li>
+                    <li><a href="index.html">index.html</a> <span class="file-meta">HTML</span></li>
+                    <li><a href="drive.md">drive.md</a> <span class="file-meta">MD</span></li>
+                    <li><a href="drivelinks.md">drivelinks.md</a> <span class="file-meta">MD</span></li>
+                </ul>
+            </div>
+
+            <!-- Netwerk Data (JSON / Media) -->
+            <div class="category">
+                <h2>Federated Netwerk & Media</h2>
+                <ul>
+                    <li><a href="audio.md">audio.md</a> <span class="file-meta">MD</span></li>
                     <li><a href="actor.json">actor.json</a> <span class="file-meta">JSON</span></li>
                     <li><a href="outbox.json">outbox.json</a> <span class="file-meta">JSON</span></li>
                     <li><a href="likes.json">likes.json</a> <span class="file-meta">JSON</span></li>
                     <li><a href="bookmarks.json">bookmarks.json</a> <span class="file-meta">JSON</span></li>
+                    <li><a href="avatar.png">avatar.png</a> <span class="file-meta">PNG</span></li>
+                    <li><a href="3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a> <span class="file-meta">PNG</span></li>
+                </ul>
+            </div>
+
+            <!-- Externe Referenties -->
+            <div class="category">
+                <h2>Externe Bronnen</h2>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=61575271632555" target="_blank" class="ext-link">Facebook Profiel</a> <span class="file-meta">EXT</span></li>
+                    <li><a href="https://www.facebook.com/profile.php?id=61575271632555&sk=photos" target="_blank" class="ext-link">Facebook Foto's</a> <span class="file-meta">EXT</span></li>
+                    <li><a href="http://gram.social/" target="_blank" class="ext-link">gram.social (Status: instabiel)</a> <span class="file-meta">EXT</span></li>
                 </ul>
             </div>
 
         </div>
 
         <footer>
-            VORTEX Omni-Bridge | Index gegenereerd voor lokale navigatie
+            VORTEX Omni-Bridge | Lokaal Dashboard & Documentatie Index
         </footer>
     </div>
 
 </body>
 </html>
-
-```
