@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>VORTEX | Mastodon Alt-Text Bridge</title>
+<style>
+    body { font-family: monospace; background-color: #0d1117; color: #c9d1d9; padding: 20px; }
+    .vortex-container { max-width: 500px; padding: 20px; border: 1px solid #30363d; border-radius: 6px; }
+    input[type="text"], textarea { 
+        width: 100%; box-sizing: border-box; padding: 10px; margin: 10px 0; 
+        background-color: #010409; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px;
+    }
+    button { 
+        background-color: #238636; color: white; border: none; padding: 10px 15px; 
+        cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%;
+    }
+    button:hover { background-color: #2ea043; }
+</style>
+</head>
+<body>
+
+<div class="vortex-container">
+    <h3>Mastodon Alt-Text Injector</h3>
+    
+    <label for="instanceInput">Mastodon Instance:</label>
+    <input type="text" id="instanceInput" value="mastodon.social" placeholder="bijv. mastodon.nl" />
+    
+    <label for="altTextInput">Beschrijving / Alt-Text (vanuit GitHub):</label>
+    <textarea id="altTextInput" rows="4" placeholder="Voer hier je cryptografische of geometrische beschrijving in..."></textarea>
+    
+    <button onclick="transmitToMastodon()">Zend naar Mastodon >></button>
+</div>
+
+<script>
+    function transmitToMastodon() {
+        const instance = document.getElementById('instanceInput').value.trim();
+        const altText = document.getElementById('altTextInput').value.trim();
+        
+        if (!instance || !altText) {
+            alert("Vul zowel de instance als de alt-text in.");
+            return;
+        }
+
+        // Construeer de Mastodon share intent. 
+        // We gebruiken encodeURIComponent om veilig speciale tekens en ruimtes te parseren.
+        const encodedPayload = encodeURIComponent(altText + "\n\n#GitHub #AltText #VORTEX");
+        const mastodonUrl = `https://${instance}/share?text=${encodedPayload}`;
+        
+        // Open een nieuw venster/tabblad om de data af te leveren
+        window.open(mastodonUrl, '_blank', 'noopener,noreferrer');
+    }
+</script>
+
+</body>
+</html>
