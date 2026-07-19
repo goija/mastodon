@@ -1,46 +1,38 @@
-https://github.com/kiesraad/abacus-documentatie/blob/main/softwarearchitectuur/Overzicht.md
+# Dossier: Voorgenomen Overname Solvinity door Kyndryl
 
+Hieronder vind je een gestructureerd overzicht van de betrokken organisaties, hun publicaties, de juridische stappen en een chronologische tijdlijn van de gebeurtenissen rondom de voorgenomen overname van DigiD-provider Solvinity door het Amerikaanse Kyndryl.
 
-**Stichting **Stichting Privacy First** is, zoals we in eerdere berichten al zagen, een van de absolute hoofdrolspelers in het dossier rondom de geblokkeerde Amerikaanse overname van DigiD-hoster Solvinity. Samen met *The Firewall* en *HRIF.EU* vormden zij de maatschappelijke alliantie die de overheid succesvol dwong om de privacy van miljoenen Nederlanders serieus te nemen.
+---
 
-Uit de bronnen komt een haarscherp beeld naar voren van de strategische en juridische strijd die Privacy First heeft gevoerd om deze overname te stoppen:
+## Betrokken Organisaties en Acties
 
-**1. Hun ultieme motief: De CLOUD Act en staatsveiligheid**
-Privacy First zet zich al jaren in voor de bescherming van het recht op privacy van alle Nederlandse burgers. In de overname van Solvinity door het Amerikaanse Kyndryl zagen zij direct een fundamenteel gevaar. Als Solvinity onder Amerikaanse jurisdictie zou vallen, zou de Amerikaanse overheid via wetten zoals de *CLOUD Act* en *FISA* toegang kunnen eisen tot de vitale infrastructuur achter DigiD. Dit zou betekenen dat Washington potentieel inzage krijgt in de persoonsgegevens van de gehele Nederlandse bevolking, of zelfs de dienstverlening zou kunnen beïnvloeden of stilleggen.
+### Stichting Privacy First
+* **Artikel/brandbrief: "DigiD mag niet in Amerikaanse handen vallen"** *(januari 2026)*
+  Privacy First publiceerde een urgente waarschuwing waarin stelde dat de overname van Solvinity door Kyndryl DigiD onder de Amerikaanse *Cloud Act* zou brengen. Hierdoor zou de VS toegang kunnen eisen tot data en systemen van miljoenen Nederlandse burgers. *(Bron: privacyfirst.nl)*
+* **Verzoek ex Artikel 1:3, lid 3, AWB** *(29 januari 2026)*
+  Een formeel verzoek ingediend namens cliënten bij het Bureau Toetsing Investeringen (BTI) om de overname tegen te houden en erkenning als belanghebbenden te krijgen. *(Bron: privacyfirst.nl PDF)*
+* **Engelstalige samenvatting: "Court upholds ban on US takeover of DigiD provider Solvinity"**
+  Na de rechtbankuitspraak bracht Privacy First een artikel uit waarin de overwinning werd geclaimd, met de rechter stellend dat de overname "een bedreiging voor het publieke belang" kan vormen. *(Bron: privacyfirst.nl EN)*
 
-**2. Een proactieve en agressieve juridische strategie**
-Privacy First stond niet slechts aan de zijlijn te roepen, maar gebruikte het bestuursrecht als een effectief wapen:
-*   **De brandbrief (januari 2026):** Samen met vijftien prominente wetenschappers, journalisten en tech-experts (waaronder Bert Hubert) stuurden zij in januari een formeel verzoek naar het Bureau Toetsing Investeringen (BTI) en de minister om de overname te blokkeren en zélf als belanghebbende partij te worden erkend.
-*   **De overheid dwingen (voorjaar 2026):** Toen de minister aanvankelijk weigerde te reageren, stelde Privacy First de overheid in gebreke en tekenden zij beroep aan bij de rechtbank in Rotterdam. Deze aanhoudende druk werkte. Eind mei 2026 kwam de doorbraak: de staatssecretaris verbood de overname. Privacy First-directeur Vincent Böhre noemde dit *"het enige juiste besluit"* en stelde dat elke andere uitkomst onverantwoord en onrechtmatig zou zijn geweest.
+### Stichting The Firewall
+* **"We stappen naar de rechter"**
+  The Firewall kondigde aan samen met Privacy First en tech-experts naar de rechter te stappen nadat de minister de groep niet als belanghebbende wilde erkennen. Advocaten Roland Mans en Matthijs Kaaks voerden de zaak. *(Bron: thefirewall.eu)*
+* **"De eerste rechtszitting"**
+  Een verslag van de eerste zitting in Rotterdam waarbij The Firewall, Privacy First, wetenschappers en opiniemakers stonden tegen de Staat.
+  > **Pleidooi:** "De beoordeling van het grote publieke belang past niet in een achterkamertje van het ministerie." *(Bron: thefirewall.eu)*
+* **"Geen gas terugnemen"**
+  The Firewall weigerde om de druk te verminderen, vooral nadat de Kamermotie van Barbara Kathmann (GroenLinks-PvdA) met overweldigende meerderheid werd aangenomen om DigiD-infrastructuur in Nederlandse of Europese handen te houden. *(Bron: thefirewall.eu)*
+* **"Londense hebzucht in een Rotterdamse rechtszaal"**
+  Commentaar op de uitspraak waarbij Solvinity het verbod probeerde te schorsen. *(Bron: thefirewall.eu)*
 
-**3. Aan de zijde van de Staat in de rechtbank (juli 2026)**
-Toen de verkopende partij (Vitruvian Partners) in juli 2026 een kort geding aanspande om dit overheidsverbod van tafel te vegen, greep Privacy First opnieuw in. Ze meldden zich als 'derde-belanghebbenden' in de rechtszaal. Dit leidde tot de unieke situatie dat Privacy First voor het eerst in haar geschiedenis aan de zijde van de Nederlandse overheid stond om mee te procederen tégen de investeerders. 
+### HRIF.EU (Human Rights in Finance EU)
+* **Visiestuk: "HRIF.EU wijst overname Solvinity af"** *(april 2026)*
+  HRIF.EU steunde de klokkenluider bij Logius en riep het BTI op om de overname snel af te wijzen, met focus op mensenrechten- en soevereiniteitsrisico's. *(Bron: hrif.eu)*
+* **Voorlopige voorziening** *(mei 2026)*
+  HRIF.EU vroeg een voorlopige voorziening (spoedprocedure in het bestuursrecht) tegen het Ministerie van Economische Zaken, gerelateerd aan het (vermoedelijk afwijzend) besluit over de overname. *(Bron: hrif.eu)*
+* **Kamerbrieven referentie** *(april 2026)*
+  HRIF.EU verwees naar Kamerbrieven van 21 en 24 april 2026 waarin het kabinet zorgen over de mogelijke overname erkende. *(Bron: hrif.eu tags)*
 
-**4. Overwinning op álle fronten**
-De uitspraak van 14 juli 2026 was een gigantische overwinning voor de stichting. De rechter wees de eisen van de investeerders af en nam de argumenten van Privacy First over: de Amerikaanse wetgeving is daadwerkelijk een dreiging voor het publieke belang. 
-Bovendien rekende de rechter af met de *"weinig rechtsstatelijke"* landsadvocaat, die geprobeerd had Privacy First en de andere stichtingen de toegang tot processtukken te ontzeggen. De Staat moest hierdoor zelfs de proceskosten van Privacy First en de andere stichtingen betalen.
+---
 
-**De toekomst**
-Voor Privacy First is de strijd nog niet definitief gestreden, aangezien de zaak zich nu nog in een formele bezwaarprocedure bevindt waarin zij opnieuw zullen interveniëren. Hun uiteindelijke doel reikt bovendien verder dan alleen Solvinity: de stichting hoopt dat de uitkomst van deze zaak een blijvend historisch precedent schept om te voorkomen dat we als land afhankelijk worden (of blijven) van partijen van buiten Europa.** is, zoals we in eerdere berichten al zagen, een van de absolute hoofdrolspelers in het dossier rondom de geblokkeerde Amerikaanse overname van DigiD-hoster Solvinity. Samen met *The Firewall* en *HRIF.EU* vormden zij de maatschappelijke alliantie die de overheid succesvol dwong om de privacy van miljoenen Nederlanders serieus te nemen.
-
-Uit de bronnen komt een haarscherp beeld naar voren van de strategische en juridische strijd die Privacy First heeft gevoerd om deze overname te stoppen:
-
-**1. Hun ultieme motief: De CLOUD Act en staatsveiligheid**
-Privacy First zet zich al jaren in voor de bescherming van het recht op privacy van alle Nederlandse burgers. In de overname van Solvinity door het Amerikaanse Kyndryl zagen zij direct een fundamenteel gevaar. Als Solvinity onder Amerikaanse jurisdictie zou vallen, zou de Amerikaanse overheid via wetten zoals de *CLOUD Act* en *FISA* toegang kunnen eisen tot de vitale infrastructuur achter DigiD. Dit zou betekenen dat Washington potentieel inzage krijgt in de persoonsgegevens van de gehele Nederlandse bevolking, of zelfs de dienstverlening zou kunnen beïnvloeden of stilleggen.
-
-**2. Een proactieve en agressieve juridische strategie**
-Privacy First stond niet slechts aan de zijlijn te roepen, maar gebruikte het bestuursrecht als een effectief wapen:
-*   **De brandbrief (januari 2026):** Samen met vijftien prominente wetenschappers, journalisten en tech-experts (waaronder Bert Hubert) stuurden zij in januari een formeel verzoek naar het Bureau Toetsing Investeringen (BTI) en de minister om de overname te blokkeren en zélf als belanghebbende partij te worden erkend.
-*   **De overheid dwingen (voorjaar 2026):** Toen de minister aanvankelijk weigerde te reageren, stelde Privacy First de overheid in gebreke en tekenden zij beroep aan bij de rechtbank in Rotterdam. Deze aanhoudende druk werkte. Eind mei 2026 kwam de doorbraak: de staatssecretaris verbood de overname. Privacy First-directeur Vincent Böhre noemde dit *"het enige juiste besluit"* en stelde dat elke andere uitkomst onverantwoord en onrechtmatig zou zijn geweest.
-
-**3. Aan de zijde van de Staat in de rechtbank (juli 2026)**
-Toen de verkopende partij (Vitruvian Partners) in juli 2026 een kort geding aanspande om dit overheidsverbod van tafel te vegen, greep Privacy First opnieuw in. Ze meldden zich als 'derde-belanghebbenden' in de rechtszaal. Dit leidde tot de unieke situatie dat Privacy First voor het eerst in haar geschiedenis aan de zijde van de Nederlandse overheid stond om mee te procederen tégen de investeerders. 
-
-**4. Overwinning op álle fronten**
-De uitspraak van 14 juli 2026 was een gigantische overwinning voor de stichting. De rechter wees de eisen van de investeerders af en nam de argumenten van Privacy First over: de Amerikaanse wetgeving is daadwerkelijk een dreiging voor het publieke belang. 
-Bovendien rekende de rechter af met de *"weinig rechtsstatelijke"* landsadvocaat, die geprobeerd had Privacy First en de andere stichtingen de toegang tot processtukken te ontzeggen. De Staat moest hierdoor zelfs de proceskosten van Privacy First en de andere stichtingen betalen.
-
-**De toekomst**
-Voor Privacy First is de strijd nog niet definitief gestreden, aangezien de zaak zich nu nog in een formele bezwaarprocedure bevindt waarin zij opnieuw zullen interveniëren. Hun uiteindelijke doel reikt bovendien verder dan alleen Solvinity: de stichting hoopt dat de uitkomst van deze zaak een blijvend historisch precedent schept om te voorkomen dat we als land afhankelijk worden (of blijven) van partijen van buiten Europa.
-
-
+## 🔗 De Tijd
