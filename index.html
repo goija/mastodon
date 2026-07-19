@@ -3,206 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repository Index | VORTEX Kernbestanden</title>
+    <title>VORTEX | Repository Index</title>
     <style>
-        :root {
-            --bg-base: #050914;
-            --panel-bg: #0A1128;
-            --cyan: #00F3FF;
-            --gold: #FFD700;
-            --alert: #FF3366;
-            --text-main: #E2E8F0;
-            --text-muted: #64748B;
-            --border-color: #1E293B;
+        body { 
+            font-family: monospace; 
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            padding: 20px; 
+            line-height: 1.6;
         }
-
-        body {
-            font-family: 'Consolas', 'Courier New', monospace;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .vortex-container { 
+            max-width: 650px; 
+            margin: 0 auto;
+            padding: 20px; 
+            border: 1px solid #30363d; 
+            border-radius: 6px; 
+            background-color: #010409;
         }
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-        }
-
-        header {
-            border-bottom: 2px solid var(--cyan);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header-text h1 {
-            color: var(--cyan);
-            margin: 0 0 5px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .header-text p {
-            color: var(--text-muted);
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        .math-constant {
-            text-align: right;
-            color: var(--gold);
-            font-style: italic;
-            background: #000;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .category {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 20px;
-            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.02);
-            transition: border-color 0.3s;
-        }
-        
-        .category:hover {
-            border-color: var(--cyan);
-        }
-
-        .category h2 {
-            color: var(--gold);
-            font-size: 1rem;
-            text-transform: uppercase;
+        h1 { 
+            color: #ffffff; 
+            font-size: 1.5em; 
+            border-bottom: 1px solid #30363d; 
+            padding-bottom: 10px; 
             margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 8px;
         }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
         }
-
-        li {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            word-break: break-all;
+        li { 
+            margin: 10px 0; 
+            padding: 5px;
+            border-bottom: 1px dashed #21262d;
         }
-
-        li::before {
-            content: '>';
-            color: var(--cyan);
-            margin-right: 10px;
-            font-weight: bold;
+        li:last-child {
+            border-bottom: none;
         }
-
-        a {
-            color: var(--text-main);
-            text-decoration: none;
-            transition: color 0.2s, text-shadow 0.2s;
+        a { 
+            color: #58a6ff; 
+            text-decoration: none; 
+            display: inline-block; 
+            width: 100%;
         }
-
-        a:hover {
-            color: var(--cyan);
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+        a:hover { 
+            text-decoration: underline; 
+            color: #79c0ff; 
         }
-
-        .file-meta {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-left: 10px;
-            white-space: nowrap;
-        }
-
-        footer {
-            margin-top: 50px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
+        .icon {
+            margin-right: 8px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="header-text">
-                <h1>Repository Index</h1>
-                <p>Opgeschoonde bestandsstructuur</p>
-                <p style="margin-top: 5px; color: #A78BFA;">SABIC Woo-dossier, Netwerkdata & VORTEX Engine</p>
-            </div>
-            <div class="math-constant">
-                VORTEX Volume Constant<br>
-                <strong>&Sigma; n³ (n=1..26) = 123.201</strong>
-            </div>
-        </header>
-
-        <div class="grid">
-            
-            <!-- Systeem & Architectuur -->
-            <div class="category">
-                <h2>Systeem & Architectuur</h2>
-                <ul>
-                    <li><a href="README.md" target="_blank">README.md</a> <span class="file-meta">MD</span></li>
-                    <li><a href="index.html" target="_blank">index.html</a> <span class="file-meta">HTML</span></li>
-                    <li><a href="vortex351.html" target="_blank">vortex351.html</a> <span class="file-meta">HTML</span></li>
-                </ul>
-            </div>
-
-            <!-- SABIC / Woo-Dossiers -->
-            <div class="category">
-                <h2>SABIC Dossier</h2>
-                <ul>
-                    <li><a href="Woo Informeren verzoek zienswijzen SABIC.pdf" target="_blank">Woo Informeren verzoek zienswijzen SABIC.pdf</a> <span class="file-meta">PDF</span></li>
-                </ul>
-            </div>
-
-            <!-- Netwerk Data (JSON) -->
-            <div class="category">
-                <h2>Federated Netwerk Data</h2>
-                <ul>
-                    <li><a href="actor.json" target="_blank">actor.json</a> <span class="file-meta">JSON</span></li>
-                    <li><a href="bookmarks.json" target="_blank">bookmarks.json</a> <span class="file-meta">JSON</span></li>
-                    <li><a href="likes.json" target="_blank">likes.json</a> <span class="file-meta">JSON</span></li>
-                    <li><a href="outbox.json" target="_blank">outbox.json</a> <span class="file-meta">JSON</span></li>
-                </ul>
-            </div>
-
-            <!-- Media -->
-            <div class="category">
-                <h2>Media & Assets</h2>
-                <ul>
-                    <li><a href="3f7202e23fba4cf2.png" target="_blank">3f7202e23fba4cf2.png</a> <span class="file-meta">PNG</span></li>
-                    <li><a href="avatar.png" target="_blank">avatar.png</a> <span class="file-meta">PNG</span></li>
-                </ul>
-            </div>
-
-        </div>
-
-        <footer>
-            VORTEX Omni-Bridge | Actieve Kernbestanden
-        </footer>
-    </div>
+<div class="vortex-container">
+    <h1>📁 Repository Bestanden</h1>
+    
+    <ul>
+        <li><a href="3f7202e23fba4cf2.png"><span class="icon">🖼️</span>3f7202e23fba4cf2.png</a></li>
+        <li><a href="README.md"><span class="icon">📄</span>README.md</a></li>
+        <li><a href="Woo%20Informeren%20verzoek%20zienswijzen%20SABIC.pdf"><span class="icon">📑</span>Woo Informeren verzoek zienswijzen SABIC.pdf</a></li>
+        <li><a href="actor.json"><span class="icon">⚙️</span>actor.json</a></li>
+        <li><a href="alt-text-mastodon"><span class="icon">📝</span>alt-text-mastodon</a></li>
+        <li><a href="avatar.png"><span class="icon">🖼️</span>avatar.png</a></li>
+        <li><a href="bookmarks.json"><span class="icon">⚙️</span>bookmarks.json</a></li>
+        <li><a href="index.html"><span class="icon">🌐</span>index.html</a></li>
+        <li><a href="likes.json"><span class="icon">⚙️</span>likes.json</a></li>
+        <li><a href="outbox.json"><span class="icon">⚙️</span>outbox.json</a></li>
+        <li><a href="vortex351.html"><span class="icon">🌐</span>vortex351.html</a></li>
+    </ul>
+</div>
 
 </body>
 </html>
