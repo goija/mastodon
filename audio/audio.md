@@ -9,3 +9,10 @@ https://vogala.org/tekst/hebban-olla-vogala // website
 https://cryptpad.fr/doc/#/2/doc/view/OXpsrYz-ngIsETWHdnsH2czD-0Uuyp2SLv+5RmRtQXw/
 
 https://cryptpad.fr/doc/#/2/doc/edit/YKanINBKu8DiweQcgiofMoZE/
+
+
+https://infosec.exchange/@queen_fennec@bird.makeup - kiesraad
+
+https://github.com/kiesraad
+
+https://github.com/kiesraad/abacus
