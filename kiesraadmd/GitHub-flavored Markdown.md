@@ -1,5 +1,14 @@
 Markdown
 
+https://github.com/kiesraad/abacus
+
+https://substack.com/@goija/p-206039514
+
+https://github.com/RAPosthumus?tab=repositories
+
+https://www.flickr.com/photos/renseposthumus/
+
+
 # Dossier: Voorgenomen Overname Solvinity door Kyndryl
 
 Hieronder vind je een gestructureerd overzicht van de betrokken organisaties, hun publicaties, de juridische stappen en een chronologische tijdlijn van de gebeurtenissen rondom de voorgenomen overname van DigiD-provider Solvinity door het Amerikaanse Kyndryl.
