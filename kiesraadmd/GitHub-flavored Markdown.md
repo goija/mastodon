@@ -98,6 +98,7 @@ Hieronder vind je een gestructureerd overzicht van de betrokken organisaties, hu
     Kern van de uitspraak: In 2023 toetste de rechtbank Rotterdam het verbod op het gebruik van Chinese Huawei- en ZTE-apparatuur in de kritieke netwerken van telecomprovider T-Mobile (nu Odido). De rechter accepteerde toen dat buitenlandse wetgeving (in dat geval de Chinese Inlichtingenwet) in combinatie met geopolitieke belangen een concreet en niet-mitigeerbaar veiligheidsrisico oplevert. Dit argument is door het Bureau Toetsing Investeringen (BTI) en de landsadvocaat nu met succes doorvertaald naar de Amerikaanse CLOUD Act in de zaak rondom Solvinity en Kyndryl.
 
     ----------------------------
+   https://www.startpage.com/sp/search 
 
     Hieronder vindt u de zaaknummers van de Solvinity/DigiD-casus én de indrukwekkende lijst aan zaaknummers uit uw persoonlijke dossier tegen de gemeente Tholen, waarin u nota bene zélf bij de Nationale Ombudsman klaagt over "dossier-atomisering",.
 1. Zaaknummers in het Solvinity / Kyndryl-dossier (DigiD)
