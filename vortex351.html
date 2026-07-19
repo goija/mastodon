@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX Engine | D=26 Spacetime Simulator</title>
+    <style>
+        :root {
+            --bg-base: #050914;
+            --panel-bg: #0A1128;
+            --cyan: #00F3FF;
+            --gold: #FFD700;
+            --alert: #FF3366;
+            --text-muted: #64748B;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: var(--bg-base);
+            color: #E2E8F0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--cyan);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header h1 {
+            color: var(--cyan);
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid #1E293B;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.05);
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+
+        .title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .value-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--cyan);
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            margin: 10px 0;
+        }
+
+        .value-display.gold {
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #1E293B;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 10px 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: var(--cyan);
+            color: var(--bg-base);
+            box-shadow: 0 0 15px var(--cyan);
+        }
+
+        button:disabled {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Dodecahedron visualization grid */
+        .vertex-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .vertex-cell {
+            background: #0F172A;
+            border: 1px solid #1E293B;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: all 0.1s;
+        }
+
+        .vertex-cell.active {
+            background: var(--gold);
+            color: #000;
+            border-color: #FFF;
+            box-shadow: 0 0 10px var(--gold);
+            font-weight: bold;
+        }
+
+        .math-block {
+            background: #000;
+            padding: 10px;
+            border-left: 3px solid var(--cyan);
+            font-family: inherit;
+            color: #A78BFA;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>VORTEX BARE-METAL KERNEL</h1>
+        <p style="color: var(--text-muted); margin: 0;">Computationele Kristallografie | Zero-Allocation Engine</p>
+    </div>
+
+    <div class="dashboard">
+        
+        <!-- Panel 1: D=26 Phase Space -->
+        <div class="panel">
+            <div class="title">Volumetrische Fase-Ruimte (D=26)</div>
+            <div class="value-display" id="volumeDisplay">0</div>
+            <div class="data-row">
+                <span>Limiet:</span>
+                <span style="color: var(--alert)">123.201 Voxels</span>
+            </div>
+            <div class="math-block">
+                &Sigma; n&sup3; (n=1..26) = 123,201<br>
+                26-Dimensionale String Theoriemodel
+            </div>
+        </div>
+
+        <!-- Panel 2: 6D Hexeract Navigation -->
+        <div class="panel">
+            <div class="title">6D Hexeract (Kinematische Status)</div>
+            <div class="value-display" id="binaryState">000000</div>
+            <div class="data-row">
+                <span>Decimaal (0-63):</span>
+                <span id="decimalState">0</span>
+            </div>
+            <div class="data-row">
+                <span>Laatste Mutatie-As:</span>
+                <span id="lastAxis">-</span>
+            </div>
+            <div class="math-block">
+                state ^= (1 &lt;&lt; bitIndex);<br>
+                Hamming Distance = 1 (Atomair)
+            </div>
+        </div>
+
+        <!-- Panel 3: Dimensional Collapse (Zero-Allocation) -->
+        <div class="panel">
+            <div class="title">Degeneratie (64 &rarr; 20)</div>
+            <div class="value-display gold" id="collapseState">0</div>
+            <div class="data-row">
+                <span>Actieve Dodecaëder Vertex:</span>
+                <span>φ Geoptimaliseerd</span>
+            </div>
+            <div class="vertex-grid" id="vertexGrid">
+                <!-- Genereer 20 cellen via JS -->
+            </div>
+            <div class="math-block">
+                dodecaVertex = (state * 20) &gt;&gt; 6;<br>
+                Zero-Allocation Bitshift
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btnStart" onclick="vortexKernel.start()">Start Kwantum Cyclus</button>
+        <button id="btnStop" onclick="vortexKernel.stop()" disabled>Halt Cyclus</button>
+        <button onclick="vortexKernel.step()">Handmatige XOR (Hamming 1)</button>
+    </div>
+
+    <script>
+        /**
+         * VORTEX Bare-Metal Simulatie
+         * Gebruikt getypeerde arrays om memory-allocation en garbage collection te vermijden.
+         */
+        class BareMetalVortex {
+            constructor() {
+                // Simuleer een 8-byte C++ register via een ArrayBuffer
+                // Byte 0: 6D State (0-63)
+                // Byte 1: Dodecahedron Collapse State (0-19)
+                // Byte 2-5 (Uint32): Volumetric Phase Space (0-123201)
+                this.memory = new ArrayBuffer(8);
+                this.view = new DataView(this.memory);
+                
+                this.MAX_VOLUME = 123201;
+                this.isRunning = false;
+                this.animationFrame = null;
+                
+                this.initGrid();
+            }
+
+            initGrid() {
+                const grid = document.getElementById('vertexGrid');
+                for (let i = 0; i < 20; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'vertex-cell';
+                    cell.id = `v-${i}`;
+                    cell.innerText = i;
+                    grid.appendChild(cell);
+                }
+            }
+
+            // Bare-metal bitwise collapse (geen floats, geen objecten)
+            computeCollapse() {
+                let state = this.view.getUint8(0);
+                
+                // (state * 20) / 64 vertaald naar bitshift voor zero-allocation performantie
+                // Vermenigvuldiging met 20 en shift right met 6 (wat delen door 2^6 = 64 is)
+                let collapsed = (state * 20) >> 6; 
+                
+                this.view.setUint8(1, collapsed);
+            }
+
+            // XOR mutatie op de Hexeract
+            mutate() {
+                let state = this.view.getUint8(0);
+                let axis = Math.floor(Math.random() * 6); // Kies as 0 t/m 5
+                
+                // Atomaire XOR shift
+                state ^= (1 << axis);
+                
+                // Beveiliging: forceer binnen 6-bit veld (0x3F = 00111111)
+                state &= 0x3F;
+                
+                this.view.setUint8(0, state);
+                document.getElementById('lastAxis').innerText = `As ${axis}`;
+
+                // Update het volume (Phase Space klok)
+                let vol = this.view.getUint32(2);
+                vol = (vol + 1) % (this.MAX_VOLUME + 1);
+                this.view.setUint32(2, vol);
+            }
+
+            updateUI() {
+                const state = this.view.getUint8(0);
+                const collapse = this.view.getUint8(1);
+                const volume = this.view.getUint32(2);
+
+                // UI Updates
+                document.getElementById('binaryState').innerText = state.toString(2).padStart(6, '0');
+                document.getElementById('decimalState').innerText = state;
+                document.getElementById('collapseState').innerText = collapse;
+                document.getElementById('volumeDisplay').innerText = volume.toLocaleString('nl-NL');
+
+                // Dodecahedron Grid UI
+                document.querySelectorAll('.vertex-cell').forEach(el => el.classList.remove('active'));
+                document.getElementById(`v-${collapse}`).classList.add('active');
+            }
+
+            step() {
+                this.mutate();
+                this.computeCollapse();
+                this.updateUI();
+            }
+
+            loop() {
+                if (!this.isRunning) return;
+                
+                // Voer 10 berekeningen per frame uit voor visuele snelheid
+                for(let i=0; i<10; i++) {
+                    this.mutate();
+                    this.computeCollapse();
+                }
+                
+                this.updateUI();
+                this.animationFrame = requestAnimationFrame(() => this.loop());
+            }
+
+            start() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                document.getElementById('btnStart').disabled = true;
+                document.getElementById('btnStop').disabled = false;
+                this.loop();
+            }
+
+            stop() {
+                this.isRunning = false;
+                cancelAnimationFrame(this.animationFrame);
+                document.getElementById('btnStart').disabled = false;
+                document.getElementById('btnStop').disabled = true;
+            }
+        }
+
+        // Boot VORTEX Kernel
+        const vortexKernel = new BareMetalVortex();
+        vortexKernel.updateUI();
+    </script>
+</body>
+</html>
