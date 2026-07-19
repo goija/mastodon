@@ -42,3 +42,5 @@ Bovendien rekende de rechter af met de *"weinig rechtsstatelijke"* landsadvocaat
 
 **De toekomst**
 Voor Privacy First is de strijd nog niet definitief gestreden, aangezien de zaak zich nu nog in een formele bezwaarprocedure bevindt waarin zij opnieuw zullen interveniëren. Hun uiteindelijke doel reikt bovendien verder dan alleen Solvinity: de stichting hoopt dat de uitkomst van deze zaak een blijvend historisch precedent schept om te voorkomen dat we als land afhankelijk worden (of blijven) van partijen van buiten Europa.
+
+
