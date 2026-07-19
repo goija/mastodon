@@ -51,6 +51,10 @@ In **STASIS_LOCKED** modus met Reine Stemming elimineert de priemfactorisatie $2
 
 De introductie van de **13e boventoon** (de verhouding $13:8$ of $13:1$) creëert een interval dat buiten de traditionele westerse en zelfs de meeste microtonale systemen (zoals de 11-limiet) valt. Dit interval, de *neutrale sext*, bezit een unieke akoestische spanning. Het is precies deze harmonische factor die de brug slaat tussen de lage 110 Hz archeoakoestische basfrequentie en de ultrasone 118 kHz LF-draaggolf, door te fungeren als een exacte rationele modulator.
 
+
+
+https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing
+    https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html
 ---
 
 ## Systeemarchitectuur (Python)
@@ -130,4 +134,4 @@ if __name__ == "__main__":
     print(f"Ruimtelijke Afstand tot (9,9) Tunnel-Nulpunt: {distance} stappen")
     print(f"Zero Deviation 13-Limiet Audiofrequentie: {audio_freq:.4f} Hz")
 
-    https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html
+
