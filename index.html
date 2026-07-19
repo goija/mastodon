@@ -3,425 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VORTEX Core - 234 Node Helix Dashboard</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Systeem Index Gateway || VORTEX Core</title>
     <style>
         :root {
-            --bg-deep: #050608;
-            --panel-bg: #0c0e14;
-            --panel-border: #1a1f2c;
-            --text-primary: #e2e8f0;
-            --text-muted: #64748b;
-            --matrix-glow: rgba(0, 255, 170, 0.1);
-            
-            /* Harmonische statuskleuren */
-            --color-active: #00ffaa;
-            --color-next: #00bfff;
-            --color-sink: #ff3366;
-            --node-default: #131722;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --bg-color: #06070a;
+            --panel-bg: #10121a;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --accent: #00ffaa;
+            --accent-hover: #00e699;
+            --accent-blue: #00bfff;
+            --border-color: #1f2937;
         }
 
         body {
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
-            padding: 30px;
-            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            line-height: 1.5;
         }
 
-        .vortex-container {
-            max-width: 1400px;
+        .container {
+            max-width: 1200px;
             width: 100%;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 25px;
         }
 
-        @media (min-width: 1100px) {
-            .vortex-container {
-                grid-template-columns: 380px 1fr;
+        .header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 5px 0;
+            font-size: 2.2em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95em;
+        }
+
+        /* Architectuur Documentatie Sectie */
+        .docs-panel {
+            background-color: #0b0d14;
+            border-left: 4px solid var(--accent-blue);
+            border-right: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-radius: 4px;
+        }
+
+        .docs-panel h2 {
+            color: var(--accent-blue);
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .docs-panel h2::before {
+            content: '⚙️';
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .docs-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Panelen Architectuur */
-        .panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .docs-col h3 {
+            color: var(--text-main);
+            font-size: 1em;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
         }
 
-        .panel-header {
-            border-bottom: 1px solid var(--panel-border);
-            padding-bottom: 12px;
-        }
-
-        .panel-header h2 {
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--color-next);
-        }
-
-        .panel-header p {
-            font-size: 0.8em;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Telemetrie & Audio Controle */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .metric-card {
-            background-color: #07080c;
-            border: 1px solid var(--panel-border);
-            padding: 12px 15px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .metric-label {
-            font-size: 0.85em;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .metric-value {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--text-primary);
-        }
-
-        .metric-value.highlight {
-            color: var(--color-active);
-            text-shadow: 0 0 8px rgba(0, 255, 170, 0.4);
-        }
-
-        .audio-toggle-btn {
-            background: transparent;
-            color: var(--color-active);
-            border: 1px solid var(--color-active);
-            padding: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-            font-weight: bold;
-        }
-
-        .audio-toggle-btn:hover {
-            background: var(--color-active);
-            color: var(--bg-deep);
-            box-shadow: 0 0 15px var(--color-active);
-        }
-
-        .audio-active {
-            border-color: var(--color-sink);
-            color: var(--color-sink);
-        }
-        .audio-active:hover {
-            background: var(--color-sink);
-            color: var(--text-primary);
-            box-shadow: 0 0 15px var(--color-sink);
-        }
-
-        /* Helix Matrix Grid */
-        .matrix-wrapper {
-            position: relative;
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(18, 1fr); /* 18 Kolommen */
-            gap: 6px;
-            min-width: 720px;
-        }
-
-        .matrix-node {
-            background-color: var(--node-default);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            aspect-ratio: 1;
+        .code-inline {
+            background-color: rgba(0, 191, 255, 0.1);
+            color: var(--accent-blue);
+            padding: 2px 6px;
             border-radius: 3px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.65em;
-            color: var(--text-muted);
-            transition: all 0.1s ease;
-            position: relative;
-            cursor: default;
-        }
-
-        /* Node Toestanden */
-        .matrix-node.is-active {
-            background-color: var(--color-active);
-            color: var(--bg-deep);
-            font-weight: bold;
-            box-shadow: 0 0 12px var(--color-active);
-            transform: scale(1.08);
-            z-index: 2;
-        }
-
-        .matrix-node.is-next-els {
-            background-color: transparent;
-            border: 2px solid var(--color-next);
-            color: var(--color-next);
-            font-weight: bold;
-            box-shadow: 0 0 8px rgba(0, 191, 255, 0.3);
-            transform: scale(1.04);
-            z-index: 1;
-        }
-
-        .matrix-node.is-tunnel-sink {
-            background-color: rgba(255, 51, 102, 0.15);
-            border: 1px dashed var(--color-sink);
-        }
-
-        .node-index {
             font-size: 0.9em;
         }
 
-        .node-mod {
-            font-size: 0.75em;
-            opacity: 0.6;
-            margin-top: 1px;
+        /* Grid layout voor de mappen */
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
         }
 
-        /* Status indicator van de verbinding */
-        .conn-status {
-            font-size: 0.8em;
-            text-align: center;
-            padding: 6px;
-            border-radius: 4px;
-            background-color: rgba(255, 51, 102, 0.1);
-            color: var(--color-sink);
+        /* Map / Kaart styling */
+        .folder {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 25px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .folder:hover {
+            border-color: rgba(0, 255, 170, 0.4);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .folder-title {
+            color: var(--accent);
+            font-size: 1.1em;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .conn-status.connected {
-            background-color: rgba(0, 255, 170, 0.1);
-            color: var(--color-active);
+        .folder-title::before {
+            content: '📁';
+            font-size: 1.2em;
+        }
+
+        /* Lijst met bestanden */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        li::before {
+            content: '📄 ';
+            opacity: 0.7;
+            font-size: 1em;
+            margin-right: 5px;
+        }
+
+        li.ext-html::before { content: '🌐 '; }
+        li.ext-py::before { content: '🐍 '; }
+        li.ext-md::before { content: '📝 '; }
+        li.ext-pdf::before { content: '🏛️ '; }
+        li.ext-json::before { content: '⚙️ '; }
+        li.ext-img::before { content: '🖼️ '; }
+
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        .meta-data {
+            font-size: 0.75em;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 4px;
+            margin-left: 28px;
         }
     </style>
 </head>
 <body>
 
-    <div id="vortex-app" class="vortex-container">
+    <div class="container">
         
-        <!-- Linker paneel: Telemetrie & Control Signalen -->
-        <div class="panel">
-            <div class="panel-header">
-                <h2>VORTEX OMNI-PANEL</h2>
-                <p>Helix scanner & 13-limiet sonificatie engine</p>
+        <div class="header">
+            <div>
+                <h1>Systeem Index Gateway</h1>
+                <p>Lokale bestandsstructuur & Repository Navigatie</p>
             </div>
-
-            <div class="conn-status" :class="{ connected: isConnected }">
-                {{ isConnected ? 'Omni-Bridge Connected' : 'Awaiting Core Signal...' }}
-            </div>
-
-            <div class="telemetry-grid">
-                <div class="metric-card">
-                    <span class="metric-label">Huidige Node (n)</span>
-                    <span class="metric-value highlight">{{ currentTickNode || '--' }}</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Next ELS Node</span>
-                    <span class="metric-value" style="color: var(--color-next)">{{ nextELSNode || '--' }}</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Helix Torsie</span>
-                    <span class="metric-value">{{ helixAngle ? helixAngle + '°' : '--' }}</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Modulaire Afstand</span>
-                    <span class="metric-value">{{ gravityDistance || '--' }}</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Harshad Divisor</span>
-                    <span class="metric-value">{{ harshadDivisor || '--' }}</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Signaal Resonantie</span>
-                    <span class="metric-value" style="color: #ffcc00">{{ audioFreq ? audioFreq + ' Hz' : '--' }}</span>
-                </div>
-            </div>
-
-            <!-- Lokale audio oscillator om de 13-limiet daadwerkelijk hoorbaar te maken -->
-            <button 
-                class="audio-toggle-btn" 
-                :class="{ 'audio-active': isAudioRunning }"
-                @click="toggleAudioEngine"
-            >
-                {{ isAudioRunning ? 'Deactiveer Audio Resonance' : 'Activeer Audio Resonance' }}
-            </button>
         </div>
 
-        <!-- Rechter paneel: De 13x18 Helix Matrix Grid Visualisatie -->
-        <div class="panel" style="flex-grow: 1;">
-            <div class="panel-header">
-                <h2>234-Node Helix Matrix ($13 \times 18$)</h2>
-                <p>Modulaire projectie. Groen = Actieve Node, Blauw omrand = ELS Sprong 19 vector.</p>
-            </div>
-
-            <div class="matrix-wrapper">
-                <div class="matrix-grid">
-                    <div 
-                        v-for="node in nodes" 
-                        :key="node.id"
-                        class="matrix-node"
-                        :class="{ 
-                            'is-active': node.id === currentTickNode, 
-                            'is-next-els': node.id === nextELSNode,
-                            'is-tunnel-sink': node.isSink
-                        }"
-                        :title="'Node: ' + node.id + ' | Mod 9: ' + node.mod9"
-                    >
-                        <span class="node-index">{{ node.id }}</span>
-                        <span class="node-mod">⦂{{ node.mod9 }}</span>
-                    </div>
+        <div class="docs-panel">
+            <h2>Systeem Architectuur: Omni-Bridge & Helix Dashboard</h2>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 20px;">
+                De koppeling tussen het Python script en de HTML frontend vormt een asynchrone client-server architectuur, verbonden via WebSockets. Dit scheidt de zware wiskundige berekeningen van de DOM-rendering.
+            </p>
+            <div class="docs-grid">
+                <div class="docs-col">
+                    <h3>1. De Backend: <span class="code-inline">VORTEX_Bridge.py</span></h3>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">
+                        Dit is het kloppende hart van het systeem. Het Python-script draait lokaal een asynchrone WebSocket server op poort <span class="code-inline">8765</span>. Het berekent continu de telemetrie voor de 234 nodes van de ELS-matrix: de modulaire zwaartekracht naar het $(9,9)$ nulpunt, de schroeflijn-hoeken en de wiskundig zuivere 13-limiet frequenties. Deze ruwe data wordt gecomprimeerd in een JSON-payload en weggeschoten in een ritme van exact $13.75$ Hz.
+                    </p>
+                </div>
+                <div class="docs-col">
+                    <h3>2. De Frontend: <span class="code-inline">vortex_helix_dashboard.html</span></h3>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">
+                        Dit is de tactische interface. Geschreven in Vue.js, "luistert" dit HTML-bestand naar de poort van de Python server. Zodra de JSON-payload binnenkomt, werkt Vue de DOM reactief bij zonder de browser te blokkeren. Hier worden de inkomende ELS-sprongen geprojecteerd op het $13 \times 18$ visuele grid. Tevens pakt de WebAudio API de inkomende 13-limiet signalen op en synthetiseert deze direct tot hoorbare, zuivere geluidsgolven via je lokale speakers.
+                    </p>
                 </div>
             </div>
+        </div>
+
+        <div class="directory-grid">
+
+            <div class="folder">
+                <h2 class="folder-title">VORTEX_Engine & Architectuur</h2>
+                <ul>
+                    <li class="ext-py">
+                        <a href="VORTEX_Bridge.py">VORTEX_Bridge.py</a>
+                        <span class="meta-data">Toegevoegd: 6 minutes ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
+                        <span class="meta-data">Toegevoegd: Recent</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="vortex-ui.html">vortex-ui.html</a>
+                        <span class="meta-data">Toegevoegd: 5 minutes ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="vortex351.html">vortex351.html</a>
+                        <span class="meta-data">Toegevoegd: 9 hours ago</span>
+                    </li>
+                    <li class="ext-md">
+                        <a href="verstrengeling.md">verstrengeling.md</a>
+                        <span class="meta-data">Toegevoegd: 6 hours ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
+                        <span class="meta-data">Update: 5 hours ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">ActivityPub / Decentraal</h2>
+                <ul>
+                    <li class="ext-json">
+                        <a href="actor.json">actor.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="outbox.json">outbox.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="bookmarks.json">bookmarks.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-json">
+                        <a href="likes.json">likes.json</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-md">
+                        <a href="alt-text-mastodon">alt-text-mastodon</a>
+                        <span class="meta-data">Toegevoegd: 9 hours ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">Onderzoek & Archieven</h2>
+                <ul>
+                    <li class="ext-pdf">
+                        <a href="Woo Informeren verzoek zienswijzen SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a>
+                        <span class="meta-data">Toegevoegd: 2 days ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="folder">
+                <h2 class="folder-title">Systeem & Media</h2>
+                <ul>
+                    <li class="ext-md">
+                        <a href="README.md">README.md</a>
+                        <span class="meta-data">Update: 7 minutes ago</span>
+                    </li>
+                    <li class="ext-html">
+                        <a href="index.html">index.html</a>
+                        <span class="meta-data">Update: 2 minutes ago</span>
+                    </li>
+                    <li class="ext-img">
+                        <a href="avatar.png">avatar.png</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                    <li class="ext-img">
+                        <a href="3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
+                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
+                    </li>
+                </ul>
+            </div>
+
         </div>
 
     </div>
-
-    <script>
-        const { createApp, ref, onMounted } = Vue;
-
-        createApp({
-            setup() {
-                const isConnected = ref(false);
-                const currentTickNode = ref(null);
-                const nextELSNode = ref(null);
-                const helixAngle = ref(null);
-                const gravityDistance = ref(null);
-                const harshadDivisor = ref(null);
-                const audioFreq = ref(null);
-
-                // Audio Context variabelen voor lokale 13-limiet resonantie
-                const isAudioRunning = ref(false);
-                let audioCtx = null;
-                let oscillator = null;
-                let gainNode = null;
-
-                // Genereer de statische 234 nodes structuur (13 rijen x 18 kolommen)
-                const nodes = [];
-                for (let i = 1; i <= 234; i++) {
-                    // Bepaal of de node mathematisch op het (9,9) reductiepad van de tunnelcoördinaat valt
-                    const mod9 = i % 9;
-                    nodes.push({
-                        id: i,
-                        mod9: mod9,
-                        isSink: mod9 === 0 // Fungeert als harmonische sink
-                    });
-                }
-
-                // Initialiseer of muteer de WebAudio API Oscillator
-                const toggleAudioEngine = () => {
-                    if (!isAudioRunning.value) {
-                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                        oscillator = audioCtx.createOscillator();
-                        gainNode = audioCtx.createGain();
-
-                        oscillator.type = 'sine';
-                        // Start op de stabiele basis
-                        oscillator.frequency.setValueAtTime(audioFreq.value || 110.0, audioCtx.currentTime);
-                        
-                        // Zacht volume om gehoor/speakers te beschermen tegen pure sinussen en infrasound clipping
-                        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
-                        
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioCtx.destination);
-                        oscillator.start();
-                        
-                        isAudioRunning.value = true;
-                    } else {
-                        if (oscillator) {
-                            oscillator.stop();
-                            oscillator.disconnect();
-                        }
-                        if (audioCtx) {
-                            audioCtx.close();
-                        }
-                        isAudioRunning.value = false;
-                    }
-                };
-
-                onMounted(() => {
-                    // Maak verbinding met de VORTEX Python WebSocket server (ws://localhost:8765)
-                    const ws = new WebSocket('ws://localhost:8765');
-
-                    ws.onopen = () => {
-                        isConnected.value = true;
-                        console.log("VORTEX Omni-Bridge verbinding succesvol geïnitieerd.");
-                    };
-
-                    ws.onmessage = (event) => {
-                        const data = JSON.parse(event.data);
-                        
-                        // Update de reactieve variabelen voor de interface
-                        currentTickNode.value = data.currentNode;
-                        nextELSNode.value = data.nextNodeELS;
-                        helixAngle.value = data.helixAngle;
-                        gravityDistance.value = data.gravityDistance;
-                        harshadDivisor.value = data.harshadDivisor;
-                        audioFreq.value = data.audioFreq;
-
-                        // Als de lokale audio engine actief is, moduleer de oscillator real-time mee
-                        if (isAudioRunning.value && oscillator && audioCtx) {
-                            oscillator.frequency.setTargetAtTime(data.audioFreq, audioCtx.currentTime, 0.03);
-                        }
-                    };
-
-                    ws.onclose = () => {
-                        isConnected.value = false;
-                        console.log("VORTEX Omni-Bridge verbinding verbroken.");
-                        if (isAudioRunning.value) {
-                            toggleAudioEngine(); // Schakel audio uit bij verbreken verbinding
-                        }
-                    };
-                });
-
-                return {
-                    isConnected,
-                    currentTickNode,
-                    nextELSNode,
-                    helixAngle,
-                    gravityDistance,
-                    harshadDivisor,
-                    audioFreq,
-                    nodes,
-                    isAudioRunning,
-                    toggleAudioEngine
-                };
-            }
-        }).mount('#vortex-app');
-    </script>
 
 </body>
 </html>
