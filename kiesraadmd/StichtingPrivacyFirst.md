@@ -1,3 +1,5 @@
+https://github.com/kiesraad/abacus-documentatie/blob/main/softwarearchitectuur/Overzicht.md
+
 # Dossier: Voorgenomen Overname Solvinity door Kyndryl
 
 Hieronder vind je een gestructureerd overzicht van de betrokken organisaties, hun publicaties, de juridische stappen en een chronologische tijdlijn van de gebeurtenissen rondom de voorgenomen overname van DigiD-provider Solvinity door het Amerikaanse Kyndryl.
