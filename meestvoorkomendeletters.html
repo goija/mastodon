@@ -3,46 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VORTEX - Multi-Language Frequency Matrix</title>
+    <title>Paleografische Frequentie Matrix (n=1 tot n=25)</title>
+    <!-- Vue 3 via CDN voor geavanceerde reactieve state-handling -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         :root {
-            --bg-dark: #050508;
-            --panel-bg: #111115;
-            --text-main: #e2e2ec;
-            --text-muted: #6e6e80;
-            --accent: #00ffcc;
-            --accent-dim: rgba(0, 255, 204, 0.12);
-            --border-color: #22222b;
+            --bg-main: #0c0d12;
+            --panel-bg: #181922;
+            --input-bg: #090a0e;
+            --text-primary: #e4e6x7;
+            --text-main: #e2e4ed;
+            --text-muted: #787a91;
+            --accent-emerald: #00ffaa;
+            --accent-blue: #00bfff;
+            --border-subtle: #262938;
+            --row-hover: rgba(0, 255, 170, 0.08);
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 30px 20px;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             width: 100%;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--border-subtle);
             padding-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            color: var(--accent);
-            letter-spacing: 3px;
-            margin: 0 0 10px 0;
+            color: var(--accent-emerald);
             font-size: 1.8em;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
@@ -50,47 +53,50 @@
             color: var(--text-muted);
             margin: 0;
             font-size: 0.95em;
+            line-height: 1.5;
         }
 
-        /* Grid Layout voor Dashboard split */
-        .grid-layout {
+        .workspace {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 25px;
+            gap: 30px;
         }
 
-        @media (min-width: 900px) {
-            .grid-layout {
-                grid-template-columns: 380px 1fr;
+        @media (min-width: 950px) {
+            .workspace {
+                grid-template-columns: 420px 1fr;
             }
         }
 
         .panel {
             background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 6px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             height: fit-content;
         }
 
         .panel h2 {
-            color: var(--accent);
+            color: var(--accent-blue);
             font-size: 1.1em;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             margin-top: 0;
             margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-subtle);
             padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         textarea {
             width: 100%;
-            height: 300px;
-            background-color: #09090c;
+            height: 280px;
+            background-color: var(--input-bg);
             color: var(--text-main);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 4px;
             padding: 15px;
             font-family: inherit;
@@ -98,44 +104,71 @@
             resize: none;
             margin-bottom: 20px;
             font-size: 0.95em;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         textarea:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 12px rgba(0, 255, 204, 0.15);
+            border-color: var(--accent-emerald);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.15);
         }
 
-        /* Real-time Telemetrie Statistieken */
-        .stats-box {
-            background-color: #09090c;
-            border: 1px solid var(--border-color);
+        .btn {
+            background: transparent;
+            color: var(--accent-emerald);
+            border: 1px solid var(--accent-emerald);
+            padding: 10px 15px;
+            font-family: inherit;
+            font-size: 0.85em;
+            cursor: pointer;
             border-radius: 4px;
-            padding: 15px;
-            font-size: 0.9em;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
-        .stat-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .stat-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-        }
-
-        .stat-value {
-            color: var(--accent);
+        .btn:hover {
+            background: var(--accent-emerald);
+            color: var(--bg-main);
             font-weight: bold;
         }
 
-        /* Matrix Tabel */
+        .btn-blue {
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-blue:hover {
+            background: var(--accent-blue);
+            color: var(--bg-main);
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            background-color: var(--input-bg);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .telemetry-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+        }
+
+        .telemetry-label {
+            color: var(--text-muted);
+        }
+
+        .telemetry-value {
+            color: var(--accent-emerald);
+            font-weight: bold;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -143,9 +176,9 @@
         }
 
         th, td {
-            padding: 10px 8px;
+            padding: 12px 10px;
             text-align: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         th {
@@ -161,21 +194,43 @@
             text-align: left;
             font-weight: bold;
             color: var(--text-muted);
-            width: 90px;
+            width: 80px;
         }
 
         tr:hover td {
-            background-color: var(--accent-dim);
+            background-color: var(--row-hover);
         }
 
-        .highlight-custom {
-            color: var(--accent);
+        .highlight-live {
+            color: var(--accent-emerald);
             font-weight: bold;
-            background-color: rgba(0, 255, 204, 0.03);
+            background-color: rgba(0, 255, 170, 0.02);
+        }
+
+        .highlight-empirical {
+            color: var(--accent-blue);
         }
 
         .empty-slot {
-            color: #333344;
+            color: #383b48;
+        }
+
+        .config-section {
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -184,56 +239,79 @@
     <div id="app" class="container">
         
         <div class="header">
-            <h1>VORTEX // LEXICAL FREQUENCY MATRIX</h1>
-            <p>Real-time cryptografische distributie-analyse vs. taalkundige baselines (n=1 tot 26)</p>
+            <h1>Paleografische Frequentie Matrix (n=1 tot 25)</h1>
+            <p>Gespecialiseerde lexicale analyser voor Middelnederlandse manuscripten en historische teksten met behoud van paleografische ligaturen en abbreviaturen.</p>
         </div>
 
-        <div class="grid-layout">
+        <div class="workspace">
             
+            <!-- Linker Paneel: Tekstinvoer & Token-configuratie -->
             <div class="panel">
-                <h2>Data Ingest</h2>
+                <h2>Manuscript Data</h2>
                 <textarea 
                     v-model="rawText" 
-                    placeholder="Plak hier de te analyseren string, cipher of historische manuscripttekst..."
+                    placeholder="Plak hier de diplomatische transcriptie van het historische manuscript..."
                 ></textarea>
 
-                <h2>Telemetrie</h2>
-                <div class="stats-box">
-                    <div class="stat-line">
-                        <span class="stat-label">Bruto Tekengrootte:</span>
-                        <span class="stat-value">{{ totalChars }}</span>
+                <h2>Parser Instellingen</h2>
+                <div class="config-section" style="margin-bottom: 20px;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" v-model="preserveLigatures">
+                        Behoud historische ligaturen (Æ, Œ, Þ, Ð)
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" v-model="preserveNasalMacrons">
+                        Behoud macron/nasaaltekens (Ā, Ē, Ī, Ō, Ū, Ñ)
+                    </label>
+                </div>
+
+                <button class="btn btn-blue" @click="lockEmpiricalBaseline">
+                    Sla op als Empirische Baseline
+                </button>
+                <button class="btn" style="border-color: #ff5555; color: #ff5555;" @click="resetEmpiricalBaseline" v-if="hasSavedBaseline">
+                    Reset Empirische Baseline
+                </button>
+
+                <h2 style="margin-top: 25px;">Telemetrie</h2>
+                <div class="telemetry-grid">
+                    <div class="telemetry-line">
+                        <span class="telemetry-label">Bruto tekens:</span>
+                        <span class="telemetry-value">{{ rawText.length }}</span>
                     </div>
-                    <div class="stat-line">
-                        <span class="stat-label">Gefilterde Letters:</span>
-                        <span class="stat-value">{{ parsedLettersCount }}</span>
+                    <div class="telemetry-line">
+                        <span class="telemetry-label">Geparste tekens:</span>
+                        <span class="telemetry-value">{{ parsedText.length }}</span>
                     </div>
-                    <div class="stat-line">
-                        <span class="stat-label">Unieke Karakters:</span>
-                        <span class="stat-value">{{ uniqueCharsCount }} / 26</span>
+                    <div class="telemetry-line">
+                        <span class="telemetry-label">Unieke entiteiten:</span>
+                        <span class="telemetry-value">{{ uniqueTokensCount }}</span>
                     </div>
                 </div>
             </div>
 
+            <!-- Rechter Paneel: De Matrix (n=1 tot n=25) -->
             <div class="panel">
-                <h2>Frequentie Matrix</h2>
+                <h2>Frequentie Matrix (n=1 t/m 25)</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>n (Rang)</th>
-                            <th>NL / VLAM</th>
-                            <th>ENGELS</th>
-                            <th>FRANS</th>
-                            <th style="color: var(--accent)">JOUW TEKST</th>
+                            <th>Rang (n)</th>
+                            <th>Modern NL</th>
+                            <th>Empirische BL</th>
+                            <th style="color: var(--accent-emerald)">Jouw Tekst (Live)</th>
+                            <th style="font-size: 0.9em;">%</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="row in frequencyTable" :key="row.n">
+                        <tr v-for="row in matrixTable" :key="row.n">
                             <td>n = {{ row.n }}</td>
-                            <td>{{ row.nl }}</td>
-                            <td>{{ row.en }}</td>
-                            <td>{{ row.fr }}</td>
-                            <td class="highlight-custom" :class="{ 'empty-slot': row.custom === '-' }">
-                                {{ row.custom }}
+                            <td>{{ row.modern }}</td>
+                            <td class="highlight-empirical">{{ row.empirical }}</td>
+                            <td class="highlight-live" :class="{ 'empty-slot': row.live === '-' }">
+                                {{ row.live }}
+                            </td>
+                            <td style="font-size: 0.9em; color: var(--text-muted)">
+                                {{ row.percentage }}
                             </td>
                         </tr>
                     </tbody>
@@ -245,71 +323,114 @@
     </div>
 
     <script>
-        const { createApp, ref, computed } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
 
         createApp({
             setup() {
-                // Statische, gevestigde baselines (gesorteerd van meest naar minst frequent)
-                const freqNL = ['E', 'N', 'A', 'T', 'I', 'O', 'R', 'D', 'S', 'L', 'G', 'V', 'H', 'M', 'K', 'C', 'W', 'P', 'B', 'U', 'J', 'Z', 'F', 'X', 'Y', 'Q'];
-                const freqEN = ['E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'C', 'U', 'M', 'W', 'F', 'G', 'Y', 'P', 'B', 'V', 'K', 'J', 'X', 'Q', 'Z'];
-                const freqFR = ['E', 'A', 'S', 'I', 'T', 'N', 'R', 'U', 'L', 'O', 'D', 'C', 'P', 'M', 'V', 'Q', 'F', 'B', 'G', 'H', 'J', 'X', 'Y', 'Z', 'W', 'K'];
+                // Standaard Modern Nederlandse baseline (top 25 letters, 'Q' weggelaten voor n=25 restrictie)
+                const modernBaseline = ['E', 'N', 'A', 'T', 'I', 'O', 'R', 'D', 'S', 'L', 'G', 'V', 'H', 'M', 'K', 'C', 'W', 'P', 'B', 'U', 'J', 'Z', 'F', 'X', 'Y'];
 
-                // Reactieve invoer-state
                 const rawText = ref('');
+                const preserveLigatures = ref(true);
+                const preserveNasalMacrons = ref(true);
+                const empiricalBaseline = ref([]);
+                const hasSavedBaseline = ref(false);
 
-                // Telemetrie computeds
-                const totalChars = computed(() => rawText.value.length);
-                
-                const cleanedText = computed(() => {
-                    return rawText.value.toUpperCase().replace(/[^A-Z]/g, '');
+                // Laad opgeslagen baseline indien aanwezig
+                onMounted(() => {
+                    const saved = localStorage.getItem('vortex_empirical_baseline');
+                    if (saved) {
+                        empiricalBaseline.value = JSON.parse(saved);
+                        hasSavedBaseline.value = true;
+                    }
                 });
 
-                const parsedLettersCount = computed(() => cleanedText.value.length);
-
-                // Dynamische berekening van de letterrangorde op basis van de invoer
-                const customRanking = computed(() => {
-                    const counts = {};
+                // Paleografische tokenization op basis van de vinkjes
+                const parsedText = computed(() => {
+                    let text = rawText.value.toUpperCase();
                     
-                    // Tel de incidenties van elke letter
-                    for (const char of cleanedText.value) {
-                        counts[char] = (counts[char] || 0) + 1;
+                    // Basisset: A-Z
+                    let regexString = 'A-Z';
+                    
+                    // Voeg historische ligaturen toe aan de whitelist indien geselecteerd
+                    if (preserveLigatures.value) {
+                        regexString += 'ÆŒÞÐ';
+                    }
+                    // Voeg verlengings-/nasaalstreep abbreviaturen toe indien geselecteerd
+                    if (preserveNasalMacrons.value) {
+                        regexString += 'ĀĒĪŌŪÑ';
                     }
 
-                    // Sorteer dalend op basis van de telling. 
-                    // Bij gelijke stand wordt er alfabetisch gesorteerd om bit-flips in de UI te voorkomen.
+                    const regex = new RegExp('[^' + regexString + ']', 'g');
+                    return text.replace(regex, '');
+                });
+
+                // Berekening van de incidenties en sortering
+                const sortedLiveTokens = computed(() => {
+                    const counts = {};
+                    const tokens = parsedText.value;
+
+                    for (const token of tokens) {
+                        counts[token] = (counts[token] || 0) + 1;
+                    }
+
+                    // Sorteer dalend op aantallen. Bij gelijke stand stabiel alfabetisch sorteren.
                     return Object.keys(counts).sort((a, b) => {
                         if (counts[b] === counts[a]) {
                             return a.localeCompare(b);
                         }
                         return counts[b] - counts[a];
-                    });
+                    }).map(token => ({
+                        token: token,
+                        count: counts[token],
+                        percentage: tokens.length ? ((counts[token] / tokens.length) * 100).toFixed(1) + '%' : '0.0%'
+                    }));
                 });
 
-                const uniqueCharsCount = computed(() => customRanking.value.length);
+                const uniqueTokensCount = computed(() => sortedLiveTokens.value.length);
 
-                // Het samenstellen van de 5-koloms matrix (n=1 tot n=26)
-                const frequencyTable = computed(() => {
-                    const matrix = [];
-                    const sortedCustom = customRanking.value;
+                // Actie om de huidige live distributie vast te leggen als de empirische vergelijking
+                const lockEmpiricalBaseline = () => {
+                    const baselineList = sortedLiveTokens.value.map(item => item.token);
+                    empiricalBaseline.value = baselineList;
+                    localStorage.setItem('vortex_empirical_baseline', JSON.stringify(baselineList));
+                    hasSavedBaseline.value = true;
+                };
 
-                    for (let i = 0; i < 26; i++) {
-                        matrix.push({
+                const resetEmpiricalBaseline = () => {
+                    empiricalBaseline.value = [];
+                    localStorage.removeItem('vortex_empirical_baseline');
+                    hasSavedBaseline.value = false;
+                };
+
+                // Samenstelling van de matrix van n=1 tot n=25
+                const matrixTable = computed(() => {
+                    const table = [];
+                    const live = sortedLiveTokens.value;
+                    const empirical = empiricalBaseline.value;
+
+                    for (let i = 0; i < 25; i++) {
+                        table.push({
                             n: i + 1,
-                            nl: freqNL[i],
-                            en: freqEN[i],
-                            fr: freqFR[i],
-                            custom: sortedCustom[i] || '-'
+                            modern: modernBaseline[i] || '-',
+                            empirical: empirical[i] || '-',
+                            live: live[i] ? live[i].token : '-',
+                            percentage: live[i] ? live[i].percentage : '0.0%'
                         });
                     }
-                    return matrix;
+                    return table;
                 });
 
                 return {
                     rawText,
-                    totalChars,
-                    parsedLettersCount,
-                    uniqueCharsCount,
-                    frequencyTable
+                    preserveLigatures,
+                    preserveNasalMacrons,
+                    uniqueTokensCount,
+                    parsedText,
+                    matrixTable,
+                    lockEmpiricalBaseline,
+                    resetEmpiricalBaseline,
+                    hasSavedBaseline
                 };
             }
         }).mount('#app');
