@@ -18,35 +18,59 @@
             overflow-x: hidden;
         }
         
-        /* Repository Navigatie Balk */
+        /* Repository Navigatie Balk - Gekleurde Knoppen */
         .repo-nav {
             width: 100%;
             background-color: #161b22;
             border-bottom: 1px solid #30363d;
-            padding: 10px 20px;
+            padding: 15px 20px;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            justify-content: center;
+            gap: 12px;
             box-sizing: border-box;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         .repo-nav a {
-            color: #58a6ff;
+            display: inline-block;
             text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             font-size: 13px;
-            background-color: #0d1117;
-            padding: 5px 10px;
-            border: 1px solid #30363d;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .repo-nav a:hover {
-            background-color: #1f6feb;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
             color: white;
-            border-color: #1f6feb;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .repo-nav a:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.15);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .repo-nav a:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 rgba(0,0,0,0);
+        }
+
+        /* Automatische Kleurverdeling voor Repo Knoppen */
+        .repo-nav a:nth-child(6n+1) { background-color: #d73a49; } /* Rood */
+        .repo-nav a:nth-child(6n+2) { background-color: #28a745; } /* Groen */
+        .repo-nav a:nth-child(6n+3) { background-color: #0366d6; } /* Blauw */
+        .repo-nav a:nth-child(6n+4) { background-color: #ffd33d; color: #24292e; } /* Geel (Donkere tekst) */
+        .repo-nav a:nth-child(6n+5) { background-color: #6f42c1; } /* Paars */
+        .repo-nav a:nth-child(6n+6) { background-color: #ea4aaa; } /* Roze */
+
+        /* Specifieke Highlight voor index.html */
+        .repo-nav a[href="#index.html"] {
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
         h1 {
@@ -110,25 +134,35 @@
             width: 100%;
             max-width: 350px;
             margin: 20px 0;
+            cursor: pointer;
         }
-        button {
+        #audioBtn {
             background-color: #238636;
             color: white;
             border: none;
             padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
             font-family: inherit;
             width: 100%;
             font-weight: bold;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 0 #185c25;
         }
-        button:hover {
+        #audioBtn:hover {
             background-color: #2ea043;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #185c25;
         }
-        button:disabled {
+        #audioBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 #185c25;
+        }
+        #audioBtn:disabled {
             background-color: #30363d;
+            box-shadow: none;
+            transform: none;
             cursor: not-allowed;
             color: #8b949e;
         }
@@ -151,7 +185,7 @@
             max-height: 700px;
             padding-right: 10px;
         }
-        /* Custom Scrollbar voor de leesbaarheid */
+        /* Custom Scrollbar */
         .readme-content::-webkit-scrollbar { width: 8px; }
         .readme-content::-webkit-scrollbar-track { background: #0d1117; }
         .readme-content::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
@@ -181,12 +215,36 @@
             padding: 0;
         }
         .readme-content ul { padding-left: 20px; }
-        .readme-content a {
-            color: #58a6ff;
-            text-decoration: none;
-            word-break: break-all;
+        
+        /* Referentie Links als Knoppen */
+        .ref-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
         }
-        .readme-content a:hover { text-decoration: underline; }
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        .btn-link:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .btn-link:active {
+            transform: translateY(1px);
+        }
+        .btn-colab { background-color: #f9ab00; color: #000; }
+        .btn-vercel { background-color: #ffffff; color: #000; border: 1px solid #ccc; }
+        .btn-github { background-color: #24292e; border: 1px solid #444; }
 
         @media (max-width: 900px) {
             .dual-abacus-layout {
@@ -199,18 +257,18 @@
 </head>
 <body>
 
-    <!-- Top Navigatie: Repository Bestanden -->
+    <!-- Top Navigatie: Repository Bestanden als Gekleurde Knoppen -->
     <nav class="repo-nav">
         <a href="#3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
         <a href="#README.md">README.md</a>
         <a href="#VORTEX_Bridge.py">VORTEX_Bridge.py</a>
-        <a href="#Woo_Informeren_verzoek_zienswijzen_SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a>
+        <a href="#Woo_Informeren_verzoek_zienswijzen_SABIC.pdf">Woo Informeren SABIC.pdf</a>
         <a href="#actor.json">actor.json</a>
         <a href="#alt-text-mastodon">alt-text-mastodon</a>
         <a href="#audiosynthese.md">audiosynthese.md</a>
         <a href="#avatar.png">avatar.png</a>
         <a href="#bookmarks.json">bookmarks.json</a>
-        <a href="#index.html" style="background-color: #1f6feb; color: white;">index.html</a>
+        <a href="#index.html">index.html</a>
         <a href="#likes.json">likes.json</a>
         <a href="#meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
         <a href="#outbox.json">outbox.json</a>
@@ -286,20 +344,12 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
                 <h3>3. Prime Verrijking (Twin Primes)</h3>
                 <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat het signaal akoestisch 'glinsteren', waardoor de wiskundige eigenschap direct hoorbaar wordt.</p>
 
-                <h3>Gebruiksinstructies</h3>
-                <ol>
-                    <li>Klik op <strong>Initialiseer Audio Engine</strong> om de Web Audio API te activeren.</li>
-                    <li>Verschuif de slider om het signaal door de matrix (0-100) te loodsen.</li>
-                    <li>Observeer de uitlijning (groen) op waarden als 11, 31, 51.</li>
-                    <li>Schuif naar <strong>71</strong> voor de Twin Prime modulatie (rood).</li>
-                </ol>
-
-                <h3>Referenties & Links</h3>
-                <ul>
-                    <li><strong>Colab Research:</strong> <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank">Google Colab Link</a></li>
-                    <li><strong>VORTEX Omni-Bridge:</strong> <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank">Vercel Deployment</a></li>
-                    <li><strong>GitHub Repository:</strong> <a href="https://github.com/goija/quantum/tree/main" target="_blank">Quantum Main Branch</a></li>
-                </ul>
+                <h3>Referenties & Actieve Links</h3>
+                <div class="ref-links">
+                    <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank" class="btn-link btn-colab">⧉ Open in Google Colab</a>
+                    <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank" class="btn-link btn-vercel">▲ Bekijk Vercel Deployment</a>
+                    <a href="https://github.com/goija/quantum/tree/main" target="_blank" class="btn-link btn-github">⚙ Verken GitHub Repository</a>
+                </div>
             </div>
         </div>
 
