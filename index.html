@@ -3,332 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systeem Index Gateway || VORTEX Core</title>
+    <title>VORTEX: Modulo 20 Akoestische Matrix</title>
     <style>
-        :root {
-            --bg-color: #06070a;
-            --panel-bg: #10121a;
-            --text-main: #d1d5db;
-            --text-muted: #6b7280;
-            --accent: #00ffaa;
-            --accent-hover: #00e699;
-            --accent-blue: #00bfff;
-            --border-color: #1f2937;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: #0d1117;
+            color: #c9d1d9;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px;
             display: flex;
-            justify-content: center;
-            line-height: 1.5;
+            flex-direction: column;
+            align-items: center;
         }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .header {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header h1 {
-            color: var(--accent);
+        h1 {
+            color: #58a6ff;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin: 0 0 5px 0;
-            font-size: 2.2em;
+            text-align: center;
         }
-
-        .header p {
-            color: var(--text-muted);
-            margin: 0;
-            font-size: 0.95em;
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            max-width: 1000px;
         }
-
-        /* Architectuur Documentatie Sectie */
-        .docs-panel {
-            background-color: #0b0d14;
-            border-left: 4px solid var(--accent-blue);
-            border-right: 1px solid var(--border-color);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 25px 30px;
-            margin-bottom: 40px;
+        .panel {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            width: 350px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        /* README stijlen */
+        .readme-panel {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .readme-panel h2, .readme-panel h3 {
+            color: #58a6ff;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 0.3em;
+        }
+        .readme-panel code {
+            background-color: #161b22;
+            padding: 0.2em 0.4em;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 85%;
+        }
+        .readme-panel pre {
+            background-color: #161b22;
+            padding: 16px;
+            border-radius: 6px;
+            overflow: auto;
+        }
+        .readme-panel pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .readme-panel ul {
+            padding-left: 20px;
+        }
+        /* Canvas & UI Stijlen */
+        canvas {
+            background-color: #000;
+            border: 1px solid #58a6ff;
             border-radius: 4px;
         }
-
-        .docs-panel h2 {
-            color: var(--accent-blue);
-            margin-top: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 1.2em;
+        .data-row {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .docs-panel h2::before {
-            content: '⚙️';
-        }
-
-        .docs-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 800px) {
-            .docs-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .docs-col h3 {
-            color: var(--text-main);
-            font-size: 1em;
+            justify-content: space-between;
             margin-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #30363d;
             padding-bottom: 5px;
         }
-
-        .code-inline {
-            background-color: rgba(0, 191, 255, 0.1);
-            color: var(--accent-blue);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.9em;
-        }
-
-        /* Grid layout voor de mappen */
-        .directory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        /* Map / Kaart styling */
-        .folder {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 25px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-
-        .folder:hover {
-            border-color: rgba(0, 255, 170, 0.4);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .folder-title {
-            color: var(--accent);
-            font-size: 1.1em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .folder-title::before {
-            content: '📁';
-            font-size: 1.2em;
-        }
-
-        /* Lijst met bestanden */
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        li:last-child {
-            margin-bottom: 0;
-        }
-
-        li::before {
-            content: '📄 ';
-            opacity: 0.7;
-            font-size: 1em;
-            margin-right: 5px;
-        }
-
-        li.ext-html::before { content: '🌐 '; }
-        li.ext-py::before { content: '🐍 '; }
-        li.ext-md::before { content: '📝 '; }
-        li.ext-pdf::before { content: '🏛️ '; }
-        li.ext-json::before { content: '⚙️ '; }
-        li.ext-img::before { content: '🖼️ '; }
-
-        a {
-            color: var(--text-main);
-            text-decoration: none;
-            transition: color 0.2s;
-            font-size: 1em;
+        .highlight {
+            color: #7ee787;
             font-weight: bold;
         }
-
-        a:hover {
-            color: var(--accent-hover);
-            text-decoration: underline;
+        .prime-highlight {
+            color: #ff7b72;
+            font-weight: bold;
         }
-
-        .meta-data {
-            font-size: 0.75em;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 4px;
-            margin-left: 28px;
+        input[type=range] {
+            width: 100%;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+            width: 100%;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        button:disabled {
+            background-color: #30363d;
+            cursor: not-allowed;
+            color: #8b949e;
         }
     </style>
 </head>
 <body>
 
+    <h1>Vigesimale Harmonische Matrix</h1>
+    
     <div class="container">
-        
-        <div class="header">
-            <div>
-                <h1>Systeem Index Gateway</h1>
-                <p>Lokale bestandsstructuur & Repository Navigatie</p>
-            </div>
+        <!-- Visualisatie Paneel -->
+        <div class="panel">
+            <canvas id="matrixCanvas" width="350" height="400"></canvas>
+            <input type="range" id="nodeSlider" min="0" max="100" value="0">
         </div>
 
-        <div class="docs-panel">
-            <h2>Systeem Architectuur: Omni-Bridge & Helix Dashboard</h2>
-            <p style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 20px;">
-                De koppeling tussen het Python script en de HTML frontend vormt een asynchrone client-server architectuur, verbonden via WebSockets. Dit scheidt de zware wiskundige berekeningen van de DOM-rendering.
-            </p>
-            <div class="docs-grid">
-                <div class="docs-col">
-                    <h3>1. De Backend: <span class="code-inline">VORTEX_Bridge.py</span></h3>
-                    <p style="font-size: 0.85em; color: var(--text-muted);">
-                        Dit is het kloppende hart van het systeem. Het Python-script draait lokaal een asynchrone WebSocket server op poort <span class="code-inline">8765</span>. Het berekent continu de telemetrie voor de 234 nodes van de ELS-matrix: de modulaire zwaartekracht naar het $(9,9)$ nulpunt, de schroeflijn-hoeken en de wiskundig zuivere 13-limiet frequenties. Deze ruwe data wordt gecomprimeerd in een JSON-payload en weggeschoten in een ritme van exact $13.75$ Hz.
-                    </p>
-                </div>
-                <div class="docs-col">
-                    <h3>2. De Frontend: <span class="code-inline">vortex_helix_dashboard.html</span></h3>
-                    <p style="font-size: 0.85em; color: var(--text-muted);">
-                        Dit is de tactische interface. Geschreven in Vue.js, "luistert" dit HTML-bestand naar de poort van de Python server. Zodra de JSON-payload binnenkomt, werkt Vue de DOM reactief bij zonder de browser te blokkeren. Hier worden de inkomende ELS-sprongen geprojecteerd op het $13 \times 18$ visuele grid. Tevens pakt de WebAudio API de inkomende 13-limiet signalen op en synthetiseert deze direct tot hoorbare, zuivere geluidsgolven via je lokale speakers.
-                    </p>
-                </div>
+        <!-- Data & Audio Paneel -->
+        <div class="panel">
+            <button id="audioBtn">Initialiseer Audio Engine</button>
+            
+            <div class="data-row">
+                <span>Input Node:</span>
+                <span id="outNode">0</span>
+            </div>
+            <div class="data-row">
+                <span>Z-As (Mod 20):</span>
+                <span id="outMod">0</span>
+            </div>
+            <div class="data-row">
+                <span>Dimensionele Laag:</span>
+                <span id="outLayer">0</span>
+            </div>
+            <div class="data-row">
+                <span>Frequentie (Hz):</span>
+                <span id="outFreq">0.00</span>
+            </div>
+            <div class="data-row">
+                <span>Akoestisch Profiel:</span>
+                <span id="outProfile">-</span>
             </div>
         </div>
-
-        <div class="directory-grid">
-
-            <div class="folder">
-                <h2 class="folder-title">VORTEX_Engine & Architectuur</h2>
-                <ul>
-                    <li class="ext-py">
-                        <a href="VORTEX_Bridge.py">VORTEX_Bridge.py</a>
-                        <span class="meta-data">Toegevoegd: 6 minutes ago</span>
-                    </li>
-                    <li class="ext-html">
-                        <a href="vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
-                        <span class="meta-data">Toegevoegd: Recent</span>
-                    </li>
-                    <li class="ext-html">
-                        <a href="vortex-ui.html">vortex-ui.html</a>
-                        <span class="meta-data">Toegevoegd: 5 minutes ago</span>
-                    </li>
-                    <li class="ext-html">
-                        <a href="vortex351.html">vortex351.html</a>
-                        <span class="meta-data">Toegevoegd: 9 hours ago</span>
-                    </li>
-                    <li class="ext-md">
-                        <a href="verstrengeling.md">verstrengeling.md</a>
-                        <span class="meta-data">Toegevoegd: 6 hours ago</span>
-                    </li>
-                    <li class="ext-html">
-                        <a href="meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
-                        <span class="meta-data">Update: 5 hours ago</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="folder">
-                <h2 class="folder-title">ActivityPub / Decentraal</h2>
-                <ul>
-                    <li class="ext-json">
-                        <a href="actor.json">actor.json</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                    <li class="ext-json">
-                        <a href="outbox.json">outbox.json</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                    <li class="ext-json">
-                        <a href="bookmarks.json">bookmarks.json</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                    <li class="ext-json">
-                        <a href="likes.json">likes.json</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                    <li class="ext-md">
-                        <a href="alt-text-mastodon">alt-text-mastodon</a>
-                        <span class="meta-data">Toegevoegd: 9 hours ago</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="folder">
-                <h2 class="folder-title">Onderzoek & Archieven</h2>
-                <ul>
-                    <li class="ext-pdf">
-                        <a href="Woo Informeren verzoek zienswijzen SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a>
-                        <span class="meta-data">Toegevoegd: 2 days ago</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="folder">
-                <h2 class="folder-title">Systeem & Media</h2>
-                <ul>
-                    <li class="ext-md">
-                        <a href="README.md">README.md</a>
-                        <span class="meta-data">Update: 7 minutes ago</span>
-                    </li>
-                    <li class="ext-html">
-                        <a href="index.html">index.html</a>
-                        <span class="meta-data">Update: 2 minutes ago</span>
-                    </li>
-                    <li class="ext-img">
-                        <a href="avatar.png">avatar.png</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                    <li class="ext-img">
-                        <a href="3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
-                        <span class="meta-data">Toegevoegd: 2 weeks ago</span>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-
     </div>
 
+    <!-- README / Documentatie Sectie -->
+    <div class="readme-panel">
+        <h2>README: Systeemarchitectuur & Wiskundige Fundering</h2>
+        <p>Deze simulatie demonstreert de operationele overlap tussen ruimtelijke geometrie, modulaire rekenkunde en zuivere audiosynthese binnen een <strong>Base-20 (vigesimale)</strong> netwerkstructuur.</p>
+
+        <h3>1. De Modulaire Invariantie: 91 ≡ 71 ≡ 11 (mod 20)</h3>
+        <p>Het fundament van deze engine is de ruimtelijke verankering van data langs een vaste as. Door het getal 91 te reduceren met volumeblokken van 20, ontstaat een schaaltransformatie die de harmonische fase niet verbreekt:</p>
+        <ul>
+            <li><code>91 = (4 &times; 20) + 11</code></li>
+            <li><strong>Verschuiving:</strong> <code>91 - 20 = 71</code></li>
+            <li><code>71 = (3 &times; 20) + 11</code></li>
+        </ul>
+        <p>De restwaarde (modulo) <strong>11</strong> fungeert als een wiskundige Z-as. Dit ankerpunt blijft onwrikbaar dwars door de driedimensionale lagen van het netwerk snijden. Node 71, het basisgetal van een priemtweeling (71/73), is hierdoor perfect uitgelijnd met het nulpunt van fase 11.</p>
+
+        <h3>2. Audio-Synthese: De 11-Limiet</h3>
+        <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation) gebaseerd op de <strong>11-limiet</strong>. Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
+        <pre><code>Base_Frequency = 110.0 Hz
+Limit_11_Ratio = 11 / 8  (Neutrale Kwart)
+Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
+        <p>Dit voorkomt digitale afrondingsfouten ("zweving") omdat de verhoudingen uitsluitend rationeel zijn opgebouwd.</p>
+
+        <h3>3. Prime Verrijking (Twin Primes)</h3>
+        <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71, in voorbereiding op twin prime 73), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat de neutrale kwart akoestisch 'glinsteren', waardoor de wiskundige eigenschap (priemgetal) direct hoorbaar wordt gemaakt in de sonificatie.</p>
+
+        <h3>Gebruiksinstructies</h3>
+        <ol>
+            <li>Klik op <strong>Initialiseer Audio Engine</strong> om de Web Audio API (zuivere sinusgolf) te activeren.</li>
+            <li>Verschuif de slider om het signaal door de modulaire matrix (van 0 naar 100) te loodsen.</li>
+            <li>Observeer hoe de node groen oplicht (en tonaal stabiliseert) op waarden als 11, 31, en 51.</li>
+            <li>Schuif naar <strong>71</strong> om de specifieke Twin Prime modulatie (rode visuele markering) te ervaren.</li>
+        </ol>
+    </div>
+
+    <script>
+        // Systeem Constanten
+        const BASE_FREQ = 110.0; // Archeoakoestische basis
+        const RATIO_11_LIMIT = 11 / 8; // Neutrale kwart (1.375)
+        const TWIN_PRIME_MODULATOR = 1.0071; // Verrijking voor primes
+
+        // DOM Elementen
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('nodeSlider');
+        const btnAudio = document.getElementById('audioBtn');
+        
+        // Output velden
+        const outNode = document.getElementById('outNode');
+        const outMod = document.getElementById('outMod');
+        const outLayer = document.getElementById('outLayer');
+        const outFreq = document.getElementById('outFreq');
+        const outProfile = document.getElementById('outProfile');
+
+        // Audio Context variabelen
+        let audioCtx;
+        let oscillator;
+        let gainNode;
+        let isAudioActive = false;
+
+        // Priemgetal checker
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        // Start Web Audio API
+        btnAudio.addEventListener('click', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine'; // Zuivere golf
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                gainNode.gain.value = 0.1; // Voorkom clipping
+                oscillator.start();
+                isAudioActive = true;
+                
+                btnAudio.textContent = "Audio Engine Actief";
+                btnAudio.disabled = true;
+                
+                updateSystem(parseInt(slider.value));
+            }
+        });
+
+        // Visuele rendering
+        function drawMatrix(nodeValue, modValue, layer) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const baseY = canvas.height - 30;
+            const rowHeight = 60;
+            
+            // Teken de abstracte Z-As lijn
+            ctx.beginPath();
+            ctx.moveTo(centerX, baseY);
+            ctx.lineTo(centerX, 20);
+            ctx.strokeStyle = "#30363d";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Teken de lagen (volumeblokken van 20)
+            for (let l = 0; l <= 4; l++) {
+                const y = baseY - (l * rowHeight);
+                
+                ctx.beginPath();
+                ctx.ellipse(centerX, y, 120, 20, 0, 0, 2 * Math.PI);
+                ctx.strokeStyle = (l <= layer) ? "#1f6feb" : "#21262d";
+                ctx.stroke();
+                
+                if (l === layer) {
+                    const xOffset = (modValue - 10) * 8; 
+                    ctx.beginPath();
+                    ctx.arc(centerX + xOffset, y, 8, 0, 2 * Math.PI);
+                    
+                    if (modValue === 11) {
+                        ctx.fillStyle = isPrime(nodeValue) ? "#ff7b72" : "#7ee787";
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = ctx.fillStyle;
+                    } else {
+                        ctx.fillStyle = "#58a6ff";
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        // Update logica
+        function updateSystem(val) {
+            const mod20 = val % 20;
+            const layer = Math.floor(val / 20);
+            const isPrimeNode = isPrime(val);
+            
+            let freq = BASE_FREQ;
+            let profile = "Standaard Ruimtelijk";
+            let cssClass = "";
+
+            if (mod20 === 11) {
+                freq = BASE_FREQ * RATIO_11_LIMIT;
+                profile = "11-Limiet (Neutrale Kwart)";
+                cssClass = "highlight";
+            }
+
+            const layerModulation = 1 + (layer * 0.05);
+            freq *= layerModulation;
+
+            if (isPrimeNode && mod20 === 11) {
+                freq *= TWIN_PRIME_MODULATOR;
+                profile = "Prime Verrijkt (Twin Prime Phase)";
+                cssClass = "prime-highlight";
+            }
+
+            outNode.textContent = val;
+            outMod.textContent = mod20;
+            outLayer.textContent = layer;
+            outFreq.textContent = freq.toFixed(2);
+            outProfile.textContent = profile;
+            
+            outMod.className = cssClass;
+            outProfile.className = cssClass;
+
+            if (isAudioActive) {
+                oscillator.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+            }
+
+            drawMatrix(val, mod20, layer);
+        }
+
+        slider.addEventListener('input', (e) => {
+            updateSystem(parseInt(e.target.value));
+        });
+
+        // Initiële render
+        drawMatrix(0, 0, 0);
+    </script>
 </body>
 </html>
