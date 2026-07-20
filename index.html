@@ -10,115 +10,119 @@
             color: #c9d1d9;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
+            overflow-x: hidden;
         }
+        
+        /* Repository Navigatie Balk */
+        .repo-nav {
+            width: 100%;
+            background-color: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .repo-nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 13px;
+            background-color: #0d1117;
+            padding: 5px 10px;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .repo-nav a:hover {
+            background-color: #1f6feb;
+            color: white;
+            border-color: #1f6feb;
+        }
+
         h1 {
             color: #58a6ff;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-align: center;
+            margin-top: 30px;
         }
-        .container {
+
+        /* Twee Abacussen Layout */
+        .dual-abacus-layout {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
             justify-content: center;
+            align-items: flex-start;
             gap: 40px;
-            margin-top: 20px;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .panel {
+
+        /* Individuele Abacus Container */
+        .abacus {
+            flex: 1;
             background-color: #161b22;
-            border: 1px solid #30363d;
+            border: 2px solid #30363d;
             border-radius: 8px;
             padding: 20px;
-            width: 350px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        /* README stijlen */
-        .readme-panel {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 30px;
-            width: 100%;
-            max-width: 800px;
-            margin-top: 40px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            line-height: 1.6;
+        .abacus-header {
+            color: #8b949e;
+            text-transform: uppercase;
+            border-bottom: 1px dashed #30363d;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
         }
-        .readme-panel h2, .readme-panel h3 {
-            color: #58a6ff;
-            border-bottom: 1px solid #21262d;
-            padding-bottom: 0.3em;
+
+        /* Canvas & UI Stijlen (Linker Abacus) */
+        .visual-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .readme-panel code {
-            background-color: #161b22;
-            padding: 0.2em 0.4em;
-            border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 85%;
-        }
-        .readme-panel pre {
-            background-color: #161b22;
-            padding: 16px;
-            border-radius: 6px;
-            overflow: auto;
-        }
-        .readme-panel pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-        .readme-panel ul {
-            padding-left: 20px;
-        }
-        .readme-panel a {
-            color: #58a6ff;
-            text-decoration: none;
-            word-break: break-all;
-        }
-        .readme-panel a:hover {
-            text-decoration: underline;
-        }
-        /* Canvas & UI Stijlen */
         canvas {
             background-color: #000;
             border: 1px solid #58a6ff;
             border-radius: 4px;
-        }
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 5px;
-        }
-        .highlight {
-            color: #7ee787;
-            font-weight: bold;
-        }
-        .prime-highlight {
-            color: #ff7b72;
-            font-weight: bold;
+            width: 100%;
+            max-width: 350px;
         }
         input[type=range] {
             width: 100%;
+            max-width: 350px;
             margin: 20px 0;
         }
         button {
             background-color: #238636;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 4px;
             font-family: inherit;
             width: 100%;
-            margin-bottom: 20px;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
         button:hover {
             background-color: #2ea043;
@@ -128,91 +132,184 @@
             cursor: not-allowed;
             color: #8b949e;
         }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 5px;
+            font-size: 15px;
+        }
+        .highlight { color: #7ee787; font-weight: bold; }
+        .prime-highlight { color: #ff7b72; font-weight: bold; }
+
+        /* Documentatie Stijlen (Rechter Abacus) */
+        .readme-content {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 700px;
+            padding-right: 10px;
+        }
+        /* Custom Scrollbar voor de leesbaarheid */
+        .readme-content::-webkit-scrollbar { width: 8px; }
+        .readme-content::-webkit-scrollbar-track { background: #0d1117; }
+        .readme-content::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        
+        .readme-content h2, .readme-content h3 {
+            color: #58a6ff;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        .readme-content code {
+            background-color: #0d1117;
+            padding: 0.2em 0.4em;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 85%;
+        }
+        .readme-content pre {
+            background-color: #0d1117;
+            padding: 16px;
+            border-radius: 6px;
+            overflow: auto;
+            border: 1px solid #30363d;
+        }
+        .readme-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .readme-content ul { padding-left: 20px; }
+        .readme-content a {
+            color: #58a6ff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .readme-content a:hover { text-decoration: underline; }
+
+        @media (max-width: 900px) {
+            .dual-abacus-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .abacus { width: 100%; max-width: 500px; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Top Navigatie: Repository Bestanden -->
+    <nav class="repo-nav">
+        <a href="#3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
+        <a href="#README.md">README.md</a>
+        <a href="#VORTEX_Bridge.py">VORTEX_Bridge.py</a>
+        <a href="#Woo_Informeren_verzoek_zienswijzen_SABIC.pdf">Woo Informeren verzoek zienswijzen SABIC.pdf</a>
+        <a href="#actor.json">actor.json</a>
+        <a href="#alt-text-mastodon">alt-text-mastodon</a>
+        <a href="#audiosynthese.md">audiosynthese.md</a>
+        <a href="#avatar.png">avatar.png</a>
+        <a href="#bookmarks.json">bookmarks.json</a>
+        <a href="#index.html" style="background-color: #1f6feb; color: white;">index.html</a>
+        <a href="#likes.json">likes.json</a>
+        <a href="#meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
+        <a href="#outbox.json">outbox.json</a>
+        <a href="#verstrengeling.md">verstrengeling.md</a>
+        <a href="#vortex-ui.html">vortex-ui.html</a>
+        <a href="#vortex351.html">vortex351.html</a>
+        <a href="#vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
+    </nav>
+
     <h1>Vigesimale Harmonische Matrix</h1>
-    
-    <div class="container">
-        <!-- Visualisatie Paneel -->
-        <div class="panel">
-            <canvas id="matrixCanvas" width="350" height="400"></canvas>
-            <input type="range" id="nodeSlider" min="0" max="100" value="0">
-        </div>
 
-        <!-- Data & Audio Paneel -->
-        <div class="panel">
-            <button id="audioBtn">Initialiseer Audio Engine</button>
+    <div class="dual-abacus-layout">
+        
+        <!-- LINKER ABACUS: Rekenmachine & Interface -->
+        <div class="abacus">
+            <div class="abacus-header">Abacus I: Rekenkern & Synthese</div>
             
-            <div class="data-row">
-                <span>Input Node:</span>
-                <span id="outNode">0</span>
+            <div class="visual-panel">
+                <canvas id="matrixCanvas" width="350" height="400"></canvas>
+                <input type="range" id="nodeSlider" min="0" max="100" value="0">
             </div>
-            <div class="data-row">
-                <span>Z-As (Mod 20):</span>
-                <span id="outMod">0</span>
-            </div>
-            <div class="data-row">
-                <span>Dimensionele Laag:</span>
-                <span id="outLayer">0</span>
-            </div>
-            <div class="data-row">
-                <span>Frequentie (Hz):</span>
-                <span id="outFreq">0.00</span>
-            </div>
-            <div class="data-row">
-                <span>Akoestisch Profiel:</span>
-                <span id="outProfile">-</span>
+
+            <div>
+                <button id="audioBtn">Initialiseer Audio Engine</button>
+                
+                <div class="data-row">
+                    <span>Input Node:</span>
+                    <span id="outNode">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Z-As (Mod 20):</span>
+                    <span id="outMod">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Dimensionele Laag:</span>
+                    <span id="outLayer">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Frequentie (Hz):</span>
+                    <span id="outFreq">0.00</span>
+                </div>
+                <div class="data-row">
+                    <span>Akoestisch Profiel:</span>
+                    <span id="outProfile">-</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- README / Documentatie Sectie -->
-    <div class="readme-panel">
-        <h2>README: Systeemarchitectuur & Wiskundige Fundering</h2>
-        <p>Deze simulatie demonstreert de operationele overlap tussen ruimtelijke geometrie, modulaire rekenkunde en zuivere audiosynthese binnen een <strong>Base-20 (vigesimale)</strong> netwerkstructuur.</p>
+        <!-- RECHTER ABACUS: Documentatie & Logboek -->
+        <div class="abacus">
+            <div class="abacus-header">Abacus II: Modulaire Documentatie</div>
+            
+            <div class="readme-content">
+                <h2>README: Systeemarchitectuur & Wiskunde</h2>
+                <p>Deze simulatie demonstreert de operationele overlap tussen ruimtelijke geometrie, modulaire rekenkunde en zuivere audiosynthese binnen een <strong>Base-20 (vigesimale)</strong> netwerkstructuur.</p>
 
-        <h3>1. De Modulaire Invariantie: 91 ≡ 71 ≡ 11 (mod 20)</h3>
-        <p>Het fundament van deze engine is de ruimtelijke verankering van data langs een vaste as. Door het getal 91 te reduceren met volumeblokken van 20, ontstaat een schaaltransformatie die de harmonische fase niet verbreekt:</p>
-        <ul>
-            <li><code>91 = (4 &times; 20) + 11</code></li>
-            <li><strong>Verschuiving:</strong> <code>91 - 20 = 71</code></li>
-            <li><code>71 = (3 &times; 20) + 11</code></li>
-        </ul>
-        <p>De restwaarde (modulo) <strong>11</strong> fungeert als een wiskundige Z-as. Dit ankerpunt blijft onwrikbaar dwars door de driedimensionale lagen van het netwerk snijden. Node 71, het basisgetal van een priemtweeling (71/73), is hierdoor perfect uitgelijnd met het nulpunt van fase 11.</p>
+                <h3>1. De Modulaire Invariantie: 91 ≡ 71 ≡ 11 (mod 20)</h3>
+                <p>Het fundament van deze engine is de ruimtelijke verankering van data langs een vaste as. Door het getal 91 te reduceren met volumeblokken van 20, ontstaat een schaaltransformatie die de harmonische fase niet verbreekt:</p>
+                <ul>
+                    <li><code>91 = (4 &times; 20) + 11</code></li>
+                    <li><strong>Verschuiving:</strong> <code>91 - 20 = 71</code></li>
+                    <li><code>71 = (3 &times; 20) + 11</code></li>
+                </ul>
+                <p>De restwaarde (modulo) <strong>11</strong> fungeert als een wiskundige Z-as. Dit ankerpunt blijft onwrikbaar dwars door de driedimensionale lagen van het netwerk snijden. Node 71, het basisgetal van een priemtweeling (71/73), is hierdoor perfect uitgelijnd met het nulpunt van fase 11.</p>
 
-        <h3>2. Audio-Synthese: De 13-Limiet & 11-Limiet</h3>
-        <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation). Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
-        <pre><code>Base_Frequency = 110.0 Hz
+                <h3>2. Audio-Synthese: De 11-Limiet</h3>
+                <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation). Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
+                <pre><code>Base_Frequency = 110.0 Hz
 Limit_11_Ratio = 11 / 8  (Neutrale Kwart)
 Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
-        <p>Dit voorkomt digitale afrondingsfouten en zwevingen omdat de verhoudingen uitsluitend rationeel zijn opgebouwd, cruciaal voor de koppeling met ultrasone LF-draaggolven.</p>
+                <p>Dit voorkomt digitale afrondingsfouten en zwevingen omdat de verhoudingen uitsluitend rationeel zijn opgebouwd, cruciaal voor de koppeling met ultrasone draaggolven.</p>
 
-        <h3>3. Prime Verrijking (Twin Primes)</h3>
-        <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71, in voorbereiding op twin prime 73), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat het signaal akoestisch 'glinsteren', waardoor de wiskundige eigenschap (priemgetal) direct hoorbaar wordt gemaakt in de sonificatie.</p>
+                <h3>3. Prime Verrijking (Twin Primes)</h3>
+                <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat het signaal akoestisch 'glinsteren', waardoor de wiskundige eigenschap direct hoorbaar wordt.</p>
 
-        <h3>Gebruiksinstructies</h3>
-        <ol>
-            <li>Klik op <strong>Initialiseer Audio Engine</strong> om de Web Audio API (zuivere sinusgolf) te activeren.</li>
-            <li>Verschuif de slider om het signaal door de modulaire matrix (van 0 naar 100) te loodsen.</li>
-            <li>Observeer hoe de node groen oplicht (en tonaal stabiliseert) op waarden als 11, 31, en 51.</li>
-            <li>Schuif naar <strong>71</strong> om de specifieke Twin Prime modulatie (rode visuele markering) te ervaren.</li>
-        </ol>
+                <h3>Gebruiksinstructies</h3>
+                <ol>
+                    <li>Klik op <strong>Initialiseer Audio Engine</strong> om de Web Audio API te activeren.</li>
+                    <li>Verschuif de slider om het signaal door de matrix (0-100) te loodsen.</li>
+                    <li>Observeer de uitlijning (groen) op waarden als 11, 31, 51.</li>
+                    <li>Schuif naar <strong>71</strong> voor de Twin Prime modulatie (rood).</li>
+                </ol>
 
-        <h3>Referenties & Project Links</h3>
-        <ul>
-            <li><strong>Colab Research:</strong> <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank">https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing</a></li>
-            <li><strong>VORTEX Omni-Bridge:</strong> <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank">https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html</a></li>
-            <li><strong>GitHub Repository (Quantum):</strong> <a href="https://github.com/goija/quantum/tree/main" target="_blank">https://github.com/goija/quantum/tree/main</a></li>
-        </ul>
+                <h3>Referenties & Links</h3>
+                <ul>
+                    <li><strong>Colab Research:</strong> <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank">Google Colab Link</a></li>
+                    <li><strong>VORTEX Omni-Bridge:</strong> <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank">Vercel Deployment</a></li>
+                    <li><strong>GitHub Repository:</strong> <a href="https://github.com/goija/quantum/tree/main" target="_blank">Quantum Main Branch</a></li>
+                </ul>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // Systeem Constanten
-        const BASE_FREQ = 110.0; // Archeoakoestische basis
-        const RATIO_11_LIMIT = 11 / 8; // Neutrale kwart (1.375)
-        const TWIN_PRIME_MODULATOR = 1.0071; // Verrijking voor primes
+        const BASE_FREQ = 110.0;
+        const RATIO_11_LIMIT = 11 / 8;
+        const TWIN_PRIME_MODULATOR = 1.0071;
 
         // DOM Elementen
         const canvas = document.getElementById('matrixCanvas');
@@ -220,14 +317,13 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
         const slider = document.getElementById('nodeSlider');
         const btnAudio = document.getElementById('audioBtn');
         
-        // Output velden
         const outNode = document.getElementById('outNode');
         const outMod = document.getElementById('outMod');
         const outLayer = document.getElementById('outLayer');
         const outFreq = document.getElementById('outFreq');
         const outProfile = document.getElementById('outProfile');
 
-        // Audio Context variabelen
+        // Audio Context
         let audioCtx;
         let oscillator;
         let gainNode;
@@ -251,11 +347,11 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
                 oscillator = audioCtx.createOscillator();
                 gainNode = audioCtx.createGain();
                 
-                oscillator.type = 'sine'; // Zuivere golf
+                oscillator.type = 'sine';
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
                 
-                gainNode.gain.value = 0.1; // Voorkom clipping
+                gainNode.gain.value = 0.1;
                 oscillator.start();
                 isAudioActive = true;
                 
@@ -266,7 +362,7 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
             }
         });
 
-        // Visuele rendering
+        // Visuele rendering (De Rekenmachine / Canvas)
         function drawMatrix(nodeValue, modValue, layer) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
@@ -274,7 +370,6 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
             const baseY = canvas.height - 30;
             const rowHeight = 60;
             
-            // Teken de abstracte Z-As lijn
             ctx.beginPath();
             ctx.moveTo(centerX, baseY);
             ctx.lineTo(centerX, 20);
@@ -282,7 +377,6 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Teken de lagen (volumeblokken van 20)
             for (let l = 0; l <= 4; l++) {
                 const y = baseY - (l * rowHeight);
                 
@@ -356,7 +450,6 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
             updateSystem(parseInt(e.target.value));
         });
 
-        // Initiële render
         drawMatrix(0, 0, 0);
     </script>
 </body>
