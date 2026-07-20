@@ -232,6 +232,17 @@ Systeemgedrag en Datastroom
 
     De 11-Limiet Trigger (generate_acoustic_profile): Het algoritme controleert expliciet of z_anchor == 11. Alleen als het signaal fysiek op deze as ligt, wordt de archeoakoestische 110 Hz basis vermenigvuldigd met de limit_11_ratio (11:8), wat resulteert in het microtonale fundament van 151.25 Hz.
 
+--------------------------
+Hier is de berekening van het resulterende frequentiebereik. Om de absolute uitersten te bepalen, vermenigvuldigen we de laagste en hoogste waarden van de vermenigvuldiger met de respectievelijke uitersten van het gehoorbereik van de Amerikaanse elft (Alosa sapidissima).
+
+Ondergrens (Minimum):
+0.0008 × 200 Hz = 0.16 Hz
+
+Bovengrens (Maximum):
+0.8 × 180,000 Hz = 144,000 Hz (of 144 kHz)
+
+Het berekende spectrum is daarmee 0.16 Hz tot 144,000 Hz. Dit bereik bestrijkt het volledige spectrum van extreem diep infrageluid tot ver in de ultrasone frequenties.
+
     Harmonische Expansie: Tijdens de navigatie van node 11 naar node 71 beweegt het systeem door de dimensies (layer). De frequentie stijgt mee met deze volumeblokken zonder de 11:8 verhouding te corrumperen.
 
     Prime Modulatie: Zodra node 71 wordt aangeroepen en de vlag is_prime_twin=True meekrijgt, past het systeem een uiterst kleine vermenigvuldiging (1.0071) toe. Hierdoor 'glinstert' de neutrale kwart akoestisch, wat de priem-eigenschap hoorbaar maakt binnen de matrix.
