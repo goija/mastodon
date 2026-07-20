@@ -137,3 +137,101 @@ if __name__ == "__main__":
     print(f"Zero Deviation 13-Limiet Audiofrequentie: {audio_freq:.4f} Hz")
 
 
+------------------------
+
+import numpy as np
+
+class VigesimalHarmonicMatrix:
+    def __init__(self, base_frequency=110.0, vigesimal_base=20):
+        """
+        Initialiseert de matrix met een archeoakoestische basisfrequentie (110 Hz)
+        en het base-20 modulaire systeem.
+        """
+        self.base_freq = base_frequency
+        self.base = vigesimal_base
+        
+        # 11-limiet interval: Neutrale Kwart (11:8)
+        self.limit_11_ratio = 11 / 8 
+
+    def calculate_spatial_coordinates(self, node_value):
+        """
+        Berekent het ruimtelijke Z-as anker (modulo 20) en de 
+        dimensionele laag (aantal volumeblokken van 20).
+        """
+        z_axis_anchor = node_value % self.base
+        layer_depth = node_value // self.base
+        
+        return z_axis_anchor, layer_depth
+
+    def generate_acoustic_profile(self, z_anchor, layer, is_prime_twin=False):
+        """
+        Genereert de modulaire frequentie. Als het Z-anker 11 is, 
+        wordt de 11-limiet frequentie geactiveerd.
+        """
+        # Controleer of de ruimtelijke poort (Z-as = 11) is bereikt
+        if z_anchor == 11:
+            # Activeer de 11:8 verhouding
+            fundamental_hz = self.base_freq * self.limit_11_ratio
+        else:
+            # Standaard ruimtelijke klank (ter illustratie)
+            fundamental_hz = self.base_freq
+            
+        # Schaaltransformatie: de frequentie moduleert mee met de vigesimale laag
+        # Elke sprong van 20 introduceert een harmonische expansie
+        layer_modulation = 1 + (layer * 0.05) 
+        modulated_hz = fundamental_hz * layer_modulation
+        
+        # Als we een priemgetal/twin prime poort raken (zoals 71), verrijk het signaal
+        if is_prime_twin:
+            # Verhoog de harmonische complexiteit via een subtiele frequentieshift
+            modulated_hz *= 1.0071 
+
+        return modulated_hz
+
+    def process_matrix_node(self, target_value, is_prime=False):
+        """
+        Voert een node door de architectuur en retourneert de wiskundige 
+        en akoestische eigenschappen.
+        """
+        z_anchor, layer = self.calculate_spatial_coordinates(target_value)
+        frequentie = self.generate_acoustic_profile(z_anchor, layer, is_prime)
+        
+        return {
+            "Input Node": target_value,
+            "Z-As Anker (Mod 20)": z_anchor,
+            "Vigesimale Laag (Schaal)": layer,
+            "Frequentie (Hz)": round(frequentie, 3),
+            "Prime Verrijking": "Actief" if is_prime else "Inactief"
+        }
+
+# --- Executie van de Matrix ---
+
+# Initialiseer de engine
+engine = VigesimalHarmonicMatrix(base_frequency=110.0)
+
+# Simuleer een signaal dat verticaal langs de Z-as reist
+# Vanuit het basis-anker (11) via schaaltransformaties naar de prime (71)
+traject = [
+    (11, False), # Basis node
+    (31, False), # +1 volumeblok
+    (51, False), # +2 volumeblokken
+    (71, True)   # +3 volumeblokken (Twin Prime basis)
+]
+
+print("--- VORTEX Z-As Transmissie Log ---")
+for node_waarde, prime_status in traject:
+    resultaat = engine.process_matrix_node(node_waarde, prime_status)
+    print(f"Node {resultaat['Input Node']:02d} | Z-As: {resultaat['Z-As Anker (Mod 20)']:02d} | "
+          f"Laag: {resultaat['Vigesimale Laag (Schaal)']}: frequentie = {resultaat['Frequentie (Hz)']} Hz "
+          f"({resultaat['Prime Verrijking']})")
+
+-----------------------------
+Systeemgedrag en Datastroom
+
+    Ruimtelijke Ankers (calculate_spatial_coordinates): De functie garandeert dat de geometrie van de matrix stabiel blijft. Ongeacht hoe hoog de inputwaarde is, het zwaartepunt wordt direct via target_value % 20 teruggerekend naar de fundamentele as.
+
+    De 11-Limiet Trigger (generate_acoustic_profile): Het algoritme controleert expliciet of z_anchor == 11. Alleen als het signaal fysiek op deze as ligt, wordt de archeoakoestische 110 Hz basis vermenigvuldigd met de limit_11_ratio (11:8), wat resulteert in het microtonale fundament van 151.25 Hz.
+
+    Harmonische Expansie: Tijdens de navigatie van node 11 naar node 71 beweegt het systeem door de dimensies (layer). De frequentie stijgt mee met deze volumeblokken zonder de 11:8 verhouding te corrumperen.
+
+    Prime Modulatie: Zodra node 71 wordt aangeroepen en de vlag is_prime_twin=True meekrijgt, past het systeem een uiterst kleine vermenigvuldiging (1.0071) toe. Hierdoor 'glinstert' de neutrale kwart akoestisch, wat de priem-eigenschap hoorbaar maakt binnen de matrix.
