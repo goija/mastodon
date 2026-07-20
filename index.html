@@ -74,6 +74,14 @@
         .readme-panel ul {
             padding-left: 20px;
         }
+        .readme-panel a {
+            color: #58a6ff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .readme-panel a:hover {
+            text-decoration: underline;
+        }
         /* Canvas & UI Stijlen */
         canvas {
             background-color: #000;
@@ -174,15 +182,15 @@
         </ul>
         <p>De restwaarde (modulo) <strong>11</strong> fungeert als een wiskundige Z-as. Dit ankerpunt blijft onwrikbaar dwars door de driedimensionale lagen van het netwerk snijden. Node 71, het basisgetal van een priemtweeling (71/73), is hierdoor perfect uitgelijnd met het nulpunt van fase 11.</p>
 
-        <h3>2. Audio-Synthese: De 11-Limiet</h3>
-        <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation) gebaseerd op de <strong>11-limiet</strong>. Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
+        <h3>2. Audio-Synthese: De 13-Limiet & 11-Limiet</h3>
+        <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation). Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
         <pre><code>Base_Frequency = 110.0 Hz
 Limit_11_Ratio = 11 / 8  (Neutrale Kwart)
 Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
-        <p>Dit voorkomt digitale afrondingsfouten ("zweving") omdat de verhoudingen uitsluitend rationeel zijn opgebouwd.</p>
+        <p>Dit voorkomt digitale afrondingsfouten en zwevingen omdat de verhoudingen uitsluitend rationeel zijn opgebouwd, cruciaal voor de koppeling met ultrasone LF-draaggolven.</p>
 
         <h3>3. Prime Verrijking (Twin Primes)</h3>
-        <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71, in voorbereiding op twin prime 73), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat de neutrale kwart akoestisch 'glinsteren', waardoor de wiskundige eigenschap (priemgetal) direct hoorbaar wordt gemaakt in de sonificatie.</p>
+        <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71, in voorbereiding op twin prime 73), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat het signaal akoestisch 'glinsteren', waardoor de wiskundige eigenschap (priemgetal) direct hoorbaar wordt gemaakt in de sonificatie.</p>
 
         <h3>Gebruiksinstructies</h3>
         <ol>
@@ -191,6 +199,13 @@ Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
             <li>Observeer hoe de node groen oplicht (en tonaal stabiliseert) op waarden als 11, 31, en 51.</li>
             <li>Schuif naar <strong>71</strong> om de specifieke Twin Prime modulatie (rode visuele markering) te ervaren.</li>
         </ol>
+
+        <h3>Referenties & Project Links</h3>
+        <ul>
+            <li><strong>Colab Research:</strong> <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank">https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing</a></li>
+            <li><strong>VORTEX Omni-Bridge:</strong> <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank">https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html</a></li>
+            <li><strong>GitHub Repository (Quantum):</strong> <a href="https://github.com/goija/quantum/tree/main" target="_blank">https://github.com/goija/quantum/tree/main</a></li>
+        </ul>
     </div>
 
     <script>
