@@ -67,8 +67,8 @@
         .repo-nav a:nth-child(6n+5) { background-color: #6f42c1; } /* Paars */
         .repo-nav a:nth-child(6n+6) { background-color: #ea4aaa; } /* Roze */
 
-        /* Specifieke Highlight voor index.html */
-        .repo-nav a[href="#index.html"] {
+        /* Specifieke Highlight voor index.html (Geüpdatet voor forward slash) */
+        .repo-nav a[href="/index.html"] {
             border: 2px solid #ffffff;
             box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
@@ -196,6 +196,11 @@
             padding-bottom: 0.3em;
             margin-top: 0;
         }
+        .readme-content h3 {
+            margin-top: 1.5em;
+            color: #c9d1d9;
+            font-size: 1.2em;
+        }
         .readme-content code {
             background-color: #0d1117;
             padding: 0.2em 0.4em;
@@ -214,7 +219,8 @@
             background-color: transparent;
             padding: 0;
         }
-        .readme-content ul { padding-left: 20px; }
+        .readme-content ul, .readme-content ol { padding-left: 20px; }
+        .readme-content li { margin-bottom: 8px; }
         
         /* Referentie Links als Knoppen */
         .ref-links {
@@ -257,32 +263,30 @@
 </head>
 <body>
 
-    <!-- Top Navigatie: Repository Bestanden als Gekleurde Knoppen -->
     <nav class="repo-nav">
-        <a href="#3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
-        <a href="#README.md">README.md</a>
-        <a href="#VORTEX_Bridge.py">VORTEX_Bridge.py</a>
-        <a href="#Woo_Informeren_verzoek_zienswijzen_SABIC.pdf">Woo Informeren SABIC.pdf</a>
-        <a href="#actor.json">actor.json</a>
-        <a href="#alt-text-mastodon">alt-text-mastodon</a>
-        <a href="#audiosynthese.md">audiosynthese.md</a>
-        <a href="#avatar.png">avatar.png</a>
-        <a href="#bookmarks.json">bookmarks.json</a>
-        <a href="#index.html">index.html</a>
-        <a href="#likes.json">likes.json</a>
-        <a href="#meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
-        <a href="#outbox.json">outbox.json</a>
-        <a href="#verstrengeling.md">verstrengeling.md</a>
-        <a href="#vortex-ui.html">vortex-ui.html</a>
-        <a href="#vortex351.html">vortex351.html</a>
-        <a href="#vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
+        <a href="/3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
+        <a href="/README.md">README.md</a>
+        <a href="/VORTEX_Bridge.py">VORTEX_Bridge.py</a>
+        <a href="/Woo_Informeren_verzoek_zienswijzen_SABIC.pdf">Woo Informeren SABIC.pdf</a>
+        <a href="/actor.json">actor.json</a>
+        <a href="/alt-text-mastodon">alt-text-mastodon</a>
+        <a href="/audiosynthese.md">audiosynthese.md</a>
+        <a href="/avatar.png">avatar.png</a>
+        <a href="/bookmarks.json">bookmarks.json</a>
+        <a href="/index.html">index.html</a>
+        <a href="/likes.json">likes.json</a>
+        <a href="/meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
+        <a href="/outbox.json">outbox.json</a>
+        <a href="/verstrengeling.md">verstrengeling.md</a>
+        <a href="/vortex-ui.html">vortex-ui.html</a>
+        <a href="/vortex351.html">vortex351.html</a>
+        <a href="/vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
     </nav>
 
     <h1>Vigesimale Harmonische Matrix</h1>
 
     <div class="dual-abacus-layout">
         
-        <!-- LINKER ABACUS: Rekenmachine & Interface -->
         <div class="abacus">
             <div class="abacus-header">Abacus I: Rekenkern & Synthese</div>
             
@@ -317,32 +321,34 @@
             </div>
         </div>
 
-        <!-- RECHTER ABACUS: Documentatie & Logboek -->
         <div class="abacus">
             <div class="abacus-header">Abacus II: Modulaire Documentatie</div>
             
             <div class="readme-content">
-                <h2>README: Systeemarchitectuur & Wiskunde</h2>
-                <p>Deze simulatie demonstreert de operationele overlap tussen ruimtelijke geometrie, modulaire rekenkunde en zuivere audiosynthese binnen een <strong>Base-20 (vigesimale)</strong> netwerkstructuur.</p>
+                <h2>Welkom bij de VORTEX index (v2.0)</h2>
+                <p>Deze interface fungeert als een digitaal telraam. Het vertaalt lineaire getallenreeksen naar een driedimensionale, vigesimale (Base-20) structuur, en koppelt deze direct aan zuivere audiosynthese en priemgetal-detectie.</p>
 
-                <h3>1. De Modulaire Invariantie: 91 ≡ 71 ≡ 11 (mod 20)</h3>
-                <p>Het fundament van deze engine is de ruimtelijke verankering van data langs een vaste as. Door het getal 91 te reduceren met volumeblokken van 20, ontstaat een schaaltransformatie die de harmonische fase niet verbreekt:</p>
+                <h3>1. Gebruiksaanwijzing (De Mechanica)</h3>
+                <ol>
+                    <li><strong>Initialiseer:</strong> Klik op de groene knop in Abacus I om de Web-Audio processor te starten. <em>Let op: zet uw volume niet te hard.</em></li>
+                    <li><strong>Itereer:</strong> Gebruik de slider (0-100) om mechanisch door de getallen te navigeren. U fungeert hier als de aandrijver van het modulaire algoritme.</li>
+                    <li><strong>Observeer:</strong> Let op de visuele verschuiving in de matrix-ringen en luister naar de harmonische veranderingen in de frequentie.</li>
+                </ol>
+
+                <h3>2. Visuele & Akoestische Legenda</h3>
+                <p>Het canvas toont uw huidige positie binnen het modulaire raster. Elke ring representeert een dimensielaag van 20 eenheden.</p>
                 <ul>
-                    <li><code>91 = (4 &times; 20) + 11</code></li>
-                    <li><strong>Verschuiving:</strong> <code>91 - 20 = 71</code></li>
-                    <li><code>71 = (3 &times; 20) + 11</code></li>
+                    <li><span style="color: #58a6ff;">● Blauwe Node:</span> Een standaard getal in de ruimte. Berekening: <code>N modulo 20</code>.</li>
+                    <li><span style="color: #7ee787;">● Groene Node (As 11):</span> Het resonantiepunt. Wanneer de restwaarde exact 11 is (bijv. 11, 31, 51), raakt het signaal de centrale as. De audio schakelt over naar de <strong>11-Limiet</strong> (Reine Stemming: 11/8 ratio of Neutrale Kwart).</li>
+                    <li><span style="color: #ff7b72;">● Rode Node (Priem + As 11):</span> Uitzonderlijke harmonie. Als de node op as 11 ligt én wiskundig ondeelbaar is (zoals 11, 31, 71), wordt een microtonale frequentiemodulator geactiveerd (<code>&times; 1.0071</code>). Dit simuleert een akoestische 'glinstering' om de ondeelbaarheid hoorbaar te maken.</li>
                 </ul>
-                <p>De restwaarde (modulo) <strong>11</strong> fungeert als een wiskundige Z-as. Dit ankerpunt blijft onwrikbaar dwars door de driedimensionale lagen van het netwerk snijden. Node 71, het basisgetal van een priemtweeling (71/73), is hierdoor perfect uitgelijnd met het nulpunt van fase 11.</p>
 
-                <h3>2. Audio-Synthese: De 11-Limiet</h3>
-                <p>In dit model is de ruimtelijke coördinaat (as 11) direct gekoppeld aan een specifieke akoestische eigenschap: Reine Stemming (Just Intonation). Zodra het datasignaal de as raakt (mod 20 = 11), genereert de engine een microtonaal interval:</p>
-                <pre><code>Base_Frequency = 110.0 Hz
-Limit_11_Ratio = 11 / 8  (Neutrale Kwart)
-Output = 110.0 &times; 1.375 = 151.25 Hz</code></pre>
-                <p>Dit voorkomt digitale afrondingsfouten en zwevingen omdat de verhoudingen uitsluitend rationeel zijn opgebouwd, cruciaal voor de koppeling met ultrasone draaggolven.</p>
-
-                <h3>3. Prime Verrijking (Twin Primes)</h3>
-                <p>Wanneer de input node zowel op as 11 ligt, als een priemgetal is (zoals 71), detecteert de engine deze wiskundige zuiverheid. Er wordt een uiterst subtiele frequentiemodulatie (<code>&times; 1.0071</code>) toegepast. Dit laat het signaal akoestisch 'glinsteren', waardoor de wiskundige eigenschap direct hoorbaar wordt.</p>
+                <h3>3. Wiskunde: De Modulaire Invariantie</h3>
+                <p>Het fundament van deze rekenkern is de ruimtelijke verankering van data langs een vaste Z-as. Door grote getallen te reduceren in volumeblokken van 20, ontstaat een schaaltransformatie die de onderliggende fase niet verbreekt:</p>
+                <pre><code>91 = (4 &times; 20) + 11
+71 = (3 &times; 20) + 11
+Verschuiving: 91 - 20 = 71</code></pre>
+                <p>De restwaarde <strong>11</strong> snijdt onwrikbaar als een verticale as dwars door de verschillende lagen van het netwerk. Hierdoor is node 71 perfect uitgelijnd met het nulpunt van fase 11.</p>
 
                 <h3>Referenties & Actieve Links</h3>
                 <div class="ref-links">
