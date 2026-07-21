@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlooP Priemgetal Simulator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .dashboard {
+            background-color: #1e1e1e;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            color: #4CAF50;
+            margin-top: 0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1.5rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .output-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #2d2d2d;
+            border-left: 4px solid #4CAF50;
+            border-radius: 0 4px 4px 0;
+            min-height: 60px;
+        }
+
+        .bloop-code {
+            background-color: #000000;
+            color: #00ff00;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>BlooP Priem Simulator</h2>
+        <p>Voer een getal in om te controleren of het een priemgetal is via een strikt begrensde iteratie.</p>
+
+        <label for="numberInput">Waarde voor N:</label>
+        <input type="number" id="numberInput" min="2" placeholder="Bijv. 41" />
+
+        <button onclick="runBloopAlgorithm()">Voer Algoritme Uit</button>
+
+        <div class="output-box" id="resultOutput">
+            Wachten op input...
+        </div>
+
+        <div class="bloop-code">
+            // Theoretische BlooP Logica:
+            DEFINE PROCEDURE ''CHECK_PRIME'' [N]:
+            BLOCK 0: BEGIN
+              CELL(IS_PRIME) <= 1;
+              LOOP (N - 2) TIMES:
+              BLOCK 1: BEGIN
+                IF N MODULO CELL(DELER) == 0:
+                QUIT BLOCK 0;
+              BLOCK 1: END;
+            BLOCK 0: END.
+        </div>
+    </div>
+
+    <script>
+        // JS Logica: De microprocessor van het dashboard
+        function isPrimeBloopStyle(n) {
+            if (n < 2) return false;
+            
+            // In BlooP is de grens van tevoren exact bekend (Bounded Loop)
+            let upperLimit = n - 1; 
+            let isPrime = true;
+
+            // Simuleer een mechanische, opeenvolgende deling (zoals op de soroban)
+            for (let deler = 2; deler <= upperLimit; deler++) {
+                if (n % deler === 0) {
+                    isPrime = false;
+                    break; // Zodra een deler is gevonden, is het geen priemgetal
+                }
+            }
+            return isPrime;
+        }
+
+        function runBloopAlgorithm() {
+            const inputElement = document.getElementById('numberInput');
+            const outputElement = document.getElementById('resultOutput');
+            const n = parseInt(inputElement.value);
+
+            if (isNaN(n) || n < 2) {
+                outputElement.innerHTML = "Voer een geldig geheel getal in van 2 of hoger.";
+                outputElement.style.borderLeftColor = "#f44336"; // Rood voor fout
+                return;
+            }
+
+            const checkN = isPrimeBloopStyle(n);
+            const checkNPlus2 = isPrimeBloopStyle(n + 2);
+
+            let resultHTML = `<strong>Resultaten voor N = ${n}:</strong><br><br>`;
+
+            if (checkN) {
+                resultHTML += `✅ ${n} is een priemgetal.<br>`;
+                outputElement.style.borderLeftColor = "#4CAF50"; // Groen voor succes
+
+                if (checkNPlus2) {
+                    resultHTML += `✅ ${n + 2} is ook een priemgetal!<br>`;
+                    resultHTML += `<br><strong>Conclusie:</strong> ${n} en ${n + 2} vormen een Twin Prime paar.`;
+                } else {
+                    resultHTML += `❌ ${n + 2} is géén priemgetal.<br>`;
+                    resultHTML += `<br><strong>Conclusie:</strong> Geen Twin Prime.`;
+                }
+            } else {
+                resultHTML += `❌ ${n} is géén priemgetal.<br>`;
+                outputElement.style.borderLeftColor = "#f44336"; // Rood voor geen priem
+            }
+
+            outputElement.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
