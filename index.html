@@ -209,3 +209,307 @@
             font-size: 85%;
         }
         .readme-content pre {
+            background-color: #0d1117;
+            padding: 16px;
+            border-radius: 6px;
+            overflow: auto;
+            border: 1px solid #30363d;
+        }
+        .readme-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .readme-content ul, .readme-content ol { padding-left: 20px; }
+        .readme-content li { margin-bottom: 8px; }
+        
+        /* Referentie Links als Knoppen */
+        .ref-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        .btn-link:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .btn-link:active {
+            transform: translateY(1px);
+        }
+        .btn-colab { background-color: #f9ab00; color: #000; }
+        .btn-vercel { background-color: #ffffff; color: #000; border: 1px solid #ccc; }
+        .btn-github { background-color: #24292e; border: 1px solid #444; }
+
+        @media (max-width: 900px) {
+            .dual-abacus-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .abacus { width: 100%; max-width: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="repo-nav">
+        <a href="/3f7202e23fba4cf2.png">3f7202e23fba4cf2.png</a>
+        <a href="/README.md">README.md</a>
+        <a href="/VORTEX_Bridge.py">VORTEX_Bridge.py</a>
+        <a href="/Woo%20Informeren%20verzoek%20zienswijzen%20SABIC.pdf">Woo Informeren SABIC.pdf</a>
+        <a href="/actor.json">actor.json</a>
+        <a href="/alt-text-mastodon">alt-text-mastodon</a>
+        <a href="/audiosynthese.md">audiosynthese.md</a>
+        <a href="/avatar.png">avatar.png</a>
+        <a href="/bloop_simulator.html">bloop_simulator.html</a>
+        <a href="/bookmarks.json">bookmarks.json</a>
+        <a href="/index.html">index.html</a>
+        <a href="/likes.json">likes.json</a>
+        <a href="/meestvoorkomendeletters.html">meestvoorkomendeletters.html</a>
+        <a href="/outbox.json">outbox.json</a>
+        <a href="/tweelingen_%20drielingen_%20vierlingen.html">tweelingen_ drielingen_ vierlingen.html</a>
+        <a href="/verstrengeling.md">verstrengeling.md</a>
+        <a href="/vortex-ui.html">vortex-ui.html</a>
+        <a href="/vortex351.html">vortex351.html</a>
+        <a href="/vortex_helix_dashboard.html">vortex_helix_dashboard.html</a>
+        <a href="/vortex_unified_architecture.pdf">vortex_unified_architecture.pdf</a>
+    </nav>
+
+    <h1>Vigesimale Harmonische Matrix</h1>
+
+    <div class="dual-abacus-layout">
+        
+        <div class="abacus">
+            <div class="abacus-header">Abacus I: Rekenkern & Synthese</div>
+            
+            <div class="visual-panel">
+                <canvas id="matrixCanvas" width="350" height="400"></canvas>
+                <input type="range" id="nodeSlider" min="0" max="100" value="0">
+            </div>
+
+            <div>
+                <button id="audioBtn">Initialiseer Audio Engine</button>
+                
+                <div class="data-row">
+                    <span>Input Node:</span>
+                    <span id="outNode">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Z-As (Mod 20):</span>
+                    <span id="outMod">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Dimensionele Laag:</span>
+                    <span id="outLayer">0</span>
+                </div>
+                <div class="data-row">
+                    <span>Frequentie (Hz):</span>
+                    <span id="outFreq">0.00</span>
+                </div>
+                <div class="data-row">
+                    <span>Akoestisch Profiel:</span>
+                    <span id="outProfile">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="abacus">
+            <div class="abacus-header">Abacus II: Modulaire Documentatie</div>
+            
+            <div class="readme-content">
+                <h2>Welkom bij de VORTEX index (v2.0)</h2>
+                <p>Deze interface fungeert als een digitaal telraam. Het vertaalt lineaire getallenreeksen naar een driedimensionale, vigesimale (Base-20) structuur, en koppelt deze direct aan zuivere audiosynthese en priemgetal-detectie.</p>
+
+                <h3>1. Gebruiksaanwijzing (De Mechanica)</h3>
+                <ol>
+                    <li><strong>Initialiseer:</strong> Klik op de groene knop in Abacus I om de Web-Audio processor te starten. <em>Let op: zet uw volume niet te hard.</em></li>
+                    <li><strong>Itereer:</strong> Gebruik de slider (0-100) om mechanisch door de getallen te navigeren. U fungeert hier als de aandrijver van het modulaire algoritme.</li>
+                    <li><strong>Observeer:</strong> Let op de visuele verschuiving in de matrix-ringen en luister naar de harmonische veranderingen in de frequentie.</li>
+                </ol>
+
+                <h3>2. Visuele & Akoestische Legenda</h3>
+                <p>Het canvas toont uw huidige positie binnen het modulaire raster. Elke ring representeert een dimensielaag van 20 eenheden.</p>
+                <ul>
+                    <li><span style="color: #58a6ff;">● Blauwe Node:</span> Een standaard getal in de ruimte. Berekening: <code>N modulo 20</code>.</li>
+                    <li><span style="color: #7ee787;">● Groene Node (As 11):</span> Het resonantiepunt. Wanneer de restwaarde exact 11 is (bijv. 11, 31, 51), raakt het signaal de centrale as. De audio schakelt over naar de <strong>11-Limiet</strong> (Reine Stemming: 11/8 ratio of Neutrale Kwart).</li>
+                    <li><span style="color: #ff7b72;">● Rode Node (Priem + As 11):</span> Uitzonderlijke harmonie. Als de node op as 11 ligt én wiskundig ondeelbaar is (zoals 11, 31, 71), wordt een microtonale frequentiemodulator geactiveerd (<code>&times; 1.0071</code>). Dit simuleert een akoestische 'glinstering' om de ondeelbaarheid hoorbaar te maken.</li>
+                </ul>
+
+                <h3>3. Wiskunde: De Modulaire Invariantie</h3>
+                <p>Het fundament van deze rekenkern is de ruimtelijke verankering van data langs een vaste Z-as. Door grote getallen te reduceren in volumeblokken van 20, ontstaat een schaaltransformatie die de onderliggende fase niet verbreekt:</p>
+                <pre><code>91 = (4 &times; 20) + 11
+71 = (3 &times; 20) + 11
+Verschuiving: 91 - 20 = 71</code></pre>
+                <p>De restwaarde <strong>11</strong> snijdt onwrikbaar als een verticale as dwars door de verschillende lagen van het netwerk. Hierdoor is node 71 perfect uitgelijnd met het nulpunt van fase 11.</p>
+
+                <h3>Referenties & Actieve Links</h3>
+                <div class="ref-links">
+                    <a href="https://colab.research.google.com/drive/1Oa4MG8PL2ehenuOpa6TKrGXyOavwd_0P?usp=sharing" target="_blank" class="btn-link btn-colab">⧉ Open in Google Colab</a>
+                    <a href="https://vortex-omni-bridge-v26-5.vercel.app/sonc-bridge.html" target="_blank" class="btn-link btn-vercel">▲ Bekijk Vercel Deployment</a>
+                    <a href="https://github.com/goija/quantum/tree/main" target="_blank" class="btn-link btn-github">⚙ Verken GitHub Repository</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Systeem Constanten
+        const BASE_FREQ = 110.0;
+        const RATIO_11_LIMIT = 11 / 8;
+        const TWIN_PRIME_MODULATOR = 1.0071;
+
+        // DOM Elementen
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('nodeSlider');
+        const btnAudio = document.getElementById('audioBtn');
+        
+        const outNode = document.getElementById('outNode');
+        const outMod = document.getElementById('outMod');
+        const outLayer = document.getElementById('outLayer');
+        const outFreq = document.getElementById('outFreq');
+        const outProfile = document.getElementById('outProfile');
+
+        // Audio Context
+        let audioCtx;
+        let oscillator;
+        let gainNode;
+        let isAudioActive = false;
+
+        // Priemgetal checker
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        // Start Web Audio API
+        btnAudio.addEventListener('click', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                isAudioActive = true;
+                
+                btnAudio.textContent = "Audio Engine Actief";
+                btnAudio.disabled = true;
+                
+                updateSystem(parseInt(slider.value));
+            }
+        });
+
+        // Visuele rendering (De Rekenmachine / Canvas)
+        function drawMatrix(nodeValue, modValue, layer) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const baseY = canvas.height - 30;
+            const rowHeight = 60;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, baseY);
+            ctx.lineTo(centerX, 20);
+            ctx.strokeStyle = "#30363d";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            for (let l = 0; l <= 4; l++) {
+                const y = baseY - (l * rowHeight);
+                
+                ctx.beginPath();
+                ctx.ellipse(centerX, y, 120, 20, 0, 0, 2 * Math.PI);
+                ctx.strokeStyle = (l <= layer) ? "#1f6feb" : "#21262d";
+                ctx.stroke();
+                
+                if (l === layer) {
+                    const xOffset = (modValue - 10) * 8; 
+                    ctx.beginPath();
+                    ctx.arc(centerX + xOffset, y, 8, 0, 2 * Math.PI);
+                    
+                    if (modValue === 11) {
+                        ctx.fillStyle = isPrime(nodeValue) ? "#ff7b72" : "#7ee787";
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = ctx.fillStyle;
+                    } else {
+                        ctx.fillStyle = "#58a6ff";
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        // Update logica
+        function updateSystem(val) {
+            const mod20 = val % 20;
+            const layer = Math.floor(val / 20);
+            const isPrimeNode = isPrime(val);
+            
+            let freq = BASE_FREQ;
+            let profile = "Standaard Ruimtelijk";
+            let cssClass = "";
+
+            if (mod20 === 11) {
+                freq = BASE_FREQ * RATIO_11_LIMIT;
+                profile = "11-Limiet (Neutrale Kwart)";
+                cssClass = "highlight";
+            }
+
+            const layerModulation = 1 + (layer * 0.05);
+            freq *= layerModulation;
+
+            if (isPrimeNode && mod20 === 11) {
+                freq *= TWIN_PRIME_MODULATOR;
+                profile = "Prime Verrijkt (Twin Prime Phase)";
+                cssClass = "prime-highlight";
+            }
+
+            outNode.textContent = val;
+            outMod.textContent = mod20;
+            outLayer.textContent = layer;
+            outFreq.textContent = freq.toFixed(2);
+            outProfile.textContent = profile;
+            
+            outMod.className = cssClass;
+            outProfile.className = cssClass;
+
+            if (isAudioActive) {
+                oscillator.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+            }
+
+            drawMatrix(val, mod20, layer);
+        }
+
+        slider.addEventListener('input', (e) => {
+            updateSystem(parseInt(e.target.value));
+        });
+
+        drawMatrix(0, 0, 0);
+    </script>
+</body>
+</html>
