@@ -8,6 +8,8 @@ https://github.com/RAPosthumus?tab=repositories
 
 https://www.flickr.com/photos/renseposthumus/
 
+https://semantius.nl/dossiers
+
 
 # Dossier: Voorgenomen Overname Solvinity door Kyndryl
 
