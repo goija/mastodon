@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priemconstellatie Algoritme</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .dashboard {
+            background-color: #1e1e1e;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h2 {
+            color: #9c27b0;
+            margin-top: 0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: #9c27b0;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #7b1fa2;
+        }
+
+        .stats {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #252525;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .table-container {
+            margin-top: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #2d2d2d;
+            position: sticky;
+            top: 0;
+            color: #9c27b0;
+            z-index: 10;
+        }
+
+        tr:nth-child(even) { background-color: #1a1a1a; }
+        tr:hover { background-color: #2a2a2a; }
+
+        .type-twin { color: #03A9F4; }      /* Tweelingen: Blauw */
+        .type-triplet { color: #4CAF50; }   /* Drielingen: Groen */
+        .type-quad { color: #FF9800; }      /* Vierlingen: Oranje */
+        
+        /* Layout fix voor knop naast inputs op brede schermen */
+        @media (min-width: 600px) {
+            .btn-group { flex-basis: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>Universeel Priemconstellatie Algoritme</h2>
+        <p>Doorzoek de getallenlijn tot een specifieke limiet. Het algoritme zoekt naar de grootst mogelijke aaneengesloten priemconstellatie voor elk getal.</p>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="limitInput">Zoek tot maximum N:</label>
+                <input type="number" id="limitInput" min="10" max="1000000" value="1000" />
+            </div>
+            <div class="input-group">
+                <label for="filterInput">Filter Resultaten:</label>
+                <select id="filterInput" onchange="renderTable()">
+                    <option value="all">Toon Alles</option>
+                    <option value="Vierling">Alleen Vierlingen (Quadruplets)</option>
+                    <option value="Drieling">Alleen Drielingen (Triplets)</option>
+                    <option value="Tweeling">Alleen Tweelingen (Twins)</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button onclick="runAlgorithm()">Start Berekening</button>
+            </div>
+        </div>
+
+        <div class="stats" id="statsBox">
+            <span>Wachten op start...</span>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Basis (P)</th>
+                        <th>Reeks</th>
+                        <th>Classificatie</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #888;">Klik op Start Berekening...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Snelle priemgetal controle
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2 || n === 3) return true;
+            if (n % 2 === 0 || n % 3 === 0) return false;
+            
+            let limit = Math.sqrt(n);
+            for (let i = 5; i <= limit; i += 6) {
+                if (n % i === 0 || n % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        let globaleResultaten = [];
+
+        function runAlgorithm() {
+            const limit = parseInt(document.getElementById('limitInput').value);
+            if (isNaN(limit) || limit < 5) {
+                alert("Voer een limiet in groter dan 5.");
+                return;
+            }
+
+            globaleResultaten = []; // Reset de data
+            let counts = { twin: 0, triplet: 0, quad: 0 };
+
+            // Omdat we tot een limiet scannen, is een for-loop veilig
+            for (let p = 2; p <= limit; p++) {
+                if (!isPrime(p)) continue; // Sla over als de basis geen priem is
+
+                // Bereken mogelijke offsets vooraf
+                const p2 = p + 2; const isP2 = isPrime(p2);
+                const p4 = p + 4; const isP4 = isPrime(p4);
+                const p6 = p + 6; const isP6 = isPrime(p6);
+                const p8 = p + 8; const isP8 = isPrime(p8);
+
+                // 1. Controleer op de zeldzaamste: De Vierling (p, p+2, p+6, p+8)
+                if (isP2 && isP6 && isP8) {
+                    globaleResultaten.push({
+                        p: p,
+                        reeks: `${p}, ${p2}, ${p6}, ${p8}`,
+                        type: "Vierling",
+                        cssClass: "type-quad",
+                        desc: "(p, p+2, p+6, p+8)"
+                    });
+                    counts.quad++;
+                }
+                // 2. Controleer Uitzondering Drieling (3, 5, 7)
+                else if (p === 3 && isP2 && isP4) {
+                    globaleResultaten.push({
+                        p: p,
+                        reeks: `${p}, ${p2}, ${p4}`,
+                        type: "Drieling",
+                        cssClass: "type-triplet",
+                        desc: "Uitzondering (p, p+2, p+4)"
+                    });
+                    counts.triplet++;
+                }
+                // 3. Controleer Drieling Vorm 1 (p, p+2, p+6)
+                else if (isP2 && isP6) {
+                    globaleResultaten.push({
+                        p: p,
+                        reeks: `${p}, ${p2}, ${p6}`,
+                        type: "Drieling",
+                        cssClass: "type-triplet",
+                        desc: "Vorm 1 (p, p+2, p+6)"
+                    });
+                    counts.triplet++;
+                }
+                // 4. Controleer Drieling Vorm 2 (p, p+4, p+6)
+                else if (isP4 && isP6) {
+                    globaleResultaten.push({
+                        p: p,
+                        reeks: `${p}, ${p4}, ${p6}`,
+                        type: "Drieling",
+                        cssClass: "type-triplet",
+                        desc: "Vorm 2 (p, p+4, p+6)"
+                    });
+                    counts.triplet++;
+                }
+                // 5. Als al het bovenstaande faalt, check dan op Tweeling (p, p+2)
+                else if (isP2) {
+                    globaleResultaten.push({
+                        p: p,
+                        reeks: `${p}, ${p2}`,
+                        type: "Tweeling",
+                        cssClass: "type-twin",
+                        desc: "(p, p+2)"
+                    });
+                    counts.twin++;
+                }
+            }
+
+            // Update statistieken balk
+            document.getElementById('statsBox').innerHTML = `
+                <span><strong>Gevonden tot ${limit}:</strong></span>
+                <span class="type-twin">${counts.twin} Tweelingen</span>
+                <span class="type-triplet">${counts.triplet} Drielingen</span>
+                <span class="type-quad">${counts.quad} Vierlingen</span>
+            `;
+
+            renderTable();
+        }
+
+        // Functie om de HTML tabel te tekenen op basis van de geselecteerde filter
+        function renderTable() {
+            const filterWaarde = document.getElementById('filterInput').value;
+            const tableBody = document.getElementById('tableBody');
+            
+            if (globaleResultaten.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Geen data om te tonen.</td></tr>`;
+                return;
+            }
+
+            let rowsHTML = "";
+            let zichtbaarAantal = 0;
+
+            for (let i = 0; i < globaleResultaten.length; i++) {
+                const item = globaleResultaten[i];
+                
+                // Toepassen van filter
+                if (filterWaarde === "all" || item.type === filterWaarde) {
+                    rowsHTML += `
+                        <tr>
+                            <td><strong>${item.p}</strong></td>
+                            <td class="${item.cssClass}">${item.reeks}</td>
+                            <td>${item.type} <span style="font-size:0.8em; color:#888;">${item.desc}</span></td>
+                        </tr>
+                    `;
+                    zichtbaarAantal++;
+                }
+            }
+
+            if (zichtbaarAantal === 0) {
+                rowsHTML = `<tr><td colspan="3" style="text-align: center;">Geen resultaten voor deze filter.</td></tr>`;
+            }
+
+            tableBody.innerHTML = rowsHTML;
+        }
+    </script>
+</body>
+</html>
