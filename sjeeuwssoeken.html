@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📜 Middeleeuwse Woorden- & Plaatsenzoeker Zeeland</title>
+    <style>
+        :root {
+            --primary-color: #8b1e25; /* Diep middeleeuws rood */
+            --secondary-color: #2c3e50; /* Slate blauw */
+            --accent-color: #d4af37; /* Goud accent */
+            --bg-color: #fcfaf2; /* Perkament-achtige lichte achtergrond */
+            --card-bg: #ffffff;
+            --text-color: #2b2b2b;
+            --border-color: #d1c7bd;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #5c1116);
+            color: #ffffff;
+            padding: 45px 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.4rem;
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 12px 0 0 0;
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 25px;
+        }
+
+        .intro-panel {
+            background-color: #fffdec;
+            border: 1px solid var(--border-color);
+            border-left: 6px solid var(--primary-color);
+            padding: 22px;
+            margin-bottom: 35px;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            font-size: 1.05rem;
+        }
+
+        .intro-panel a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .search-filter-wrapper {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .search-filter-wrapper label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .search-filter-wrapper input {
+            width: 100%;
+            padding: 12px 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .search-filter-wrapper input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            background-color: #fff;
+        }
+
+        .place-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .place-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .place-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+
+        .place-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0eae1;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .place-title {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: normal;
+        }
+
+        .place-category {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .place-meta {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .variant-tag {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f5f0e6;
+            color: #5c1116;
+            padding: 4px 8px;
+            border: 1px dashed #c5b8a5;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .place-description {
+            font-size: 0.95rem;
+            color: #444;
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background-color 0.2s, transform 0.1s;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-delpher { background-color: #1e6fa5; }
+        .btn-delpher:hover { background-color: #155078; }
+        
+        .btn-archive { background-color: #27ae60; }
+        .btn-archive:hover { background-color: #1e8449; }
+
+        .btn-wiki { background-color: #e67e22; }
+        .btn-wiki:hover { background-color: #d35400; }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 35px;
+            color: #6e655f;
+            font-size: 0.95rem;
+            border-top: 1px solid var(--border-color);
+            background-color: #f5efe6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📜 Middeleeuwse Woorden- &amp; Plaatsenzoeker Zeeland</h1>
+        <p>Interactief bronnenportaal voor verdronken dorpen, adellijke geslachten en dialecten</p>
+    </header>
+
+    <div class="container">
+        <div class="intro-panel">
+            <strong>Middeleeuws Onderzoeksportaal:</strong> Deze applicatie bevat alle historische locaties, verdronken parochies en adellijke kernen uit uw documenten. Gebruik de databasekoppelingen om direct te zoeken naar middeleeuwse vertalingen, oorkonden en vermeldingen in historische registers. 
+            <br><br>
+            🔗 <strong>Externe bronnen gebruikt voor dit project:</strong> 
+            <a href="https://zea.wikipedia.org/wiki/Lieste_van_verdroenke_durpen_in_Ze%C3%AAland" target="_blank">Lieste van verdroenke durpen in Zeêland</a> | 
+            <a href="https://uusvantzeeuws.nl/index.php/in-t-zeeuws-2/muziek/" target="_blank">Uus van 't Zeêuws Muziek &amp; Dialect</a>
+        </div>
+
+        <div class="search-filter-wrapper">
+            <label for="search-input">🔍 Filter op modern of middeleeuws dorp / term:</label>
+            <input type="text" id="search-input" onkeyup="filterPlaces()" placeholder="Typ bijvoorbeeld: Reimerswaal, Emelisse, Schouwen, of claeskerke...">
+        </div>
+
+        <div class="place-list" id="place-container">
+            <!-- Dynamisch geladen via JS -->
+        </div>
+    </div>
+
+    <footer>
+        <p>Middeleeuwse Zeeland Zoekpagina &copy; 2026 | Gebouwd met gefixte Booleaanse query-strings voor Delpher &amp; Zeeuws Archief.</p>
+    </footer>
+
+    <script>
+        // Uitgebreide dataset met alle plaatsen en varianten uit de verstrekte documenten
+        const placesData = [
+            {
+                name: "Reimerswaal",
+                category: "Verdronken Stad",
+                variants: ["Reimerswala", "Rommerswael", "Roemerswale", "Reymerswael", "Reymerswale", "Romerswale"],
+                description: "Oudst bekende vermelding uit april 1214. Betekenis herleidbaar tot de persoon 'Reymer' en '-wale' (dijkdoorbraakkolk). Verwoest bij de stormvloeden van 1530 en 1532."
+            },
+            {
+                name: "Westenschouwen",
+                category: "Verdronken Zuidland Schouwen",
+                variants: ["Westenschouwen", "Paelvoetseinde"],
+                description: "Gelegen aan de zuidkust van Schouwen, historisch ook bekend onder de dialectische/alternatieve aanduiding Paelvoetseinde."
+            },
+            {
+                name: "Clauskinderen",
+                category: "Verdronken Zuidland Schouwen",
+                variants: ["Clauskinderen", "Claeskerke", "Oostkerke"],
+                description: "Een dichtbevolkt verdronken parochiedorp aan de zuidkust van Schouwen met meerdere naamvarianten in de archieven."
+            },
+            {
+                name: "Brieskerke",
+                category: "Verdronken Zuidland Schouwen",
+                variants: ["Brieskerke", "Brisselkerk"],
+                description: "Vermeld in oorkonden uit 1276 onder de middeleeuwse vertaling/variant Brisselkerk."
+            },
+            {
+                name: "Westkerke",
+                category: "Verdronken Zuidland Schouwen",
+                variants: ["Westkerke", "Raaskerke"],
+                description: "Ook wel bekend onder de historische benaming Raaskerke."
+            },
+            {
+                name: "'s-Heer Arendshaven",
+                category: "Verdronken Zuidland Schouwen",
+                variants: ["'s-Heer Arendshaven", "Arnoutshaven"],
+                description: "Duikt in 1389 en 1512 in de grafelijke oorkonden op onder de variant Arnoutshaven."
+            },
+            {
+                name: "Emelisse",
+                category: "Noord-Beveland / Kloosters",
+                variants: ["Emelisse", "emoliste", "Emelnes"],
+                description: "Verdronken cisterciënzer kloosterdorp op Noord-Beveland, in oude teksten vaak vertaald als emoliste of Emelnes."
+            },
+            {
+                name: "Zoetelinkskerke",
+                category: "Noord-Beveland / Walcheren",
+                variants: ["Zoetelinkskerke", "Soelekerke", "Soetelinkskerke"],
+                description: "Oud middeleeuws parochiedorp dat evengoed als Soelekerke werd aangeduid."
+            },
+            {
+                name: "Serooskerke",
+                category: "Walcheren",
+                variants: ["Serooskerke", "Alardskerke"],
+                description: "Dorp op Walcheren dat in vroege middeleeuwse bronnen werd geschreven en vertaald als Alardskerke."
+            },
+            {
+                name: "Goes",
+                category: "Goes & Omgeving",
+                variants: ["Goes", "Curtagosum", "Gous"],
+                description: "De oudst bekende naam stamt uit 976 (Curtagosum, betekenend Korte Goes). In 1216 vermeld als Gous."
+            },
+            {
+                name: "'s-Heer Arendskerke",
+                category: "Goes & Omgeving",
+                variants: ["'s-Heer Arendskerke", "Arentskerke"],
+                description: "Gesticht door de adellijke broer Heer Arent (met den Bilik), die hier de vroege kerk fundeerde."
+            },
+            {
+                name: "Wissekerke",
+                category: "Goes & Omgeving",
+                variants: ["Wissekerke", "Wisse"],
+                description: "Vernoemd naar heer Wisse, broer van Arent en Hendrik, als onderdeel van adellijke expansie."
+            },
+            {
+                name: "'s-Heer Hendrikskinderen",
+                category: "Goes & Omgeving",
+                variants: ["'s-Heer Hendrikskinderen", "Hendrikskinderen"],
+                description: "Letterlijk vernoemd naar de kinderen van broer Hendrik, die op deze specifieke locatie een kerk stichtten."
+            },
+            {
+                name: "Lodijke",
+                category: "Oost-Watering (Reimerswaal)",
+                variants: ["Lodijke", "Lodike"],
+                description: "Thuisbasis van de machtige kasteelheren van Reimerswaal, ten onder gegaan tijdens de stormvloeden."
+            },
+            {
+                name: "Duvenee",
+                category: "Oost-Watering (Reimerswaal)",
+                variants: ["Duvenee", "Duvenede"],
+                description: "Historische parochie in het welvarende poelgebied rondom Reimerswaal."
+            },
+            {
+                name: "Koudekerke (Schouwen)",
+                category: "Verdwenen Kerken",
+                variants: ["Koudekerke", "Plompe Toren"],
+                description: "Van dit parochiedorp resteert alleen nog de 14e-eeuwse 'Plompe Toren' als baken in de Westerschelde/Oosterschelde-regio."
+            },
+            {
+                name: "Stavenisse",
+                category: "Adellijke Heerlijkheden",
+                variants: ["Stavenisse", "Van Stavenisse"],
+                description: "Kerngebied van het adellijke geslacht Van Stavenisse. Bekend van de oorkonde uit 1325 van Maria en de enorme Tournoyse restschuld."
+            },
+            {
+                name: "Ovezande & Sinoutskerke",
+                category: "Verdwenen Kerken",
+                variants: ["Sinoutskerke", "Ovezande", "Wit Arjaentje"],
+                description: "Sinoutskerke werd in 1906 gesloopt wegens bouwvalligheid; Ovezande bewaart de protestantse kerk het 'Wit Arjaentje'."
+            },
+            {
+                name: "Oost-Watering Restdorpen",
+                category: "Oost-Watering (Reimerswaal)",
+                variants: ["Kouwerve", "Kreke", "Everswaard", "Vinkenisse", "Oud-Krabbendijke", "Broecke", "Schoudee", "Tolsende"],
+                description: "Collectie van verdronken dorpen, typisch voor de Zeeuwse topografie getekend door de strijd tegen het water."
+            }
+        ];
+
+        // Functie om kaarten te genereren en in de DOM te plaatsen
+        function renderPlaces(data) {
+            const container = document.getElementById('place-container');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; font-style:italic; color:#6e655f;">Geen locaties gevonden die voldoen aan uw zoekterm.</p>';
+                return;
+            }
+
+            data.forEach(place => {
+                const card = document.createElement('div');
+                card.className = 'place-card';
+
+                // Maak booleaanse query string voor Delpher en archief
+                const queryStr = place.variants.map(v => `"${v}"`).join(' OR ');
+
+                let variantsHTML = place.variants.map(v => `<span class="variant-tag">${v}</span>`).join('');
+
+                card.innerHTML = `
+                    <div class="place-header">
+                        <h3 class="place-title">${place.name}</h3>
+                        <span class="place-category">${place.category}</span>
+                    </div>
+                    <div class="place-meta">
+                        <strong>Middeleeuwse &amp; Dialectvarianten:</strong><br>
+                        <div style="margin-top: 5px;">${variantsHTML}</div>
+                    </div>
+                    <div class="place-description">${place.description}</div>
+                    <div class="action-buttons">
+                        <button class="btn btn-delpher" onclick="searchDelpher('${encodeURIComponent(queryStr)}')">📰 Zoek in Delpher Kranten/Boeken</button>
+                        <button class="btn btn-archive" onclick="searchArchive('${encodeURIComponent(queryStr)}')">🏛️ Zoek in Zeeuws Archief</button>
+                        <button class="btn btn-wiki" onclick="searchWiki('${encodeURIComponent(place.name)}')">🌐 Zeêuwse Wiki (Dialect)</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Zoekfuncties met de juiste stabiele URL's
+        function searchDelpher(encodedQuery) {
+            const url = `https://www.delpher.nl/nl/kranten/results?query=${encodedQuery}&coll=ddd`;
+            window.open(url, '_blank');
+        }
+
+        function searchArchive(encodedQuery) {
+            const url = `https://www.archieven.nl/nl/zoeken?q=${encodedQuery}`;
+            window.open(url, '_blank');
+        }
+
+        function searchWiki(term) {
+            const fullQuery = `site:zea.wikipedia.org "${term}"`;
+            const url = `https://www.google.com/search?q=${encodeURIComponent(fullQuery)}`;
+            window.open(url, '_blank');
+        }
+
+        // Filter/zoekbalk logica
+        function filterPlaces() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const filtered = placesData.filter(place => {
+                const nameMatch = place.name.toLowerCase().includes(input);
+                const catMatch = place.category.toLowerCase().includes(input);
+                const descMatch = place.description.toLowerCase().includes(input);
+                const variantMatch = place.variants.some(v => v.toLowerCase().includes(input));
+                return nameMatch || catMatch || descMatch || variantMatch;
+            });
+            renderPlaces(filtered);
+        }
+
+        // Eerste render van alle data bij het laden van de pagina
+        renderPlaces(placesData);
+    </script>
+</body>
+</html>
