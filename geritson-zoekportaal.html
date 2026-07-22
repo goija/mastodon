@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Zoekportaal: Oorlogsbronnen, Groep-Gerretson & Pseudoniemen</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #c53030;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: #ebf8ff;
+            color: var(--primary);
+        }
+        .alias-badge {
+            display: inline-block;
+            background-color: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin: 2px;
+            border: 1px solid #cbd5e0;
+        }
+        .search-box {
+            background-color: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .search-box h2 {
+            color: #9c4221;
+            margin-top: 0;
+            border-bottom: 2px solid #fbd38d;
+            padding-bottom: 8px;
+        }
+        code {
+            background-color: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🏛️ Master Zoekportaal: Oorlogsbronnen & Persoonsdossiers</h1>
+        <p>Integraal dashboard voor historisch onderzoek naar de Groep-Gerretson, clandestiene netwerken, pseudoniemen en naoorlogse archieven (1914–1968).</p>
+    </header>
+
+    <div class="table-container">
+        <h2>👥 Sleutelfiguren, Echte Namen & Pseudoniemen</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Echte Naam</th>
+                    <th>Bekende Pseudoniemen / Aliassen</th>
+                    <th>Historische Rol & Context</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Frederik Carel Gerretson</strong></td>
+                    <td><span class="alias-badge">Geerten Gossaert</span><span class="alias-badge">Erasmus</span><span class="alias-badge">Geheimrat</span></td>
+                    <td>Historicus, dichter, politicus. Spil van de Groep-Gerretson, Groot-Nederlands activist en conservatyve ideoloog.</td>
+                </tr>
+                <tr>
+                    <td><strong>Derk Hoek</strong></td>
+                    <td><span class="alias-badge">Jan Jacob ten Hove</span><span class="alias-badge">Frank Gericke</span></td>
+                    <td>Auteur, financier van de illegale uitgeverij De Bezige Bij (schreef o.a. over Arend en Hendrik Goudt).</td>
+                </tr>
+                <tr>
+                    <td><strong>Geert Lubberhuizen</strong></td>
+                    <td><span class="alias-badge">Bas Ruys</span><span class="alias-badge">Bas Busy</span><span class="alias-badge">The Busy Bee</span><span class="alias-badge">LiLaLub</span></td>
+                    <td>Oprichter en drijvende kracht achter de clandestine uitgeverij De Bezige Bij.</td>
+                </tr>
+                <tr>
+                    <td><strong>Fedde Weidema</strong></td>
+                    <td><span class="alias-badge">Fred Ingram</span><span class="alias-badge">Antipholus van Siracuse</span><span class="alias-badge">Radboud de Cadt</span></td>
+                    <td>Graficus en illustrator die onder talrijke aliassen beeldmateriaal verzorgde voor het verzet.</td>
+                </tr>
+                <tr>
+                    <td><strong>Robert Frédéric Groeninx van Zoelen</strong></td>
+                    <td><span class="alias-badge">Breyster</span></td>
+                    <td>Jhr., politicus (Nationale Unie), actief in inlichtingenkringen. (Niet te verwarren met Jan Jacob ten Hove).</td>
+                </tr>
+                <tr>
+                    <td><strong>Louis Einthoven</strong></td>
+                    <td><em>Geen</em></td>
+                    <td>Lid van het driemanschap van de Nederlandse Unie, later hoofd Bureau Nationale Veiligheid (BNV) en BVD.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>🇳🇱 Nederlandse Archieven & Portalen</h2>
+            <ul>
+                <li><strong>Oorlogsbronnen.nl:</strong> <a href="https://www.oorlogsbronnen.nl" target="_blank">Startpagina</a> (Overkoepelend zoekportaal)</li>
+                <li><strong>NIOD:</strong> <a href="https://www.niod.nl" target="_blank">Bezoek website</a> (Oorlogsdocumentatie & illegale pers)</li>
+                <li><strong>Nationaal Archief (CABR):</strong> <a href="https://oorlogvoorderechter.nl" target="_blank">Oorlog voor de Rechter</a> (~425.000 collaboratiedossiers)</li>
+                <li><strong>Delpher:</strong> <a href="https://www.delpher.nl" target="_blank">Kranten & Tijdschriften</a> (Inclusief <em>De Vlaamsche Stem</em> 1915)</li>
+                <li><strong>Archieven.nl:</strong> <a href="https://www.archieven.nl" target="_blank">Regionaal Zoeken</a> (Literatuurmuseum & stadsarchieven)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🗃️ Specifieke Archieftoegangen (NA)</h2>
+            <ul>
+                <li><strong>Toegang 2.21.246:</strong> <a href="https://www.nationaalarchief.nl/onderzoeken/archief/2.21.246" target="_blank">Archief F.C. Gerretson</a></li>
+                <li><strong>Toegang 2.21.305:</strong> <a href="https://www.nationaalarchief.nl/onderzoeken/archief/2.21.305" target="_blank">Archief Han Baudet</a> (Correspondentie Groep-Gerretson & L. de Jong)</li>
+                <li><strong>Toegang 2.06.079:</strong> <a href="https://www.nationaalarchief.nl/onderzoeken/archief/2.06.079" target="_blank">Crisisinstellingen 1914-1926</a> (Eerste Wereldoorlog)</li>
+                <li><strong>Toegang 2.21.231:</strong> Archief Louis Einthoven (Nederlandsche Unie / BVD)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🌍 Internationale Databases</h2>
+            <ul>
+                <li><strong>Arolsen Archives:</strong> <a href="https://arolsen-archives.org" target="_blank">Zoekportaal</a> (Kampdossiers & vervolgden)</li>
+                <li><strong>USHMM:</strong> <a href="https://www.ushmm.org/online/hsv/" target="_blank">Holocaust Survivors and Victims Database</a></li>
+                <li><strong>Yad Vashem:</strong> <a href="https://www.yadvashem.org" target="_blank">Central Database of Shoah Victims’ Names</a></li>
+                <li><strong>Rijksarchief België:</strong> <a href="https://www.arch.be" target="_blank">Belgische vluchtelingen & Vlaamse Beweging</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <h2>🔍 Snelle Zoekopdrachten & Google Dorks</h2>
+        <p>Kopieer deze strings direct in de zoekbalken van de betreffende archieven:</p>
+        <ul>
+            <li><code>site:niod.nl filetype:pdf "Groep-Gerretson"</code> (Zoek specifiek naar documenten over de groep)</li>
+            <li><code>"Jan Jacob ten Hove" AND "Bezige Bij"</code> (Traceren van clandestiene uitgaven)</li>
+            <li><code>"Groeninx van Zoelen" NOT "Yerseke" NOT "oestervisserij"</code> (Filteren van Zeeuwse handelsruis in genealogische archieven)</li>
+            <li><code>"Minerva" AND "gelouterd herrijst"</code> (Academische verzetsiconografie in studentenbladen)</li>
+            <li><code>"L. de Jong" AND ("Heeft de afwezige ongelijk?")</code> (Polemieken rondom de bezettingsgeschiedschrijving)</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
