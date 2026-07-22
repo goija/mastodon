@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archiefzoeker: Oude Plaatsnamen & Verdronken Dorpen</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #2c3e50;
+            --delpher-red: #d12027;
+            --delpher-hover: #a1171d;
+            --archief-blue: #2980b9;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            border-bottom: 3px solid var(--archief-blue);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            color: var(--text-color);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .search-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+            min-width: 300px;
+            font-family: monospace; /* Ideaal voor paleografische teksten */
+        }
+
+        #searchInput:focus {
+            border-color: var(--archief-blue);
+        }
+
+        .btn {
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-delpher {
+            background-color: var(--delpher-red);
+        }
+
+        .btn-archief {
+            background-color: var(--archief-blue);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .category-title {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--archief-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyword-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-chip {
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .keyword-chip:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5e0;
+            color: var(--archief-blue);
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            margin-top: 1rem;
+            display: block;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📜 Archiefzoeker: Oude Zeeuwse Plaatsnamen</h1>
+        <p>Doorzoek historische bronnen op Middelnederlandse spellingsvarianten en verdronken nederzettingen.</p>
+    </div>
+
+    <div class="search-container">
+        <div class="search-controls">
+            <input type="text" id="searchInput" placeholder="Bouw een zoekopdracht (bijv. Reymerswael OR Rommerswael)...">
+            <button class="btn btn-delpher" id="searchKranten">Delpher Kranten</button>
+            <button class="btn btn-delpher" id="searchBoeken">Delpher Boeken</button>
+            <button class="btn btn-archief" id="clearSearch">Wis</button>
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- Reimerswaal & Etymologie -->
+        <div class="category-card">
+            <h2 class="category-title">🌊 Reimerswaal (Varianten & Etymologie)</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Reimerswala</span>
+                <span class="keyword-chip">Rommerswael</span>
+                <span class="keyword-chip">Roemerswale</span>
+                <span class="keyword-chip">Reymerswael</span>
+                <span class="keyword-chip">Reymerswale</span>
+                <span class="keyword-chip">Romerswale</span>
+                <span class="keyword-chip">Reymer</span>
+                <span class="keyword-chip">Reymaer</span>
+                <span class="keyword-chip">Zwartewaal</span>
+                <span class="keyword-chip">Beverswale</span>
+            </div>
+            <span class="note">Achtervoegsel -wale of -waal betekent 'wiel' of 'weel' (waterkolk bij dijkdoorbraak). Oudste oorkonde: april 1214.</span>
+        </div>
+
+        <!-- Verdronken dorpen van de Oost-Watering -->
+        <div class="category-card">
+            <h2 class="category-title">⛪ Oost-Watering (Verdronken in 1530/1532)</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Lodijke</span>
+                <span class="keyword-chip">Duvenee</span>
+                <span class="keyword-chip">Duvenede</span>
+                <span class="keyword-chip">Kouwerve</span>
+                <span class="keyword-chip">Kreke</span>
+                <span class="keyword-chip">Everswaard</span>
+                <span class="keyword-chip">Vinkenisse</span>
+                <span class="keyword-chip">Oud-Krabbendijke</span>
+                <span class="keyword-chip">Broecke</span>
+                <span class="keyword-chip">Schoudee</span>
+                <span class="keyword-chip">Tolsende</span>
+            </div>
+            <span class="note">Welvarend poelgebied rondom de stad Reimerswaal. Lodijke was de thuisbasis van de kasteelheren.</span>
+        </div>
+
+        <!-- Het Verdronken Zuidland van Schouwen -->
+        <div class="category-card">
+            <h2 class="category-title">💨 Verdronken Zuidland van Schouwen</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Westenschouwen</span>
+                <span class="keyword-chip">Paelvoetseinde</span>
+                <span class="keyword-chip">Clauskinderen</span>
+                <span class="keyword-chip">Claeskerke</span>
+                <span class="keyword-chip">Oostkerke</span>
+                <span class="keyword-chip">Brieskerke</span>
+                <span class="keyword-chip">Brisselkerk</span>
+                <span class="keyword-chip">Westkerke</span>
+                <span class="keyword-chip">Raaskerke</span>
+                <span class="keyword-chip">'s-Heer Arendshaven</span>
+                <span class="keyword-chip">Arnoutshaven</span>
+            </div>
+        </div>
+
+        <!-- Noord-Beveland en Walcheren -->
+        <div class="category-card">
+            <h2 class="category-title">🏝️ Noord-Beveland & Walcheren</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Emelisse</span>
+                <span class="keyword-chip">emoliste</span>
+                <span class="keyword-chip">Emelnes</span>
+                <span class="keyword-chip">Zoetelinkskerke</span>
+                <span class="keyword-chip">Soelekerke</span>
+                <span class="keyword-chip">Soetelinkskerke</span>
+                <span class="keyword-chip">Serooskerke</span>
+                <span class="keyword-chip">Alardskerke</span>
+            </div>
+            <span class="note">Emelisse was een cisterciënzerkloosterdorp (verdronken in de 16e eeuw).</span>
+        </div>
+
+        <!-- Goes en omgeving -->
+        <div class="category-card">
+            <h2 class="category-title">📜 Goes & Adellijke Stichtingen</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Curtagosum</span>
+                <span class="keyword-chip">Gous</span>
+                <span class="keyword-chip">'s-Heer Arendskerke</span>
+                <span class="keyword-chip">Wissekerke</span>
+                <span class="keyword-chip">'s-Heer Hendrikskinderen</span>
+                <span class="keyword-chip">"heer Arent"</span>
+                <span class="keyword-chip">"broer Wisse"</span>
+                <span class="keyword-chip">"broer Hendrik"</span>
+            </div>
+            <span class="note">Curtagosum (976) en Gous (1216). Veel dorpsnamen zijn direct herleidbaar tot de adellijke broers Arent, Wisse en Hendrik.</span>
+        </div>
+
+        <!-- Operatoren voor Transcripties -->
+        <div class="category-card">
+            <h2 class="category-title">⚙️ Transcriptie & Zoek Operatoren</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip"> AND </span>
+                <span class="keyword-chip"> OR </span>
+                <span class="keyword-chip"> NOT </span>
+                <span class="keyword-chip">""</span>
+                <span class="keyword-chip"> NEAR/5 </span>
+                <span class="keyword-chip" title="Vervangt meerdere tekens">*</span>
+                <span class="keyword-chip" title="Vervangt 1 teken">?</span>
+            </div>
+            <span class="note">Tip: Gebruik OR tussen spellingsvarianten (bijv: Reymerswael OR Romerswale) om breder te zoeken in oude bronnen.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const chips = document.querySelectorAll('.keyword-chip');
+        const btnKranten = document.getElementById('searchKranten');
+        const btnBoeken = document.getElementById('searchBoeken');
+        const btnClear = document.getElementById('clearSearch');
+
+        // Voeg termen toe aan de zoekbalk
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const text = chip.textContent;
+                
+                if (text === '""') {
+                    searchInput.value += ' ""';
+                    searchInput.focus();
+                    searchInput.setSelectionRange(searchInput.value.length - 1, searchInput.value.length - 1);
+                } else {
+                    if (searchInput.value.length > 0 && !searchInput.value.endsWith(' ')) {
+                        searchInput.value += ' ';
+                    }
+                    // Voeg aanhalingstekens toe rond plaatsnamen met spaties
+                    if (text.trim().includes(' ') && !text.includes('AND') && !text.includes('OR') && !text.includes('NOT') && !text.includes('NEAR')) {
+                        searchInput.value += `"${text.trim()}" `;
+                    } else {
+                        searchInput.value += text.trim() + ' ';
+                    }
+                    searchInput.focus();
+                }
+            });
+        });
+
+        // Wis zoekbalk
+        btnClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchInput.focus();
+        });
+
+        // Zoeken in Delpher
+        const executeSearch = (collection) => {
+            let query = searchInput.value.trim();
+            if (query) {
+                // Delpher URL constructie
+                const url = `https://www.delpher.nl/nl/${collection}/results?query=${encodeURIComponent(query)}&coll=${collection === 'kranten' ? 'ddd' : 'boeken'}`;
+                window.open(url, '_blank');
+            }
+        };
+
+        btnKranten.addEventListener('click', () => executeSearch('kranten'));
+        btnBoeken.addEventListener('click', () => executeSearch('boeken'));
+
+        // Enter-toets = Kranten zoeken
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                executeSearch('kranten');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
