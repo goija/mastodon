@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Historische Database: Verzet, Gerretson & OSINT</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #2c3e50;
+            --accent-color: #1a252f;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            
+            /* Themakleuren */
+            --theme-osint: #009432;    
+            --theme-ww1: #e17055;      /* Fase 1: WWI & Vlaamsche Stem */
+            --theme-pol: #6c5ce7;      /* Fase 2: Interbellum & Nationale Unie */
+            --theme-res: #d63031;      /* Fase 3: WO2 & Bezige Bij */
+            --theme-his: #fdcb6e;      /* Fase 4: Naoorlogse Zuivering */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 { font-size: 2.5rem; color: var(--accent-color); border-bottom: 4px solid var(--theme-osint); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.6rem; margin-top: 0; color: var(--accent-color); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;}
+        h3 { font-size: 1.15rem; color: #444; margin-bottom: 1rem; margin-top: 1.5rem;}
+
+        .narrative-essay {
+            background-color: #ffffff;
+            border-left: 6px solid var(--theme-ww1);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .narrative-essay h3 {
+            color: var(--accent-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .narrative-essay h3:first-of-type { margin-top: 0; }
+
+        /* Portal Grid */
+        .portal-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .portal-btn {
+            flex: 1 1 calc(16.666% - 12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .portal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+
+        /* Theme Cards */
+        .theme-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .t-osint { border-top: 5px solid var(--theme-osint); }
+        .t-ww1 { border-top: 5px solid var(--theme-ww1); }
+        .t-pol { border-top: 5px solid var(--theme-pol); }
+        .t-res { border-top: 5px solid var(--theme-res); }
+        .t-his { border-top: 5px solid var(--theme-his); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 2rem; background: var(--card-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f8f9fa; font-weight: 700; color: var(--accent-color); }
+        tr:hover { background-color: #f1f5f9; }
+        .tag { background: #e2e8f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block; margin: 2px; }
+
+        /* Copy Buttons */
+        .query-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 12px;
+        }
+
+        .copy-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            font-family: ui-monospace, "SF Mono", Consolas, monospace;
+            font-size: 0.85rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .copy-btn:hover { background-color: #e2e8f0; border-color: #94a3b8; }
+        .copy-btn::before { content: "📋"; margin-right: 8px; opacity: 0.8; }
+        .copy-btn strong { display: block; margin-bottom: 5px; color: var(--accent-color); font-size: 0.95rem; }
+        .copy-btn span.note { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.8rem; color: #64748b; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a252f;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+    </style>
+</head>
+<body>
+
+    <h1>🔍 OSINT & Master Database: Gerretson, Netwerken & Historiografie</h1>
+    
+    <div class="narrative-essay">
+        <h2 style="border:none; margin-bottom:1rem; color:var(--theme-ww1);">De Historische Breuklijnen van de Groep-Gerretson</h2>
+        <p>Open Source Intelligence (OSINT) en archiefonderzoek komen samen in het ontrafelen van de drie belangrijkste politieke en historische fases waarin de Groep-Gerretson rond prof. dr. Frederik Carel Gerretson actief was:</p>
+
+        <h3>1. De Eerste Wereldoorlog: Activisme en de Flamenpolitik</h3>
+        <p>Gerretsons voornaamste politieke drijfveer was zijn Groot-Nederlandse overtuiging (vereniging van Nederland en Vlaanderen), waarvoor hij strategisch samenwerkte met de Duitse bezetter in België.<br>
+        <strong>De Vlaamsche Stem (1915):</strong> Gerretson was het brein achter de heimelijke overname van dit van oorsprong anti-Duitse blad van gevluchte Vlamingen met behulp van Duitse fondsen ("pecunia non olet" - geld stinkt niet), in samenwerking met diplomaten zoals Fritz Wichert.</p>
+
+        <h3>2. Het Interbellum: Autoritaire pressiegroepen en Corporatisme</h3>
+        <p>Na de Eerste Wereldoorlog hielp Gerretson in november 1918 de revolutiepoging van Troelstra te smoren. Samen met jhr. Robert Frédéric Groeninx van Zoelen richtte hij in 1925 de <strong>Nationale Unie</strong> op, een antidemocratische denktank die streefde naar corporatisme en een autoritair koningschap. Hoewel hij sympathie koesterde voor Mussolini, was hij een fel tegenstander van Anton Mussert en de NSB.</p>
+
+        <h3>3. Jaren veertig en vijftig: Strijd tegen de dekolonisatie</h3>
+        <p>Vanuit de "Utrechtse School" (gefinancierd door de BPM/Shell) verzette Gerretson zich als fractiewoordvoerder binnen de CHU fel tegen de Indië-politiek van kabinetten-Drees, wat leidde tot extreme confrontaties en ideologische polemieken met historici als L. de Jong.</p>
+    </div>
+    
+    <div class="portal-grid">
+        <a href="https://www.google.com" target="_blank" class="portal-btn">🔍 Google (Dorks)</a>
+        <a href="https://www.delpher.nl/" target="_blank" class="portal-btn">📰 Delpher</a>
+        <a href="https://www.niod.nl/nl/archieven/zoeken" target="_blank" class="portal-btn">🏛️ NIOD</a>
+        <a href="https://www.nationaalarchief.nl/onderzoeken/zoeken" target="_blank" class="portal-btn">⚖️ Nat. Archief</a>
+        <a href="https://www.oorlogsbronnen.nl/zoeken" target="_blank" class="portal-btn">🔍 Oorlogsbronnen</a>
+        <a href="https://collections.arolsen-archives.org/nl/search" target="_blank" class="portal-btn">🗃️ Arolsen</a>
+    </div>
+
+    <h2>👥 Referentiekader: Personen, Aliassen & Rollen</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Persoon</th>
+                <th>Pseudoniemen / Aliassen</th>
+                <th>Rol / Functie</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Carel Gerretson</strong></td>
+                <td><span class="tag">Geerten Gossaert</span> <span class="tag">Erasmus</span> <span class="tag">Geheimrat</span></td>
+                <td>Historicus, dichter, politicus. Spil van de Groep-Gerretson.</td>
+            </tr>
+            <tr>
+                <td><strong>Derk Hoek</strong></td>
+                <td><span class="tag">Jan Jacob ten Hove</span> <span class="tag">Frank Gericke</span></td>
+                <td>Auteur, Groep-Gerretson. Financierde De Bezige Bij.</td>
+            </tr>
+            <tr>
+                <td><strong>Geert Lubberhuizen</strong></td>
+                <td><span class="tag">Bas Ruys</span> <span class="tag">Bas Busy</span> <span class="tag">The Busy Bee</span> <span class="tag">LiLaLub</span></td>
+                <td>Oprichter en directeur van De Bezige Bij.</td>
+            </tr>
+            <tr>
+                <td><strong>Fedde Weidema</strong></td>
+                <td><span class="tag">Fred Ingram</span> <span class="tag">Antipholus van Siracuse</span> <span class="tag">Radboud de Cadt</span></td>
+                <td>Illustrator/graficus van het verzet en bijenvignet.</td>
+            </tr>
+            <tr>
+                <td><strong>R.F. Groeninx van Zoelen</strong></td>
+                <td><span class="tag">Breyster</span></td>
+                <td>Oesterbaron, politicus (Nationale Unie). Inlichtingenkringen.</td>
+            </tr>
+            <tr>
+                <td><strong>Louis Einthoven</strong></td>
+                <td><em>Geen</em></td>
+                <td>Oprichter Nederlandsche Unie, later hoofd BNV/BVD.</td>
+            </tr>
+            <tr>
+                <td><strong>L. de Jong</strong></td>
+                <td><em>Geen</em></td>
+                <td>Directeur RIOD. Standaardwerk over de bezettingstijd.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-bottom: 2rem; color: #64748b; font-size: 0.95rem;"><em>Klik op een blok om de zoekreeks of Google Dork direct naar uw klembord te kopiëren.</em></p>
+
+    <div class="theme-card t-ww1">
+        <h2>I. Fase 1: Eerste Wereldoorlog & De Vlaamsche Stem (1915)</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'De Vlaamsche Stem\' AND \'Gerretson\'')">
+                <strong>"De Vlaamsche Stem" AND "Gerretson"</strong>
+                <span class="note">Onderzoek naar de heimelijke overname en Duitse financiering.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Fritz Wichert\' AND \'Den Haag\'')">
+                <strong>"Fritz Wichert" AND "Den Haag"</strong>
+                <span class="note">Duitse diplomatieke contacten en geldstromen.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'pecunia non olet\' AND \'Vlaamsche Stem\'')">
+                <strong>"pecunia non olet" AND "Vlaamsche Stem"</strong>
+                <span class="note">Briefwisseling over buitenlandse financiering.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('site:delpher.nl &quot;De Vlaamsche Stem&quot; 1915')">
+                <strong>site:delpher.nl "De Vlaamsche Stem" 1915</strong>
+                <span class="note">Google Dork voor Delpher-artikelen uit 1915.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-osint">
+        <h2>II. Fase 2: Interbellum, Nationale Unie & Google Dorks</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Groeninx van Zoelen\' AND \'Nationale Unie\'')">
+                <strong>"Groeninx van Zoelen" AND "Nationale Unie"</strong>
+                <span class="note">Fascistische en conservatieve denktank (NIOD/Delpher).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('site:niod.nl filetype:pdf &quot;Groep-Gerretson&quot;')">
+                <strong>site:niod.nl filetype:pdf "Groep-Gerretson"</strong>
+                <span class="note">Direct zoeken naar verborgen PDF-documenten op niod.nl.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('site:nationaalarchief.nl filetype:pdf &quot;Meerkamp van Embden&quot;')">
+                <strong>site:nationaalarchief.nl filetype:pdf "Meerkamp van Embden"</strong>
+                <span class="note">Vind inventarissen over Meerkamp van Embden.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-res">
+        <h2>III. Fase 3: Clandestiene Uitgeverijen & Aliassen</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Jan Jacob ten Hove\' AND \'Bezige Bij\'')">
+                <strong>"Jan Jacob ten Hove" AND "Bezige Bij"</strong>
+                <span class="note">Derk Hoek's pseudoniem en proza.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Geert Lubberhuizen\' AND (\'Bas Busy\' OR \'Bas Ruys\')')">
+                <strong>"Geert Lubberhuizen" AND ("Bas Busy" OR "Bas Ruys")</strong>
+                <span class="note">Oprichter De Bezige Bij en zijn aliassen.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Fedde Weidema\' AND (\'Radboud de Cadt\' OR \'Antipholus van Siracuse\' OR \'Fred Ingram\')')">
+                <strong>"Fedde Weidema" & Aliassen</strong>
+                <span class="note">Beeldmateriaal onder pseudoniem.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-his">
+        <h2>IV. Fase 4: Naoorlogse Zuivering & Historiografie</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Nederlandse Unie\' OR \'verantwoording\'')">
+                <strong>"Nederlandse Unie" OR "verantwoording"</strong>
+                <span class="note">Archief Einthoven (NA 2.21.231).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'L. de Jong\' AND (\'Heeft de afwezige ongelijk?\' OR \'Groene Amsterdammer\')')">
+                <strong>"L. de Jong" AND ("Heeft de afwezige ongelijk?")</strong>
+                <span class="note">Verweerschriften van Einthoven tegen het RIOD.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Pieter Geyl\' AND (\'Gerretson\' OR \'polemiek\')')">
+                <strong>"Pieter Geyl" AND ("Gerretson" OR "polemiek")</strong>
+                <span class="note">Academische strijd (Archief Baudet).</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">✔️ Gekopieerd naar klembord!</div>
+
+    <script>
+        function copyText(textToCopy) {
+            const cleanText = textToCopy.replace(/\\'/g, '"');
+            navigator.clipboard.writeText(cleanText).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Kopiëren mislukt: ', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
