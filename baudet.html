@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master OSINT & Historisch Zoekportaal: Van Verzet tot Hedendaags Rechts</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #2c3e50;
+            --accent-color: #1a252f;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            
+            --t-osint: #009432;
+            --t-ww1: #e17055;
+            --t-pol: #6c5ce7;
+            --t-res: #d63031;
+            --t-his: #fdcb6e;
+            --t-mod: #0984e3;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 { font-size: 2.5rem; color: var(--accent-color); border-bottom: 4px solid var(--t-osint); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.6rem; margin-top: 0; color: var(--accent-color); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;}
+        h3 { font-size: 1.15rem; color: #444; margin-bottom: 1rem; margin-top: 1.5rem;}
+
+        .narrative-essay {
+            background-color: #ffffff;
+            border-left: 6px solid var(--t-mod);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .portal-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .portal-btn {
+            flex: 1 1 calc(16.666% - 12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .portal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+
+        .theme-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .t-osint { border-top: 5px solid var(--t-osint); }
+        .t-ww1 { border-top: 5px solid var(--t-ww1); }
+        .t-pol { border-top: 5px solid var(--t-pol); }
+        .t-res { border-top: 5px solid var(--t-res); }
+        .t-his { border-top: 5px solid var(--t-his); }
+        .t-mod { border-top: 5px solid var(--t-mod); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 2rem; background: var(--card-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f8f9fa; font-weight: 700; color: var(--accent-color); }
+        tr:hover { background-color: #f1f5f9; }
+        .tag { background: #e2e8f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block; margin: 2px; }
+
+        .query-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 12px;
+        }
+
+        .copy-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            font-family: ui-monospace, "SF Mono", Consolas, monospace;
+            font-size: 0.85rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .copy-btn:hover { background-color: #e2e8f0; border-color: #94a3b8; }
+        .copy-btn::before { content: "📋"; margin-right: 8px; opacity: 0.8; }
+        .copy-btn strong { display: block; margin-bottom: 5px; color: var(--accent-color); font-size: 0.95rem; }
+        .copy-btn span.note { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.8rem; color: #64748b; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a252f;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+    </style>
+</head>
+<body>
+
+    <h1>🌐 Master OSINT & Historisch Zoekportaal (12 Modules)</h1>
+    
+    <div class="narrative-essay">
+        <h2 style="border:none; margin-bottom:1rem; color:var(--t-mod);">De Evolutie van het Conservatieve Landschap</h2>
+        <p>Dit interactieve portaal overbrugt historisch archiefonderzoek en open-source intelligence (OSINT). Het verbindt de vooroorlogse wortels van autoritair rechts (zoals het <em>Verbond voor Nationaal Herstel</em> en Horace van Gybland Oosterhoff) met de hedendaagse politieke erfenis en het publieke debat rond 'deftig rechts' en moderne populistische bewegingen.</p>
+    </div>
+    
+    <div class="portal-grid">
+        <a href="https://www.google.com" target="_blank" class="portal-btn">🔍 Google (Dorks)</a>
+        <a href="https://www.delpher.nl/" target="_blank" class="portal-btn">📰 Delpher</a>
+        <a href="https://www.niod.nl/nl/archieven/zoeken" target="_blank" class="portal-btn">🏛️ NIOD</a>
+        <a href="https://www.nationaalarchief.nl/onderzoeken/zoeken" target="_blank" class="portal-btn">⚖️ Nat. Archief</a>
+        <a href="https://www.oorlogsbronnen.nl/zoeken" target="_blank" class="portal-btn">🔍 Oorlogsbronnen</a>
+        <a href="https://collections.arolsen-archives.org/nl/search" target="_blank" class="portal-btn">🗃️ Arolsen</a>
+    </div>
+
+    <h2>👥 Referentiekader: Sleutelfiguren & Aliassen</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Persoon</th>
+                <th>Pseudoniemen / Aliassen</th>
+                <th>Rol / Functie</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Carel Gerretson</strong></td>
+                <td><span class="tag">Geerten Gossaert</span> <span class="tag">Erasmus</span> <span class="tag">Geheimrat</span></td>
+                <td>Historicus, dichter, politicus. Spil van de Groep-Gerretson.</td>
+            </tr>
+            <tr>
+                <td><strong>Derk Hoek</strong></td>
+                <td><span class="tag">Jan Jacob ten Hove</span> <span class="tag">Frank Gericke</span></td>
+                <td>Auteur, financier De Bezige Bij.</td>
+            </tr>
+            <tr>
+                <td><strong>Geert Lubberhuizen</strong></td>
+                <td><span class="tag">Bas Ruys</span> <span class="tag">Bas Busy</span> <span class="tag">LiLaLub</span></td>
+                <td>Oprichter en directeur van De Bezige Bij.</td>
+            </tr>
+            <tr>
+                <td><strong>Horace van Gybland Oosterhoff</strong></td>
+                <td><em>Geen</em></td>
+                <td>Drijvende kracht achter het Verbond voor Nationaal Herstel (VNH).</td>
+            </tr>
+            <tr>
+                <td><strong>Han Baudet (H. Baudet)</strong></td>
+                <td><span class="tag">HB</span></td>
+                <td>Historicus, verzetsman (De Koerier), Leidse Dispuut.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-bottom: 2rem; color: #64748b; font-size: 0.95rem;"><em>Klik op een blok om de zoekreeks direct naar uw klembord te kopiëren.</em></p>
+
+    <div class="theme-card t-mod">
+        <h2>XII. Hedendaagse Politieke Erfenis & VNH (Nieuw)</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Verbond voor Nationaal Herstel\' AND \'Thierry Baudet\'')">
+                <strong>"Verbond voor Nationaal Herstel" AND "Thierry Baudet"</strong>
+                <span class="note">Actuele politieke analyses en opiniestukken (o.a. De Kanttekening).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Verbond voor Nationaal Herstel\' AND \'Deftig rechts\'')">
+                <strong>"Verbond voor Nationaal Herstel" AND "Deftig rechts"</strong>
+                <span class="note">Publieke debat over de verschuiving in het conservatieve landschap.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Verbond voor Nationaal Herstel\' AND \'Gerretson\'')">
+                <strong>"Verbond voor Nationaal Herstel" AND "Gerretson"</strong>
+                <span class="note">Vooroorlogse wortels en connecties (Delpher & NIOD).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Horace van Gybland Oosterhoff\' AND \'Nationale Unie\'')">
+                <strong>"Horace van Gybland Oosterhoff" AND "Nationale Unie"</strong>
+                <span class="note">Oprichters en financiers in kaart brengen.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-his">
+        <h2>XI. Han Baudet & Academische Oorlogsgeschiedenis</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Baudet, H.\' AND \'Robert Fruin\'')">
+                <strong>"Baudet, H." AND "Robert Fruin"</strong>
+                <span class="note">Leids Historisch Dispuut tijdens de universiteitssluiting (NA 2.21.305).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Baudet, H.\' AND \'De Koerier\'')">
+                <strong>"Baudet, H." AND "De Koerier"</strong>
+                <span class="note">Betrokkenheid bij de illegale pers en oud-verzetslieden.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-osint">
+        <h2>I. OSINT & Geavanceerde Google Dorks</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('site:niod.nl filetype:pdf &quot;Groep-Gerretson&quot;')">
+                <strong>site:niod.nl filetype:pdf "Groep-Gerretson"</strong>
+                <span class="note">Zoek direct naar verborgen PDF-documenten op niod.nl.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('site:nationaalarchief.nl filetype:pdf &quot;Meerkamp van Embden&quot;')">
+                <strong>site:nationaalarchief.nl filetype:pdf "Meerkamp van Embden"</strong>
+                <span class="note">Vind archiefinventarissen over Meerkamp van Embden.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('intitle:&quot;index of&quot; &quot;De Bezige Bij&quot; clandestien')">
+                <strong>intitle:"index of" "De Bezige Bij" clandestien</strong>
+                <span class="note">Zoek naar open webmappen met onbeveiligde documenten.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-ww1">
+        <h2>II. Eerste Wereldoorlog & De Vlaamsche Stem (1915)</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'De Vlaamsche Stem\' AND \'Gerretson\'')">
+                <strong>"De Vlaamsche Stem" AND "Gerretson"</strong>
+                <span class="note">Onderzoek naar de heimelijke overname en Duitse financiering.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'pecunia non olet\' AND \'Vlaamsche Stem\'')">
+                <strong>"pecunia non olet" AND "Vlaamsche Stem"</strong>
+                <span class="note">Briefwisseling over buitenlandse financiering.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-pol">
+        <h2>III. Conservatieve Politiek & Groep-Gerretson</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Groep-Gerretson\' OR \'Groep Gerretson\'')">
+                <strong>"Groep-Gerretson" OR "Groep Gerretson"</strong>
+                <span class="note">Algemene literatuur en krantenartikelen (Delpher).</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Groeninx van Zoelen\' AND \'Nationale Unie\'')">
+                <strong>"Groeninx van Zoelen" AND "Nationale Unie"</strong>
+                <span class="note">Fascistische en conservatieve connecties.</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="theme-card t-res">
+        <h2>IV. Clandestiene Uitgeverijen (De Bezige Bij)</h2>
+        <div class="query-grid">
+            <button class="copy-btn" onclick="copyText('\'Jan Jacob ten Hove\' AND \'Bezige Bij\'')">
+                <strong>"Jan Jacob ten Hove" AND "Bezige Bij"</strong>
+                <span class="note">Derk Hoek's pseudoniem en proza.</span>
+            </button>
+            <button class="copy-btn" onclick="copyText('\'Geert Lubberhuizen\' AND (\'Bas Busy\' OR \'Bas Ruys\')')">
+                <strong>"Geert Lubberhuizen" AND ("Bas Busy" OR "Bas Ruys")</strong>
+                <span class="note">Oprichter De Bezige Bij en zijn aliassen.</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">✔️ Gekopieerd naar klembord!</div>
+
+    <script>
+        function copyText(textToCopy) {
+            const cleanText = textToCopy.replace(/\\'/g, '"');
+            navigator.clipboard.writeText(cleanText).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Kopiëren mislukt: ', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
