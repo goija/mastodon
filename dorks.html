@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historische Google Dorks & Zoekportaal</title>
+    <style>
+        :root {
+            --bg-color: #faf8f5;
+            --text-color: #2c2a29;
+            --accent-color: #8b4513; /* Warm historic brown accent */
+            --accent-hover: #5c2c16;
+            --card-bg: #ffffff;
+            --border-color: #e2dcd5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 1rem;
+        }
+
+        h1 { 
+            font-size: 2.2rem; 
+            color: #1a1918; 
+            margin: 0 0 0.5rem 0; 
+        }
+
+        .description {
+            font-size: 1.05rem;
+            color: #6b6560;
+        }
+
+        .category-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(44, 42, 41, 0.04);
+        }
+
+        h2 { 
+            font-size: 1.3rem; 
+            color: var(--accent-color); 
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 0.5rem; 
+        }
+
+        .dork-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 12px;
+        }
+
+        .dork-item {
+            display: flex;
+            background-color: #fcfbfa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .dork-item:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 2px 6px rgba(139, 69, 19, 0.1);
+        }
+
+        .query-code {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            font-family: ui-monospace, "SF Mono", Consolas, monospace;
+            font-size: 0.85rem;
+            color: #1a1918;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-group {
+            display: flex;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .action-btn {
+            background-color: #f4f0ec;
+            border: none;
+            padding: 0 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #5c5652;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2c2a29;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📜 Historische Google Dorks & Zoekportaal</h1>
+        <p class="description">Klik op <strong>Kopieer</strong> om de query direct naar je klembord te kopiëren, of op <strong>Google ↗</strong> om direct de zoekresultaten te openen.</p>
+    </header>
+
+    <!-- CATEGORIE I -->
+    <div class="category-box">
+        <h2>I. Groep-Gerretson, Pseudoniemen & Clandestiene Netwerken</h2>
+        <div class="dork-grid" id="cat1"></div>
+    </div>
+
+    <!-- CATEGORIE II -->
+    <div class="category-box">
+        <h2>II. Zeeuwse Adel & Familie Van Stavenisse (1325)</h2>
+        <div class="dork-grid" id="cat2"></div>
+    </div>
+
+    <!-- CATEGORIE III -->
+    <div class="category-box">
+        <h2>III. Kerken, Genealogie & Hedendaagse Erfenis</h2>
+        <div class="dork-grid" id="cat3"></div>
+    </div>
+
+    <!-- CATEGORIE IV -->
+    <div class="category-box">
+        <h2>IV. Krachtige Google Dorks (Directe Web-hacks)</h2>
+        <div class="dork-grid" id="cat4"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">✔️ Gekopieerd naar klembord!</div>
+
+    <script>
+        const queries = {
+            cat1: [
+                '"Jan Jacob ten Hove"',
+                '"Frank Gericke" AND "Derk Hoek"',
+                '"Het raadsel van Arend en Hendrik Goudt"',
+                '"Groeninx van Zoelen" AND "Nationale Unie"',
+                '"R.F. Groeninx van Zoelen" AND "Breyster"',
+                '"Groep-Gerretson" OR "Groep Gerretson"',
+                '"Geerten Gossaert" AND "Constantijn Huygens-prijs"',
+                '"L. de Jong" AND ("Heeft de afwezige ongelijk?" OR "Groene Amsterdammer")',
+                '"Pieter Geyl" AND ("Gerretson" OR "polemiek")',
+                '"Geert Lubberhuizen" AND ("Bas Busy" OR "Bas Ruys")',
+                '"Fedde Weidema" AND ("Radboud de Cadt" OR "Antipholus van Siracuse" OR "Fred Ingram")',
+                '"Anna de Waard" AND "Titia G. Timmenga"',
+                '"Minerva" AND "gelouterd herrijst"',
+                '"J. Kortenhorst" AND "ex-libris"',
+                '"Daniël Tulleken" AND "Minerva"'
+            ],
+            cat2: [
+                '"Boudewijn Boudewijnsz" AND "Stavenisse"',
+                '"Jonkvrouw Maria" AND "Stavenisse" AND "verkoop"',
+                '"Dankard heer Dankardsz" OR "Dankaart van Stavenisse"',
+                '"Jan Hendriksz" AND "rentmeester" AND "Bewesten Schelde"',
+                '"Willem III" AND "schuld" AND "Stavenisse"',
+                '"AGH 303" AND "Stavenisse"',
+                '"Regesta Hannonensia" AND "Stavenisse"'
+            ],
+            cat3: [
+                '"Wapenborden en Wapens op Tombes"',
+                '"Verbond voor Nationaal Herstel" AND "Thierry Baudet"',
+                '"Verbond voor Nationaal Herstel" AND "Deftig rechts"',
+                '"Horace van Gybland Oosterhoff" AND "Nationale Unie"'
+            ],
+            cat4: [
+                'site:niod.nl filetype:pdf "Groep-Gerretson"',
+                'site:nationaalarchief.nl filetype:pdf "Meerkamp van Embden"',
+                'intitle:"index of" "De Bezige Bij" clandestien',
+                'site:dbnl.org "Jan Jacob ten Hove" OR "Frank Gericke"'
+            ]
+        };
+
+        function renderQueries() {
+            for (const [catId, list] of Object.entries(queries)) {
+                const container = document.getElementById(catId);
+                list.forEach(q => {
+                    const item = document.createElement('div');
+                    item.className = 'dork-item';
+                    
+                    const code = document.createElement('div');
+                    code.className = 'query-code';
+                    code.innerText = q;
+
+                    const btnGroup = document.createElement('div');
+                    btnGroup.className = 'btn-group';
+
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'action-btn';
+                    copyBtn.innerText = 'Kopieer';
+                    copyBtn.onclick = () => copyText(q);
+
+                    const searchBtn = document.createElement('button');
+                    searchBtn.className = 'action-btn';
+                    searchBtn.innerText = 'Google ↗';
+                    searchBtn.onclick = () => openGoogle(q);
+
+                    btnGroup.appendChild(copyBtn);
+                    btnGroup.appendChild(searchBtn);
+
+                    item.appendChild(code);
+                    item.appendChild(btnGroup);
+                    container.appendChild(item);
+                });
+            }
+        }
+
+        function forceCopy(text, callback) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.top = "0";
+            textarea.style.left = "0";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful && callback) {
+                    callback();
+                } else {
+                    alert("Kopiëren mislukt door browserbeveiliging.");
+                }
+            } catch (err) {
+                alert("Browser ondersteunt geen automatische kopie.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function copyText(text) {
+            forceCopy(text, () => {
+                showToast('✔️ Query gekopieerd naar klembord!');
+            });
+        }
+
+        function openGoogle(text) {
+            forceCopy(text, () => {
+                showToast('✔️ Gekopieerd & geopend in Google!');
+                setTimeout(() => {
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
+                }, 250);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "toast show";
+            setTimeout(() => { 
+                toast.className = toast.className.replace("show", ""); 
+            }, 2000);
+        }
+
+        window.onload = renderQueries;
+    </script>
+</body>
+</html>
