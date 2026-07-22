@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startpagina Delpher Archieven & Historisch Onderzoek</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #333333;
+            --delpher-red: #d12027; /* Officiële Delpher kleur-stijl */
+            --delpher-hover: #a1171d;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid var(--delpher-red);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+
+        .search-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+            min-width: 300px;
+        }
+
+        #searchInput:focus {
+            border-color: var(--delpher-red);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--delpher-red);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background-color: var(--delpher-hover);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .category-title {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--delpher-red);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyword-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-chip {
+            background-color: #f1f3f5;
+            color: #495057;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .keyword-chip:hover {
+            background-color: #e2e6ea;
+            border-color: #ced4da;
+            color: var(--delpher-red);
+        }
+
+        /* Operators styling (boolean search) */
+        .operator-chip {
+            background-color: #e8f4fd;
+            color: #0d6efd;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .operator-chip:hover {
+            background-color: #cfe2ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 Startpagina Delpher Archieven</h1>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Bouw hier je zoekopdracht (bijv. Reimerswaal AND kapittelkerk)...">
+        <button class="btn" id="searchKranten">Zoek in Kranten</button>
+        <button class="btn" id="searchBoeken">Zoek in Boeken</button>
+    </div>
+
+    <div class="grid-layout">
+        <!-- Categorie 1 -->
+        <div class="category-card">
+            <h2 class="category-title">🌊 Eilandnederzettingen & Verdronken Land</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Reimerswaal</span>
+                <span class="keyword-chip">"Verdronken Land van Zuid-Beveland"</span>
+                <span class="keyword-chip">Stormvloed</span>
+                <span class="keyword-chip">Sint-Felixvloed</span>
+                <span class="keyword-chip">Allerheiligenvloed</span>
+                <span class="keyword-chip">Koudekerke</span>
+                <span class="keyword-chip">Emelisse</span>
+                <span class="keyword-chip">Stadsrechten</span>
+                <span class="keyword-chip">Kapittelkerk</span>
+                <span class="keyword-chip">Zoutwinning</span>
+                <span class="keyword-chip">Moernering</span>
+            </div>
+        </div>
+
+        <!-- Categorie 2 -->
+        <div class="category-card">
+            <h2 class="category-title">📜 Taalhistorie & Handschriften</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">Middelnederlands</span>
+                <span class="keyword-chip">Paleografie</span>
+                <span class="keyword-chip">Transcriptie</span>
+                <span class="keyword-chip">Diets</span>
+                <span class="keyword-chip">Vroegnieuwnederlands</span>
+                <span class="keyword-chip">Handschrift</span>
+                <span class="keyword-chip">Oorkonde</span>
+                <span class="keyword-chip">Perkament</span>
+                <span class="keyword-chip">Folio</span>
+                <span class="keyword-chip">Gotisch schrift</span>
+                <span class="keyword-chip">Brievenboek</span>
+            </div>
+        </div>
+
+        <!-- Categorie 3 -->
+        <div class="category-card">
+            <h2 class="category-title">⛪ Kerkelijk Erfgoed & Missie</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip">"Sint Odulphus"</span>
+                <span class="keyword-chip">Benedictijnen</span>
+                <span class="keyword-chip">Kapittel</span>
+                <span class="keyword-chip">Kanunnik</span>
+                <span class="keyword-chip">Relikwieën</span>
+                <span class="keyword-chip">Praalgraf</span>
+                <span class="keyword-chip">"Grote Kerk"</span>
+                <span class="keyword-chip">Hervorming</span>
+                <span class="keyword-chip">Doopboek</span>
+                <span class="keyword-chip">Trouwboek</span>
+            </div>
+        </div>
+
+        <!-- Categorie 4: Delpher Zoekoperatoren -->
+        <div class="category-card">
+            <h2 class="category-title">⚙️ Delpher Zoekoperatoren (Klik om toe te voegen)</h2>
+            <div class="keyword-grid">
+                <span class="keyword-chip operator-chip" title="Woord 1 én Woord 2 moeten voorkomen"> AND </span>
+                <span class="keyword-chip operator-chip" title="Woord 1 óf Woord 2 moet voorkomen"> OR </span>
+                <span class="keyword-chip operator-chip" title="Sluit een woord uit"> NOT </span>
+                <span class="keyword-chip operator-chip" title="Zoekt naar woorden die maximaal 5 woorden van elkaar af staan"> NEAR/5 </span>
+                <span class="keyword-chip operator-chip" title="Zoekt naar de exacte zin">""</span>
+                <span class="keyword-chip operator-chip" title="Wildcard (vervangt meerdere letters, bijv. klooster*)">*</span>
+                <span class="keyword-chip operator-chip" title="Wildcard (vervangt 1 letter, bijv. v?uw = vrouw of vouw)">?</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const chips = document.querySelectorAll('.keyword-chip');
+        const btnKranten = document.getElementById('searchKranten');
+        const btnBoeken = document.getElementById('searchBoeken');
+
+        // Functionaliteit om chips toe te voegen aan de zoekbalk
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const text = chip.textContent;
+                
+                // Als het een lege quote operator is, zet cursor er tussen
+                if (text === '""') {
+                    searchInput.value += ' ""';
+                    searchInput.focus();
+                    searchInput.setSelectionRange(searchInput.value.length - 1, searchInput.value.length - 1);
+                } else {
+                    // Voeg spatie toe als de balk niet leeg is
+                    if (searchInput.value.length > 0 && !searchInput.value.endsWith(' ')) {
+                        searchInput.value += ' ';
+                    }
+                    searchInput.value += text.trim() + ' ';
+                    searchInput.focus();
+                }
+            });
+        });
+
+        // Zoeken in Delpher Kranten
+        btnKranten.addEventListener('click', () => {
+            const query = encodeURIComponent(searchInput.value.trim());
+            if (query) {
+                const url = `https://www.delpher.nl/nl/kranten/results?query=${query}&coll=ddd`;
+                window.open(url, '_blank');
+            }
+        });
+
+        // Zoeken in Delpher Boeken
+        btnBoeken.addEventListener('click', () => {
+            const query = encodeURIComponent(searchInput.value.trim());
+            if (query) {
+                const url = `https://www.delpher.nl/nl/boeken/results?query=${query}&coll=boeken`;
+                window.open(url, '_blank');
+            }
+        });
+
+        // Enter-toets triggert standaard de krantenzoekopdracht
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                btnKranten.click();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
