@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoekmodel: Zeeuwse Streekdrachten & Confessionele Cultuur</title>
+    <title>Zoekmodel: Zeeuwse Streekdrachten & Confessionele Cultuur (incl. Fotoarchieven)</title>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -29,7 +29,7 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1150px;
             margin: 0 auto;
             background: var(--card);
             padding: 2.5rem;
@@ -207,7 +207,7 @@
 
 <div class="container">
     <h1>🔎 Zoekmodel: Zeeuwse Streekdrachten & Confessionele Cultuur</h1>
-    <p class="intro">Combineer systematisch termen uit de hoofdmatrix en verfijners om booleaanse zoekcombinaties (Dorks) te genereren voor DBNL, Google, museale catalogi en academische archieven.</p>
+    <p class="intro">Combineer systematisch termen uit de hoofdmatrix en verfijners om booleaanse zoekcombinaties (Dorks) te genereren voor DBNL, Google, Nederlandse én Europese fotoarchieven.</p>
 
     <div class="presets">
         <h2>⚡ Praktijkscenario's (Direct laden):</h2>
@@ -216,6 +216,8 @@
         <button class="preset-btn" onclick="applyScenario(3)">3. Status allerlaatste dagelijkse draagsters</button>
         <button class="preset-btn" onclick="applyScenario(4)">4. Sobere protestantse dracht Noord-Beveland</button>
         <button class="preset-btn" onclick="applyScenario(5)">5. Museale inventarisatie & erfgoedbeheer Zeeland</button>
+        <button class="preset-btn" style="background: #fed7aa; border-color: #fb923c;" onclick="applyScenario(6)">📷 6. Fotoarchieven: Mutsen-onderscheid (Europeana/ZB)</button>
+        <button class="preset-btn" style="background: #fed7aa; border-color: #fb923c;" onclick="applyScenario(7)">🖼️ 7. Beeldbanken: Ansichtkaarten & Glasnegatieven Zeeland</button>
     </div>
 
     <div class="grid">
@@ -228,6 +230,7 @@
                 <option value="religieus">3. Religieus (Confessioneel & verzuiling)</option>
                 <option value="materieel">4. Materieel (Kledingstukken, kant & meekrap)</option>
                 <option value="behoud">5. Behoud (Museologie, collecties & status)</option>
+                <option value="beeld">🖼️ 6. Beeldarchieven (Foto's, ansichten & beeldbanken)</option>
             </select>
             
             <label style="margin-top: 1rem;">Selecteer specifieke attributen (OR-cluster):</label>
@@ -259,21 +262,34 @@
                 <option value="">Geen status/tijdsfilter</option>
                 <option value='("laatste draagster" OR "dagelijks gebruik" OR "2025" OR status)'>📍 Heden: Dagelijks gebruik & laatste dragers</option>
                 <option value='("na WOII" OR "Amerikaanse cultuur" OR "Pieter Verhage" OR "1975" OR historisch)'>⏳ Historisch: Verdwijning & uitsterfmomenten</option>
+                <option value='("rond 1900" OR "glasnegatief" OR "19e eeuw" OR ansichtkaart)'>📷 Fotohistorisch: Einde 19e & begin 20e eeuw</option>
             </select>
         </div>
     </div>
 
     <div class="grid">
         <div class="box">
-            <h2>III. Specifieke Operatoren (Dorks)</h2>
-            <label for="siteFilter">Beperk tot specifieke databank of domein (site: / intitle:):</label>
+            <h2>III. Databanken & Archieven (site:)</h2>
+            <label for="siteFilter">Beperk tot specifieke (beeld)databank of domein:</label>
             <select id="siteFilter" onchange="generateDork()">
                 <option value="">🌐 Geen beperking (Hele Web / Algemene Catalogus)</option>
-                <option value="site:dbnl.org">📚 DBNL (Digitale Bibliotheek voor de Nederlandse Letteren)</option>
-                <option value="site:delpher.nl">📰 Delpher (Historische kranten, boeken & tijdschriften)</option>
-                <option value="site:zeeuwsmuseum.nl OR site:arnemuiden.org OR site:demeestoof.nl">🏛️ Direct in Zeeuwse Musea (Zeeuws Museum, Arnemuiden, Meestoof)</option>
-                <option value="intitle:&quot;meekrap&quot;">🔍 intitle:"meekrap" (Dwingt 'meekrap' in paginatitel)</option>
-                <option value="intitle:&quot;klederdracht&quot; OR intitle:&quot;streekdracht&quot;">🔍 intitle:"klederdracht" (Dwingt dracht in paginatitel)</option>
+                <optgroup label="Tekst & Literatuur">
+                    <option value="site:dbnl.org">📚 DBNL (Digitale Bibliotheek voor de Nederlandse Letteren)</option>
+                    <option value="site:delpher.nl">📰 Delpher (Historische kranten, boeken & tijdschriften)</option>
+                </optgroup>
+                <optgroup label="Fotoarchieven & Beeldbanken">
+                    <option value="site:europeana.eu OR site:geheugen.delpher.nl">🖼️ Europeana & Het Geheugen van Nederland</option>
+                    <option value="site:zeeuwsarchief.nl OR site:dezb.nl">📷 Zeeuws Archief & ZB (Beeldbanken Zeeland)</option>
+                    <option value="site:openluchtmuseum.nl OR site:rijksmuseum.nl">🏛️ Nederlands Openluchtmuseum & Rijksmuseum</option>
+                </optgroup>
+                <optgroup label="Lokale Musea Zeeland">
+                    <option value="site:zeeuwsmuseum.nl OR site:arnemuiden.org OR site:demeestoof.nl">🏛️ Direct in Zeeuwse Musea (Zeeuws Museum, Arnemuiden, Meestoof)</option>
+                </optgroup>
+                <optgroup label="Titel-sturing (intitle:)">
+                    <option value="intitle:&quot;meekrap&quot;">🔍 intitle:"meekrap" (Dwingt 'meekrap' in paginatitel)</option>
+                    <option value="intitle:&quot;klederdracht&quot; OR intitle:&quot;streekdracht&quot;">🔍 intitle:"klederdracht" (Dwingt dracht in paginatitel)</option>
+                    <option value="intitle:&quot;foto&quot; OR intitle:&quot;afbeelding&quot;">🔍 intitle:"foto" OR "afbeelding" (Focus op beeldmateriaal)</option>
+                </optgroup>
             </select>
         </div>
 
@@ -284,6 +300,7 @@
                 <option value="">Alle bestandstypen (Webpagina's & documenten)</option>
                 <option value="filetype:pdf">Alleen PDF (Wetenschappelijke artikelen, museumgidsen)</option>
                 <option value="filetype:doc OR filetype:docx">Word documenten (.doc / .docx)</option>
+                <option value="filetype:jpg OR filetype:png">Directe Afbeeldingen (.jpg / .png)</option>
             </select>
 
             <label style="margin-top: 1rem;" for="excludeInput">Uitsluiten (bijv. -wikipedia -pinterest):</label>
@@ -305,13 +322,14 @@
 </div>
 
 <script>
-    // Data uit de Hoofdmatrix
+    // Data uit de Hoofdmatrix (inclusief Fotoarchieven)
     const domainTags = {
         algemeen: ["Zeeuwse klederdracht", "streekdracht", "streekkleding Zeeland", "volkskunst", "klederdracht", "kostuumgeschiedenis"],
         geografisch: ["Walcheren", "Arnemuiden", "Zuid-Beveland", "Noord-Beveland", "Tholen", "Schouwen", "Duiveland", "Zeeuws-Vlaanderen", "Axel", "Cadzand"],
         religieus: ["confessioneel", "religieus", "katholiek", "protestants", "reformatie", "gereformeerd", "scheiding", "splitsing", "zuilen"],
         materieel: ["muts", "hul", "bovenmuts", "ondermuts", "kornet", "jak", "beuk", "doek", "rok", "schort", "sieraad", "oorijzer", "kloskant", "Beveren", "granaten", "meekrap"],
-        behoud: ["museum", "collectie", "beheer", "Stichting Streekdracht", "Meestoof", "Zeeuws Museum", "educatie", "reconstructie", "erfgoed"]
+        behoud: ["museum", "collectie", "beheer", "Stichting Streekdracht", "Meestoof", "Zeeuws Museum", "educatie", "reconstructie", "erfgoed"],
+        beeld: ["fotoarchief", "beeldbank", "ansichtkaart", "glasnegatief", "historische foto", "dorpsgezicht", "portret", "Europeana", "Zeeuws Archief", "Geheugen van Nederland"]
     };
 
     let activeTags = new Set();
@@ -447,6 +465,28 @@
             activeTags.add("collectie");
             activeTags.add("erfgoed");
             document.getElementById('customKeywords').value = '"Zeeuws Museum" OR "Museum Arnemuiden" OR "De Meestoof" OR "Erfgoed Goes" OR "Grutte Moole" OR Zierikzee';
+        } else if (number === 6) {
+            // Fotoarchieven: Mutsen-onderscheid
+            document.getElementById('domainSelect').value = 'beeld';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("historische foto");
+            activeTags.add("portret");
+            document.getElementById('locationFilter').value = '("Zuid-Beveland" OR Tholen)';
+            document.getElementById('confessionFilter').value = '(katholiek AND (trapezeformig OR kloskant OR "echt kant" OR "oorijzer" OR "ijzeren beugel" OR versierd OR luxer))';
+            document.getElementById('siteFilter').value = 'site:europeana.eu OR site:geheugen.delpher.nl';
+            document.getElementById('excludeInput').value = '-pinterest -bol.com';
+        } else if (number === 7) {
+            // Beeldbanken: Ansichtkaarten & Glasnegatieven Zeeland
+            document.getElementById('domainSelect').value = 'beeld';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("ansichtkaart");
+            activeTags.add("glasnegatief");
+            document.getElementById('statusFilter').value = '("rond 1900" OR "glasnegatief" OR "19e eeuw" OR ansichtkaart)';
+            document.getElementById('siteFilter').value = 'site:zeeuwsarchief.nl OR site:dezb.nl';
+            document.getElementById('customKeywords').value = 'klederdracht OR streekdracht';
+            document.getElementById('excludeInput').value = '-pinterest';
         }
 
         // Visuele tags verversen
