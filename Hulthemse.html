@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academisch Zoekmodel: Middelnederlands & Middeleeuws Nederland</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #1d4ed8;
+            --accent: #b45309;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+        }
+        h1 { color: var(--primary); margin-top: 0; font-size: 1.8rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+        h2 { font-size: 1.1rem; color: var(--accent); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+        .box { background: #f1f5f9; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); }
+        label { font-weight: 600; font-size: 0.875rem; display: block; margin-bottom: 0.5rem; color: #334155; }
+        select, input[type="text"] {
+            width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box;
+            background: white;
+        }
+        select:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15); }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; max-height: 140px; overflow-y: auto; padding: 0.25rem; }
+        .tag {
+            background: white; border: 1px solid var(--border); padding: 0.35rem 0.7rem; border-radius: 20px; font-size: 0.8rem;
+            cursor: pointer; transition: all 0.15s; user-select: none;
+        }
+        .tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .output-section { margin-top: 2rem; border-top: 2px solid var(--border); padding-top: 1.5rem; }
+        .dork-box {
+            background: #0f172a; color: #38bdf8; font-family: "Fira Code", monospace; padding: 1.25rem; border-radius: 8px;
+            font-size: 0.95rem; word-break: break-all; min-height: 3.5rem; display: flex; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        button {
+            flex: 1; min-width: 180px; padding: 0.8rem; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #92400e; }
+        .presets { margin-top: 1.5rem; background: #fffbeb; border: 1px solid #fde68a; padding: 1rem; border-radius: 8px; }
+        .preset-btn { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; padding: 0.5rem 0.8rem; font-size: 0.8rem; margin: 0.25rem; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .preset-btn:hover { background: #fde68a; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏛️ Geïntegreerd Zoekmodel: Middelnederlands & Middeleeuwen</h1>
+    <p>Combineer thematische onderzoekstermen met de officiële Middelnederlandse lexica, tekstcorpora, charterbanken en handschriftencatalogi.</p>
+
+    <div class="grid">
+        <div class="box">
+            <label>1. Thematisch of Linguïstisch Domein:</label>
+            <select id="domainSelect" onchange="loadTags()">
+                <option value="teksten">📜 Literatuur, Handschriften & Sprooksprekers</option>
+                <option value="taal">🗣️ Taalkunde, Lexica, Dialecten & Klankatlas</option>
+                <option value="archief">💰 Charters, Rekeningen & Stadsbestuur</option>
+                <option value="theater">🏛️ Theater, Abele Spelen & Bisschopspel</option>
+                <option value="ecologie">🌊 Stormvloeden, Waterwolf & Klimaat</option>
+            </select>
+            <div id="tagContainer" class="checkbox-group"></div>
+            <input type="text" id="customKeywords" placeholder="Extra termen (bijv. 'Corpus Gysseling' of 'Willem van Hildegaersberch')..." style="margin-top: 0.75rem;" oninput="generate()">
+        </div>
+
+        <div class="box">
+            <label>2. Geografische & Dialectologische Filter:</label>
+            <select id="geoSelect" onchange="generate()">
+                <option value="">Geen specifieke regio-filter</option>
+                <option value='("Vlaanderen" OR "Vlaams" OR "Brugge" OR "Gent" OR "Zuid-Vlaams")'>Vlaanderen & Zuid-Vlaamse dialecten</option>
+                <option value='("Brabant" OR "Brabants" OR "Brussel" OR "Antwerpen" OR "Leuven")'>Hertogdom Brabant & Brabantse dialecten</option>
+                <option value='("Holland" OR "Hollands" OR "Haags" OR "Binnenhof" OR "Dordrecht")'>Graafschap Holland & Zeeuws-Hollandse kanselarij</option>
+                <option value='("Deventer" OR "Overijssel" OR "Kampen" OR "Zwolle" OR "Oosters")'>Oost-Nederland, Hanzesteden & IJsselland</option>
+            </select>
+
+            <label style="margin-top: 1rem;">3. Chronologische Afbakening:</label>
+            <select id="periodSelect" onchange="generate()">
+                <option value="">Brede Late Middeleeuwen (1200–1500)</option>
+                <option value='("vroegmiddelnederlands" OR "voor 1300" OR "13e eeuw" OR "dertiende eeuw")'>Vroegmiddelnederlands (tot ca. 1300)</option>
+                <option value='("14e eeuw" OR "veertiende eeuw" OR "1300".."1399" OR "CRM14" OR "C14NL")'>14e Eeuw & Klankatlas-periode (1300–1399)</option>
+                <option value='("15e eeuw" OR "vijftiende eeuw" OR "1400".."1500" OR "incunabelen")'>15e Eeuw & Vroege Drukken (1400–1500)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid" style="margin-top: 1.5rem;">
+        <div class="box">
+            <label>4. Middelnederlandse Databank, Corpus of Portaal (site:):</label>
+            <select id="siteSelect" onchange="generate()">
+                <option value="">🌐 Geen beperking (Zoek over het hele web)</option>
+                <optgroup label="Lexica, Woordenboeken & Taaldatabanken">
+                    <option value="(site:ivdnt.org OR site:gtb.ivdnt.org OR site:nederlab.nl)">📚 INT / Gtb / Nederlab (MNW, VMN, WNT & Corpora)</option>
+                    <option value="(site:ctb.kantl.be OR site:corpusfinder.ugent.be)">🗣️ KANTL / UGent (Klankatlas 14e eeuw, C14NL, Gysseling)</option>
+                </optgroup>
+                <optgroup label="Literatuurgeschiedenis & Tekstedities">
+                    <option value="(site:dbnl.org OR site:literatuurgeschiedenis.org)">📖 DBNL & Literatuurgeschiedenis.org (Edities & Secundair)</option>
+                    <option value="(site:bntl.nl OR site:arlima.net)">📑 BNTL & ARLIMA (Literatuurwetenschappelijke bibliografieën)</option>
+                </optgroup>
+                <optgroup label="Handschriften, Codicologie & Paleografie">
+                    <option value="(site:mmdc.nl OR site:medievalmanuscripts.nl OR site:narrative-sources.be)">📜 MMDC & Narrative Sources (Middeleeuwse handschriften in NL/BE)</option>
+                    <option value="(site:kbr.be OR site:kb.nl OR site:galerij.kb.nl)">🏛️ KB Den Haag & KBR Brussel (Hulthemse & Haagse codices)</option>
+                </optgroup>
+                <optgroup label="Archieven, Oorkonden & Historische Bronnen">
+                    <option value="(site:resources.huygens.knaw.nl OR site:diplomata-belgica.be OR site:telma-chartes.irht.cnrs.fr)">⚖️ Huygens ING & Diplomata Belgica (Charters & Oorkondenboeken)</option>
+                    <option value="(site:delpher.nl OR site:archieven.nl OR site:openarch.nl)">📰 Delpher & Archieven.nl (Historische drukken & stadsarchieven)</option>
+                </optgroup>
+                <optgroup label="Academische Repositories">
+                    <option value="(site:uva.nl OR site:ugent.be OR site:ru.nl OR site:kuleuven.be OR site:uu.nl)">🎓 Universitaire Repositories (UvA, UGent, Radboud, KU Leuven, UU)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="box">
+            <label>5. Bestandstype & Dataformaat:</label>
+            <select id="fileSelect" onchange="generate()">
+                <option value="">Alle bestandstypen</option>
+                <option value="filetype:pdf">Alleen PDF-documenten (Wetenschappelijke artikelen & scans)</option>
+                <option value="filetype:xml OR filetype:txt">XML / TXT (TEI-transcripties & taalkundige datasets)</option>
+                <option value="filetype:doc OR filetype:docx">Word-documenten (.doc/.docx)</option>
+            </select>
+            <input type="text" id="excludeInput" placeholder="Uitsluiten (bijv. -wikipedia -scholieren.com -encyclo)..." style="margin-top: 0.75rem;" oninput="generate()">
+        </div>
+    </div>
+
+    <div class="presets">
+        <label style="color: #92400e; margin-bottom: 0.5rem;">⚡ Snelle Presets voor Gespecialiseerd Onderzoek:</label><br>
+        <button class="preset-btn" onclick="applyPreset('gysseling')">Corpus Gysseling & Ambtelijk 13e Eeuw</button>
+        <button class="preset-btn" onclick="applyPreset('handschriften')">Handschriften (Hulthem / Haags / MMDC)</button>
+        <button class="preset-btn" onclick="applyPreset('charters')">Huygens ING & Diplomata Belgica (Charters)</button>
+        <button class="preset-btn" onclick="applyPreset('lexica')">Woordenboekartikelen (MNW / VMN / INT)</button>
+    </div>
+
+    <div class="output-section">
+        <label>Gegenereerde Booleaanse Zoekopdracht (Google Dork):</label>
+        <div class="dork-box" id="dorkOutput">Selecteer parameters...</div>
+        
+        <div class="btn-group">
+            <button class="btn-primary" onclick="searchGoogle()">🔎 Zoek in Google</button>
+            <button class="btn-accent" onclick="searchScholar()">🎓 Zoek in Google Scholar</button>
+            <button class="btn-secondary" onclick="copyDork()">📋 Kopiëer Zoekstring</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const domainTags = {
+        teksten: ["Willem van Hildegaersberch", "Hulthemse handschrift", "Haags handschrift", "Sprooksprekers", "Moraaldichtkunst", "Jacob van Maerlant", "Reinaert", "Beatrijs", "KB 128 E 6", "Codex 195", "Paleografie"],
+        taal: ["Corpus Gysseling", "Middelnederlandsch Woordenboek", "Vroegmiddelnederlands", "Grafeem", "Klankatlas", "C14NL", "CRM14", "Toponymisch Woordenboek", "Kanselarijtaal", "Diachronie"],
+        archief: ["Cameraarsrekeningen", "Stadsrekeningen", "Oorkondenboek", "Charters", "Diplomata", "Cartularium", "Hanzesteden", "Municipal accounts", "Schepenbank", "Stadsarchief"],
+        theater: ["Bisschopspel", "Jongensbisschop", "Scolaribus ad ludum eorum", "Abele Spelen", "Esmoreit", "Lanseloet van Denemerken", "Gloriant", "Sotternieën", "Rederijkerskamers"],
+        ecologie: ["Stormvloed 1374", "Stormvloed 1375", "Braakman", "Dijkdoorbraak", "Waterwolf", "Landschapsgeschiedenis", "Biervliet", "Verdronken land", "Kustgeschiedenis"]
+    };
+
+    let activeTags = new Set();
+
+    function loadTags() {
+        const domain = document.getElementById('domainSelect').value;
+        const container = document.getElementById('tagContainer');
+        container.innerHTML = '';
+        activeTags.clear();
+
+        domainTags[domain].forEach((tag, idx) => {
+            const el = document.createElement('div');
+            el.className = 'tag' + (idx < 3 ? ' active' : '');
+            el.textContent = tag;
+            if (idx < 3) activeTags.add(tag);
+            el.onclick = () => {
+                if (activeTags.has(tag)) {
+                    activeTags.delete(tag);
+                    el.classList.remove('active');
+                } else {
+                    activeTags.add(tag);
+                    el.classList.add('active');
+                }
+                generate();
+            };
+            container.appendChild(el);
+        });
+        generate();
+    }
+
+    function generate() {
+        let parts = [];
+        
+        let themeTerms = Array.from(activeTags).map(t => t.includes(' ') ? `"${t}"` : t);
+        const custom = document.getElementById('customKeywords').value.trim();
+        if (custom) themeTerms.push(...custom.split(' ').filter(x => x).map(t => t.includes(' ') ? `"${t}"` : t));
+        
+        if (themeTerms.length > 1) {
+            parts.push(`(${themeTerms.join(' OR ')})`);
+        } else if (themeTerms.length === 1) {
+            parts.push(themeTerms[0]);
+        }
+
+        const geo = document.getElementById('geoSelect').value;
+        if (geo) parts.push(geo);
+
+        const period = document.getElementById('periodSelect').value;
+        if (period) parts.push(period);
+
+        const site = document.getElementById('siteSelect').value;
+        if (site) parts.push(site);
+
+        const filetype = document.getElementById('fileSelect').value;
+        if (filetype) parts.push(filetype.includes('OR') ? `(${filetype})` : filetype);
+
+        const exclude = document.getElementById('excludeInput').value.trim();
+        if (exclude) {
+            exclude.split(' ').forEach(w => {
+                if (w && !w.startsWith('-')) parts.push(`-${w}`);
+                else if (w) parts.push(w);
+            });
+        }
+
+        const query = parts.join(' ');
+        document.getElementById('dorkOutput').textContent = query || 'Selecteer minstens één term...';
+        return query;
+    }
+
+    function applyPreset(type) {
+        document.getElementById('customKeywords').value = '';
+        document.getElementById('excludeInput').value = '-wikipedia -scholieren.com';
+        document.getElementById('fileSelect').value = '';
+        document.getElementById('geoSelect').value = '';
+        document.getElementById('periodSelect').value = '';
+        
+        if (type === 'gysseling') {
+            document.getElementById('domainSelect').value = 'taal';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("Corpus Gysseling");
+            activeTags.add("Vroegmiddelnederlands");
+            activeTags.add("Kanselarijtaal");
+            document.getElementById('siteSelect').value = '(site:ivdnt.org OR site:gtb.ivdnt.org OR site:nederlab.nl)';
+        } else if (type === 'handschriften') {
+            document.getElementById('domainSelect').value = 'teksten';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("Hulthemse handschrift");
+            activeTags.add("Haags handschrift");
+            activeTags.add("Codex 195");
+            document.getElementById('siteSelect').value = '(site:mmdc.nl OR site:medievalmanuscripts.nl OR site:narrative-sources.be)';
+        } else if (type === 'charters') {
+            document.getElementById('domainSelect').value = 'archief';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("Oorkondenboek");
+            activeTags.add("Charters");
+            activeTags.add("Cameraarsrekeningen");
+            document.getElementById('siteSelect').value = '(site:resources.huygens.knaw.nl OR site:diplomata-belgica.be OR site:telma-chartes.irht.cnrs.fr)';
+        } else if (type === 'lexica') {
+            document.getElementById('domainSelect').value = 'taal';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("Middelnederlandsch Woordenboek");
+            activeTags.add("Grafeem");
+            document.getElementById('siteSelect').value = '(site:ivdnt.org OR site:gtb.ivdnt.org OR site:nederlab.nl)';
+        }
+        
+        // Refresh UI tags
+        document.querySelectorAll('.tag').forEach(el => {
+            if (activeTags.has(el.textContent)) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+        generate();
+    }
+
+    function searchGoogle() {
+        const q = generate();
+        if (q && q !== 'Selecteer minstens één term...') {
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+        }
+    }
+
+    function searchScholar() {
+        const q = generate();
+        if (q && q !== 'Selecteer minstens één term...') {
+            window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(q)}`, '_blank');
+        }
+    }
+
+    function copyDork() {
+        const q = generate();
+        navigator.clipboard.writeText(q);
+        alert('Zoekstring gekopieerd naar klembord!');
+    }
+
+    loadTags();
+</script>
+</body>
+</html>
