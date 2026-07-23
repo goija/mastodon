@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archief & Netwerk Onderzoekssuite</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --border-color: #334155;
+            --hover-color: #0284c7;
+            --success-color: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Controls */
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #0b1329;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        button.action-btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        button.action-btn:hover {
+            background-color: var(--hover-color);
+            color: #fff;
+        }
+
+        /* Database links */
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .db-card {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .db-card a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .db-card a:hover {
+            text-decoration: underline;
+        }
+
+        /* Network Mapping */
+        .network-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .network-table th, .network-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .network-table th {
+            background: #0f172a;
+        }
+
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        .dork-output {
+            font-family: monospace;
+            background: #000;
+            padding: 10px;
+            border-left: 4px solid var(--accent-color);
+            word-break: break-all;
+            margin: 10px 0;
+            user-select: all;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel full-width">
+        <h1>🔍 Archief- & Netwerkonderzoek Suite</h1>
+        <p>Een digitaal instrumentarium gebaseerd op het onderzoeksmodel voor historisch en hedendaags archief- en netwerkonderzoek (WOI, WOII, Clandestiene pers & Shaduwnetwerken).</p>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('dork-generator')">🛠️ OSINT Dork Generator</button>
+            <button class="tab-btn" onclick="openTab('databases')">📚 Archief Databases</button>
+            <button class="tab-btn" onclick="openTab('network-mapper')">🕸️ Netwerk Mapper</button>
+            <button class="tab-btn" onclick="openTab('checklist')">✅ Master-Checklist</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- TAB 1: DORK GENERATOR -->
+        <div id="dork-generator" class="tab-content active full-width">
+            <div class="panel">
+                <h2>OSINT & Booleaanse Zoekmachine</h2>
+                <p>Genereer direct specifieke zoekreeksen om verborgen archiefstukken, PDF's en open server-mappen te ondervragen.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label for="dork-target">Doelwit / Zoekterm 1 (bijv. Persoon of Organisatie):</label>
+                        <input type="text" id="dork-target" placeholder="bijv. Groep-Gerretson of Derk Hoek">
+
+                        <label for="dork-co">Koppel met Zoekterm 2 (bijv. Alias, Financier, Tijdschrift):</label>
+                        <input type="text" id="dork-co" placeholder="bijv. Nationale Unie of Breyster">
+
+                        <label for="dork-domain">Specifiek Domein / Bron:</label>
+                        <select id="dork-domain">
+                            <option value="">-- Volledige Web (Geen specifiek domein) --</option>
+                            <option value="site:niod.nl">NIOD (niod.nl)</option>
+                            <option value="site:nationaalarchief.nl">Nationaal Archief (nationaalarchief.nl)</option>
+                            <option value="site:delpher.nl">Delpher (delpher.nl)</option>
+                            <option value="site:dbnl.org">DBNL (dbnl.org)</option>
+                            <option value="site:oorlogsbronnen.nl">Oorlogsbronnen (oorlogsbronnen.nl)</option>
+                            <option value="site:repository.ubn.ru.nl">Radboud Repository</option>
+                        </select>
+
+                        <label for="dork-type">Specifieke OSINT Filter:</label>
+                        <select id="dork-type">
+                            <option value="standard">Standaard Booleaanse Koppeling</option>
+                            <option value="pdf">Alleen Documenten (filetype:pdf)</option>
+                            <option value="doc">Alleen Tekstbestanden (filetype:doc OR filetype:docx)</option>
+                            <option value="indexof">Open Server Mappen (intitle:"index of")</option>
+                        </select>
+
+                        <button class="action-btn" onclick="generateDork()">Genereer & Open Zoekopdracht</button>
+                    </div>
+
+                    <div>
+                        <h3>Gegenereerde Google Dork:</h3>
+                        <p>Kopieer onderstaande string of klik op de knop om direct te zoeken:</p>
+                        <div id="dork-result" class="dork-output">Vul links de gegevens in om een dork te bouwen...</div>
+                        <button class="action-btn" id="search-btn" style="background:#10b981; display:none;" onclick="executeSearch()">🚀 Lanceer Zoekopdracht in Google</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DATABASES -->
+        <div id="databases" class="tab-content full-width">
+            <div class="panel">
+                <h2>De Basislaag: Directe Portalen</h2>
+                <div class="db-grid">
+                    <div class="db-card">
+                        <h3>🇳🇱 CABR (Oorlog voor de Rechter)</h3>
+                        <p>Centraal Archief Bijzondere Rechtspleging. Voor naoorlogse collaboratie en persoonsdossiers.</p>
+                        <a href="https://oorlogvoorderechter.nl" target="_blank">Open CABR Zoekportaal &rarr;</a>
+                    </div>
+                    <div class="db-card">
+                        <h3>🇳🇱 Oorlogsbronnen.nl</h3>
+                        <p>Nationale aggregator van collecties over de Tweede Wereldoorlog vanuit musea en archieven.</p>
+                        <a href="https://www.oorlogsbronnen.nl" target="_blank">Open Oorlogsbronnen &rarr;</a>
+                    </div>
+                    <div class="db-card">
+                        <h3>🇳🇱 NIOD Collecties</h3>
+                        <p>Bezettingsdocumentatie, ondergrondse pers (zoals de vroege Bezige Bij) en verzetsgroepen.</p>
+                        <a href="https://www.niod.nl/zoeken" target="_blank">Open NIOD Catalogus &rarr;</a>
+                    </div>
+                    <div class="db-card">
+                        <h3>🇳🇱 Delpher (KB)</h3>
+                        <p>Historische kranten en tijdschriften (17e tot eind 20e eeuw). Cruciaal voor publieke debatten.</p>
+                        <a href="https://www.delpher.nl" target="_blank">Open Delpher &rarr;</a>
+                    </div>
+                    <div class="db-card">
+                        <h3>🌍 Arolsen Archives</h3>
+                        <p>Internationaal archief over nazivervolging, dwangarbeid en Displaced Persons (17.5M dossiers).</p>
+                        <a href="https://arolsen-archives.org/en/search-explore/search-online-archive/" target="_blank">Open Arolsen &rarr;</a>
+                    </div>
+                    <div class="db-card">
+                        <h3>🌍 Yad Vashem & USHMM</h3>
+                        <p>Internationale slachtofferregisters, deportatielijsten en historische netwerkdocumentatie.</p>
+                        <a href="https://www.yadvashem.org/archive.html" target="_blank">Open Yad Vashem &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: NETWORK MAPPER -->
+        <div id="network-mapper" class="tab-content full-width">
+            <div class="panel">
+                <h2>🕸️ Netwerk- en Ideologische Reconstructie</h2>
+                <p>Koppel de 4 lagen van het onderzoeksvariabelen-model aan elkaar: <i>Financier &rarr; Ideologische Bastion &rarr; Media &rarr; Politiek/Erfenis</i>.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label>1. Persoon / Financier:</label>
+                        <input type="text" id="net-person" placeholder="bijv. BPM / Gerretson">
+                    </div>
+                    <div>
+                        <label>2. Denktank / Sociëteit:</label>
+                        <input type="text" id="net-org" placeholder="bijv. Nationale Unie">
+                    </div>
+                    <div>
+                        <label>3. Persorgaan / Alias:</label>
+                        <input type="text" id="net-media" placeholder="bijv. De Vlaamsche Stem">
+                    </div>
+                    <div>
+                        <label>4. Hedendaagse Erfenis / Sfeer:</label>
+                        <input type="text" id="net-legacy" placeholder="bijv. Koloniaal-conservatisme">
+                    </div>
+                </div>
+                <button class="action-btn" onclick="addNetworkNode()">Voeg Knoop toe aan Relatiematrix</button>
+
+                <table class="network-table">
+                    <thead>
+                        <tr>
+                            <th>Persoon / Zakelijke Bron</th>
+                            <th>Ideologisch Bastion</th>
+                            <th>Media & Uitgeversketen</th>
+                            <th>Politieke Invloed / Erfenis</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody id="network-body">
+                        <!-- Wordt gevuld via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: CHECKLIST -->
+        <div id="checklist" class="tab-content full-width">
+            <div class="panel">
+                <h2>✅ Master-Checklist voor Uitvoering</h2>
+                <p>Vink systematisch de onderzoeksfases af voor een sluitende methodiek.</p>
+                
+                <div id="checklist-container">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1" onclick="saveChecklist()">
+                        <label for="check1"><b>Fase 1: Biografische & Juridische Validatie:</b> Controleer de hoofdnaam en eventuele aliassen in Oorlogsbronnen, de NIOD-catalogus en de CABR-index.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2" onclick="saveChecklist()">
+                        <label for="check2"><b>Fase 2: Het Publieke Spoor:</b> Zoek in Delpher naar de vroegste en laatste vermeldingen in kranten en tijdschriften. Noteer co-auteurs en bestuursleden.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3" onclick="saveChecklist()">
+                        <label for="check3"><b>Fase 3: De Diepte in (OSINT):</b> Gebruik de Dork Generator (filetype:pdf, intitle:"index of") om beleidsstukken, interne correspondentie of academische evaluaties op te sporen.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4" onclick="saveChecklist()">
+                        <label for="check4"><b>Fase 4: Netwerk-relaties en Kapitaalstromen:</b> Koppel in de Netwerk Mapper de geldstromen (KVK/Bedrijfsarchieven als Shell/BPM) aan ideologische besturen en persorganen.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check5" onclick="saveChecklist()">
+                        <label for="check5"><b>Fase 5: Hedendaagse Erfenis & Genealogie:</b> Controleer stichtingsregisters (ANBI) en het CBG Centrum voor familiegeschiedenis voor patriciërsnetwerken en hedendaagse ideologische continuïteit.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Dork Generator Logic
+        let currentDork = "";
+
+        function generateDork() {
+            const target = document.getElementById('dork-target').value.trim();
+            const co = document.getElementById('dork-co').value.trim();
+            const domain = document.getElementById('dork-domain').value;
+            const type = document.getElementById('dork-type').value;
+
+            if (!target) {
+                alert("Vul tenminste Doelwit / Zoekterm 1 in.");
+                return;
+            }
+
+            let dorkParts = [];
+
+            // Domain part
+            if (domain) {
+                dorkParts.push(domain);
+            }
+
+            // Type specific operators
+            if (type === 'pdf') {
+                dorkParts.push('filetype:pdf');
+            } else if (type === 'doc') {
+                dorkParts.push('(filetype:doc OR filetype:docx)');
+            } else if (type === 'indexof') {
+                dorkParts.push('intitle:"index of"');
+            }
+
+            // Target and Co-target logical formatting
+            let queryPart = `"${target}"`;
+            if (co) {
+                queryPart += ` AND "${co}"`;
+            }
+
+            dorkParts.push(queryPart);
+
+            currentDork = dorkParts.join(' ');
+            
+            document.getElementById('dork-result').innerText = currentDork;
+            document.getElementById('search-btn').style.display = 'inline-block';
+        }
+
+        function executeSearch() {
+            if (currentDork) {
+                const url = `https://www.google.com/search?q=${encodeURIComponent(currentDork)}`;
+                window.open(url, '_blank');
+            }
+        }
+
+        // Network Mapper Logic
+        let networkData = [];
+
+        function addNetworkNode() {
+            const person = document.getElementById('net-person').value.trim() || 'Onbekend';
+            const org = document.getElementById('net-org').value.trim() || 'Onbekend';
+            const media = document.getElementById('net-media').value.trim() || 'Onbekend';
+            const legacy = document.getElementById('net-legacy').value.trim() || 'Onbekend';
+
+            networkData.push({ person, org, media, legacy });
+            renderNetwork();
+
+            // Reset inputs
+            document.getElementById('net-person').value = '';
+            document.getElementById('net-org').value = '';
+            document.getElementById('net-media').value = '';
+            document.getElementById('net-legacy').value = '';
+        }
+
+        function removeNetworkNode(index) {
+            networkData.splice(index, 1);
+            renderNetwork();
+        }
+
+        function renderNetwork() {
+            const tbody = document.getElementById('network-body');
+            tbody.innerHTML = '';
+
+            networkData.forEach((node, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${node.person}</strong></td>
+                    <td>${node.org}</td>
+                    <td><i>${node.media}</i></td>
+                    <td>${node.legacy}</td>
+                    <td><button onclick="removeNetworkNode(${index})" style="background:#ef4444; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">X</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initial default network example
+        networkData.push({
+            person: "F.C. Gerretson / BPM (Shell)",
+            org: "Nationale Unie",
+            media: "De Vlaamsche Stem (1915)",
+            legacy: "Anti-parlementair / Koloniaal-conservatisme"
+        });
+        renderNetwork();
+
+        // Checklist persistence in local storage
+        function saveChecklist() {
+            for (let i = 1; i <= 5; i++) {
+                localStorage.setItem('check' + i, document.getElementById('check' + i).checked);
+            }
+        }
+
+        function loadChecklist() {
+            for (let i = 1; i <= 5; i++) {
+                const checked = localStorage.getItem('check' + i) === 'true';
+                document.getElementById('check' + i).checked = checked;
+            }
+        }
+
+        // Load checklist on start
+        window.onload = loadChecklist;
+    </script>
+</body>
+</html>
