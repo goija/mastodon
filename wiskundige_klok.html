@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Wiskundige 181-Klok</title>
+    
+    <!-- KaTeX CDN voor razendsnelle wiskundige rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --accent-blue: #38bdf8;
+            --accent-gold: #facc15;
+            --accent-pink: #f472b6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            width: 100%;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* KLOK STYLING */
+        .clock-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .clock {
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+            border: 8px solid #334155;
+            position: relative;
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.15), inset 0 0 20px rgba(0,0,0,0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 500px) {
+            .clock {
+                width: 340px;
+                height: 340px;
+            }
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        /* Wijzers */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 4px;
+            z-index: 5;
+            transition: transform 0.5s cubic-bezier(0.4, 2.08, 0.55, 0.44);
+        }
+
+        .hour-hand {
+            width: 8px;
+            height: 120px;
+            background: var(--accent-blue);
+            margin-left: -4px;
+        }
+
+        .minute-hand {
+            width: 6px;
+            height: 160px;
+            background: var(--accent-gold);
+            margin-left: -3px;
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 180px;
+            background: var(--accent-pink);
+            margin-left: -1px;
+            z-index: 6;
+        }
+
+        /* Uur-posities */
+        .hour-position {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 4;
+        }
+
+        .hour-position:hover {
+            transform: scale(1.2) !important;
+            color: var(--accent-gold);
+            z-index: 8;
+        }
+
+        .hour-position.active {
+            color: var(--accent-blue);
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+        }
+
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn:hover, .btn.active {
+            background: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* INFO PANEEL */
+        .info-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .info-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .info-title {
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+        }
+
+        .hour-badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .proof-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .proof-step {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-left: 3px solid var(--accent-pink);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .theory-box {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(244, 114, 182, 0.05));
+            border: 1px dashed var(--text-muted);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .theory-box strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>De Wiskundige 181-Klok</h1>
+        <p class="subtitle">Klik op een formule op de wijzerplaat om de stapsgewijze wiskundige verificatie en de theoretische link met Rule 181 en kwantumarchitectuur te bekijken.</p>
+    </header>
+
+    <div class="main-container">
+        <!-- KLOK GEDEELTE -->
+        <div class="clock-wrapper">
+            <div class="clock" id="clock">
+                <div class="center-dot"></div>
+                <div class="hand hour-hand" id="hour-hand"></div>
+                <div class="hand minute-hand" id="minute-hand"></div>
+                <div class="hand second-hand" id="second-hand"></div>
+                <!-- Uur posities worden dynamisch gegenereerd door JS -->
+            </div>
+
+            <div class="controls">
+                <button class="btn active" id="btn-sim" onclick="setMode('sim')">Simulatie (10:10:37)</button>
+                <button class="btn" id="btn-live" onclick="setMode('live')">Actuele Tijd</button>
+            </div>
+        </div>
+
+        <!-- INFORMATIE PANEEL -->
+        <div class="info-panel" id="panel">
+            <div>
+                <div class="info-header">
+                    <h2 class="info-title" id="panel-title">Selecteer een uur</h2>
+                    <span class="hour-badge" id="panel-badge">Positie 10 & 2</span>
+                </div>
+                <div class="proof-content" id="panel-proof">
+                    Welkom bij de interactieve onderzoekssuite van de Wiskundige Klok. De wijzers staan momenteel ingesteld op <strong>10:10:37</strong>.
+                    <div class="proof-step">
+                        Klik op willekeurig welke wiskundige expressie op de wijzerplaat om het bijbehorende bewijs te openen.
+                    </div>
+                </div>
+            </div>
+            <div class="theory-box" id="panel-theory">
+                <strong>Het DNA van 181:</strong> De huidige stand (10:10) verbindt positie 10 (het decagoon) en positie 9 ($3^2=9$). De som van hun kwadraten vormt exact ons fundamentele getal: $9^2 + 10^2 = 81 + 100 = 181$.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // De 12 wiskundige uren en hun theoretische achtergrond
+        const hoursData = [
+            {
+                hour: 1,
+                latex: "\\int_0^1 x^0 dx",
+                title: "1 uur: De Integraal van de Leegte",
+                proof: "Omdat $x^0 = 1$ (voor $x \\neq 0$), neem je de integraal van de constante $1$ over het domein $[0,1]$:<br><br>$$\\int_0^1 1 \\, dx = [x]_0^1 = 1 - 0 = \\mathbf{1}$$",
+                theory: "<strong>De 'Big Bang' Eigenschap:</strong> Dit representeert de overgang van 0 naar 1. In Rule 181 (binair 10110101) resulteert de leegte (000) onmiddellijk in het creëren van structuur (1)."
+            },
+            {
+                hour: 2,
+                latex: "\\lim_{x \\to 0} \\frac{\\sin(2x)}{x}",
+                title: "2 uur: De Goniometrische Limiet",
+                proof: "Gebruikmakend van de standaardlimiet $\\lim_{t \\to 0} \\frac{\\sin(t)}{t} = 1$, herschrijven we de breuk door teller en noemer te vermenigvuldigen met 2:<br><br>$$2 \\cdot \\lim_{x \\to 0} \\frac{\\sin(2x)}{2x} = 2 \\cdot 1 = \\mathbf{2}$$",
+                theory: "<strong>Symmetrie-as:</strong> Op 10:10 wijst de minutenwijzer exact naar deze limiet. Het weerspiegelt de strobogrammatische balans van het getal 181."
+            },
+            {
+                hour: 3,
+                latex: "f'(1)\\text{ bij }x^3",
+                title: "3 uur: De Afgeleide van de Kubus",
+                proof: "De eerste afgeleide van de machtsfunctie $f(x) = x^3$ wordt bepaald via de machtsregel:<br><br>$$f'(x) = 3x^2$$<br>Substitueer vervolgens $x = 1$:<br>$$f'(1) = 3(1)^2 = \\mathbf{3}$$",
+                theory: "<strong>Ruimtelijke Dimensies:</strong> De afgeleide van het volume van een kubus naar zijn zijde op het eenheidspunt levert de 3 dimensies van onze fysieke ruimte."
+            },
+            {
+                hour: 4,
+                latex: "\\sum_{n=1}^\\infty \\frac{4}{2^n}",
+                title: "4 uur: De Meetkundige Reeks",
+                proof: "Dit is een oneindige meetkundige reeks met startterm $a = \\frac{4}{2^1} = 2$ en reden $r = \\frac{1}{2}$. De somformule $S = \\frac{a}{1 - r}$ geeft:<br><br>$$S = \\frac{2}{1 - 0.5} = \\frac{2}{0.5} = \\mathbf{4}$$",
+                theory: "<strong>De 4 Kwadranten:</strong> Dit verbindt direct met de 4-voudige ruimtelijke symmetrie van de Manhattan-cirkel ($181 = 4 \\times 45 + 1$) en het gecentreerde kwadraatgetal."
+            },
+            {
+                hour: 5,
+                latex: "\\int_1^e \\frac{5}{x} dx",
+                title: "5 uur: De Logaritmische Integraal",
+                proof: "De primitieve functie van $\\frac{5}{x}$ is $5 \\ln|x|$. We evalueren deze tussen de grenzen $1$ en het getal van Euler $e$:<br><br>$$[5 \\ln|x|]_1^e = 5\\ln(e) - 5\\ln(1) = 5(1) - 5(0) = \\mathbf{5}$$",
+                theory: "<strong>Natuurlijke Schaling:</strong> Het getal $e$ verbindt continue groei aan discrete gehele getallen, essentieel in thermodynamische systemen."
+            },
+            {
+                hour: 6,
+                latex: "3!",
+                title: "6 uur: De Faculteit",
+                proof: "De faculteit van 3 (genoteerd als $3!$) is het product van alle positieve gehele getallen kleiner dan of gelijk aan 3:<br><br>$$3! = 3 \\times 2 \\times 1 = \\mathbf{6}$$",
+                theory: "<strong>Permutaties:</strong> 6 representeert het exact aantal manieren waarop 3 unieke bouwstenen geordend kunnen worden in een ruimtelijk rooster."
+            },
+            {
+                hour: 7,
+                latex: "\\pi(17)",
+                title: "7 uur: De Priemgetalfunctie",
+                proof: "De functie $\\pi(x)$ geeft het aantal priemgetallen kleiner dan of gelijk aan $x$. De priemgetallen tot en met 17 zijn:<br><br>$$\\{2, 3, 5, 7, 11, 13, 17\\}$$<br>Dit zijn er in totaal exact $\\mathbf{7}$.",
+                theory: "<strong>De Kwantum-Octit (Deel 1):</strong> In Tantaal-181 (Ta-181) heeft de atoomkern een nucleaire spin van $7/2$. Dit vormt de directe spil van onze kwantumarchitectuur."
+            },
+            {
+                hour: 8,
+                latex: "\\log_2(256)",
+                title: "8 uur: De Binaire Logaritme",
+                proof: "De 2-logaritme van 256 stelt de vraag: tot welke macht moet je het grondgetal $2$ verheffen om $256$ te bereiken?<br><br>$$2^8 = 256 \\implies \\log_2(256) = \\mathbf{8}$$",
+                theory: "<strong>De Kwantum-Octit (Deel 2):</strong> Een nucleaire spin van $7/2$ resulteert in exact $2^3 = 8$ kwantumtoestanden in de Hilbertruimte. Posities 7 en 8 vormen samen de Ta-181 Octit!"
+            },
+            {
+                hour: 9,
+                latex: "3^2",
+                title: "9 uur: Het Kwadraat",
+                proof: "Drie verheven tot de tweede macht (in het kwadraat):<br><br>$$3^2 = 3 \\times 3 = \\mathbf{9}$$",
+                theory: "<strong>Bouwsteen van 181:</strong> Exact op positie 9 vinden we de eerste component van de stelling van Fermat voor ons getal: $9^2 + 10^2 = 81 + 100 = 181$."
+            },
+            {
+                hour: 10,
+                latex: "\\text{Decagon}",
+                title: "10 uur: De Geometrie van de Decagoon",
+                proof: "Een decagoon (tiendehoek) is in de euclidische meetkunde per definitie een polygoon met exact $\\mathbf{10}$ zijden en 10 hoekpunten.",
+                theory: "<strong>Het Uur van Symmetrie:</strong> De uurwijzer op 10 uur wijst direct naar de tweede component ($10^2=100$) die samen met 9 uur ($9^2=81$) ons kerngetal 181 vormt."
+            },
+            {
+                hour: 11,
+                latex: "\\lim_{n \\to \\infty} \\sqrt[n]{11^n + 10^n}",
+                title: "11 uur: De Dominante Machtswortel",
+                proof: "Bij het trekken van de $n$-de machtswortel uit een som van exponentiële termen domineert het grootste grondgetal naarmate $n$ naar oneindig gaat:<br><br>$$\\lim_{n \\to \\infty} 11 \\cdot \\left(1 + \\left(\\frac{10}{11}\\right)^n\\right)^{\\frac{1}{n}} = 11 \\cdot (1 + 0)^0 = \\mathbf{11}$$",
+                theory: "<strong>Asymptotische Dominantie:</strong> In macroscopische limieten filtert de natuur automatisch de subdominante ruis weg om de kernwaarde over te houden."
+            },
+            {
+                hour: 12,
+                latex: "\\frac{d}{dx}(12x^2)|_{\\frac{1}{2}}",
+                title: "12 uur: De Afgeleide in het Zenith",
+                proof: "Differentiëren van de functie $g(x) = 12x^2$ naar $x$ geeft:<br><br>$$g'(x) = 24x$$<br>Substitueer vervolgens het punt $x = \\frac{1}{2}$:<br>$$24 \\times \\frac{1}{2} = \\mathbf{12}$$",
+                theory: "<strong>Zenith van Orde:</strong> Tijd is een orde-parameter. Op het hoogste punt van de klok sluit de wiskunde naadloos aan op het absolute beginpunt."
+            }
+        ];
+
+        let currentMode = 'sim'; // 'sim' of 'live'
+        let liveTimer = null;
+
+        // Bouw de wijzerplaat op
+        function buildClock() {
+            const clock = document.getElementById('clock');
+            const radius = clock.clientWidth / 2 - 45; // Afstand vanaf het midden
+
+            hoursData.forEach(item => {
+                const angleDeg = (item.hour * 30) - 90; // 12 uur = -90 graden (bovenaan)
+                const angleRad = angleDeg * (Math.PI / 180);
+
+                const x = (clock.clientWidth / 2) + radius * Math.cos(angleRad) - 40;
+                const y = (clock.clientHeight / 2) + radius * Math.sin(angleRad) - 20;
+
+                const div = document.createElement('div');
+                div.className = 'hour-position';
+                div.style.left = `${x}px`;
+                div.style.top = `${y}px`;
+                div.id = `hour-pos-${item.hour}`;
+                
+                div.onclick = () => selectHour(item.hour);
+
+                clock.appendChild(div);
+
+                // Render LaTeX via KaTeX
+                katex.render(item.latex, div, {
+                    throwOnError: false,
+                    displayMode: false
+                });
+            });
+        }
+
+        // Toon de uitleg in het rechterpaneel
+        function selectHour(hourNumber) {
+            // Active state op klok
+            document.querySelectorAll('.hour-position').forEach(el => el.classList.remove('active'));
+            const selectedEl = document.getElementById(`hour-pos-${hourNumber}`);
+            if (selectedEl) selectedEl.classList.add('active');
+
+            // Data ophalen
+            const data = hoursData.find(h => h.hour === hourNumber);
+            
+            document.getElementById('panel-title').innerHTML = data.title;
+            document.getElementById('panel-badge').innerText = `Positie ${hourNumber} op wijzerplaat`;
+            
+            const proofContainer = document.getElementById('panel-proof');
+            proofContainer.innerHTML = data.proof;
+            
+            document.getElementById('panel-theory').innerHTML = data.theory;
+
+            // Render eventuele LaTeX in de proof en theorie via KaTeX
+            renderMathInElement(proofContainer);
+            renderMathInElement(document.getElementById('panel-theory'));
+        }
+
+        // Hulpmiddel om KaTeX in een DOM-element te renderen
+        function renderMathInElement(element) {
+            const text = element.innerHTML;
+            // Eenvoudige parser voor $$...$$ en $...$
+            const rendered = text.replace(/\$\$(.*?)\$\$/g, (match, math) => {
+                return katex.renderToString(math, { displayMode: true, throwOnError: false });
+            }).replace(/\$(.*?)\$/g, (match, math) => {
+                return katex.renderToString(math, { displayMode: false, throwOnError: false });
+            });
+            element.innerHTML = rendered;
+        }
+
+        // Zet de wijzers
+        function updateHands(hours, minutes, seconds) {
+            // Bereken hoeken (inclusief vloeiende verloop voor uur- en minuutwijzer)
+            const secondAngle = seconds * 6;
+            const minuteAngle = (minutes * 6) + (seconds * 0.1);
+            const hourAngle = ((hours % 12) * 30) + (minutes * 0.5) + (seconds * (0.5/60));
+
+            document.getElementById('hour-hand').style.transform = `rotate(${hourAngle}deg)`;
+            document.getElementById('minute-hand').style.transform = `rotate(${minuteAngle}deg)`;
+            document.getElementById('second-hand').style.transform = `rotate(${secondAngle}deg)`;
+        }
+
+        // Modus schakelaar (Simulatie vs Live)
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-sim').classList.toggle('active', mode === 'sim');
+            document.getElementById('btn-live').classList.toggle('active', mode === 'live');
+
+            if (mode === 'sim') {
+                clearInterval(liveTimer);
+                // Exact 10:10 en 37 seconden
+                updateHands(10, 10, 37);
+            } else {
+                runLiveClock();
+                liveTimer = setInterval(runLiveClock, 1000);
+            }
+        }
+
+        function runLiveClock() {
+            const now = new Date();
+            updateHands(now.getHours(), now.getMinutes(), now.getSeconds());
+        }
+
+        // Initialisatie na het laden van de pagina
+        window.addEventListener('DOMContentLoaded', () => {
+            buildClock();
+            setMode('sim'); // Start standaard in de 10:10:37 simulatie
+        });
+    </script>
+</body>
+</html>
