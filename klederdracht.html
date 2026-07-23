@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoekmodel: Zeeuwse Streekdrachten & Confessionele Cultuur</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #1d4ed8;
+            --accent: #b45309;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+            --tag-bg: #e2e8f0;
+            --tag-active: #2563eb;
+        }
+        
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        p.intro {
+            color: #475569;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 850px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .box {
+            background: #f1f5f9;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #334155;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            max-height: 160px;
+            overflow-y: auto;
+            padding: 0.25rem;
+        }
+
+        .tag {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.35rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .tag:hover {
+            border-color: var(--primary);
+        }
+
+        .tag.active {
+            background: var(--tag-active);
+            color: white;
+            border-color: var(--tag-active);
+        }
+
+        .presets {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .preset-btn {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: #fde68a;
+        }
+
+        .output-section {
+            margin-top: 2rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1.5rem;
+        }
+
+        .dork-box {
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: "Fira Code", monospace;
+            padding: 1.25rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            word-break: break-all;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        button.action-btn {
+            flex: 1;
+            min-width: 180px;
+            padding: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #92400e; }
+        .btn-reset { background: #ef4444; color: white; flex: 0 0 auto;}
+        .btn-reset:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔎 Zoekmodel: Zeeuwse Streekdrachten & Confessionele Cultuur</h1>
+    <p class="intro">Combineer systematisch termen uit de hoofdmatrix en verfijners om booleaanse zoekcombinaties (Dorks) te genereren voor DBNL, Google, museale catalogi en academische archieven.</p>
+
+    <div class="presets">
+        <h2>⚡ Praktijkscenario's (Direct laden):</h2>
+        <button class="preset-btn" onclick="applyScenario(1)">1. Mutsensplitsing Zuid-Beveland (Kath vs. Prot)</button>
+        <button class="preset-btn" onclick="applyScenario(2)">2. Economische herkomst Thoolse dracht & meekrap</button>
+        <button class="preset-btn" onclick="applyScenario(3)">3. Status allerlaatste dagelijkse draagsters</button>
+        <button class="preset-btn" onclick="applyScenario(4)">4. Sobere protestantse dracht Noord-Beveland</button>
+        <button class="preset-btn" onclick="applyScenario(5)">5. Museale inventarisatie & erfgoedbeheer Zeeland</button>
+    </div>
+
+    <div class="grid">
+        <div class="box">
+            <h2>I. Hoofdmatrix (Domeinen)</h2>
+            <label for="domainSelect">Selecteer een zoekdomein om verfijners te laden:</label>
+            <select id="domainSelect" onchange="loadTags()">
+                <option value="algemeen">1. Algemeen (Brede oriëntatie & volkskunst)</option>
+                <option value="geografisch">2. Geografisch (Eilanden & dorpsenclaves)</option>
+                <option value="religieus">3. Religieus (Confessioneel & verzuiling)</option>
+                <option value="materieel">4. Materieel (Kledingstukken, kant & meekrap)</option>
+                <option value="behoud">5. Behoud (Museologie, collecties & status)</option>
+            </select>
+            
+            <label style="margin-top: 1rem;">Selecteer specifieke attributen (OR-cluster):</label>
+            <div id="tagContainer" class="checkbox-group"></div>
+            <input type="text" id="customKeywords" placeholder="Extra termen (bijv. 'oorijzer' of 'Pieter Verhage')..." style="margin-top: 0.75rem;" oninput="generateDork()">
+        </div>
+
+        <div class="box">
+            <h2>II. Verfijners & Attributen</h2>
+            <label for="locationFilter">A. Locatie-specifieke filter:</label>
+            <select id="locationFilter" onchange="generateDork()">
+                <option value="">Geen specifieke locatie-filter</option>
+                <option value='(Walcheren OR Arnemuiden)'>Walcheren & Arnemuiden (Enclaves)</option>
+                <option value='("Zuid-Beveland" OR "Noord-Beveland" OR Beveland)'>De Bevelanden (Zuid- & Noord-Beveland)</option>
+                <option value='Tholen'>Tholen & Sint-Annaland</option>
+                <option value='(Schouwen OR Duiveland OR "Schouwen-Duiveland")'>Schouwen-Duiveland</option>
+                <option value='("Zeeuws-Vlaanderen" OR Axel OR Cadzand OR "Land van Axel" OR "Land van Cadzand")'>Zeeuws-Vlaanderen (Axel & Cadzand)</option>
+            </select>
+
+            <label style="margin-top: 1rem;" for="confessionFilter">B. Confessionele kenmerken:</label>
+            <select id="confessionFilter" onchange="generateDork()">
+                <option value="">Geen confessionele filter</option>
+                <option value='(katholiek AND (trapezeformig OR kloskant OR "echt kant" OR "oorijzer" OR "ijzeren beugel" OR versierd OR luxer))'>✝️ Katholiek (Trapeze, kloskant, oorijzer, luxer)</option>
+                <option value='(protestants AND (schelpvormig OR "kanten muts" OR "zilveren beugel" OR sober OR nuchter OR ingetogen))'>📖 Protestants (Schelpvormig, sober, zilveren beugel)</option>
+            </select>
+
+            <label style="margin-top: 1rem;" for="statusFilter">D. Status & Tijdlijn:</label>
+            <select id="statusFilter" onchange="generateDork()">
+                <option value="">Geen status/tijdsfilter</option>
+                <option value='("laatste draagster" OR "dagelijks gebruik" OR "2025" OR status)'>📍 Heden: Dagelijks gebruik & laatste dragers</option>
+                <option value='("na WOII" OR "Amerikaanse cultuur" OR "Pieter Verhage" OR "1975" OR historisch)'>⏳ Historisch: Verdwijning & uitsterfmomenten</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="box">
+            <h2>III. Specifieke Operatoren (Dorks)</h2>
+            <label for="siteFilter">Beperk tot specifieke databank of domein (site: / intitle:):</label>
+            <select id="siteFilter" onchange="generateDork()">
+                <option value="">🌐 Geen beperking (Hele Web / Algemene Catalogus)</option>
+                <option value="site:dbnl.org">📚 DBNL (Digitale Bibliotheek voor de Nederlandse Letteren)</option>
+                <option value="site:delpher.nl">📰 Delpher (Historische kranten, boeken & tijdschriften)</option>
+                <option value="site:zeeuwsmuseum.nl OR site:arnemuiden.org OR site:demeestoof.nl">🏛️ Direct in Zeeuwse Musea (Zeeuws Museum, Arnemuiden, Meestoof)</option>
+                <option value="intitle:&quot;meekrap&quot;">🔍 intitle:"meekrap" (Dwingt 'meekrap' in paginatitel)</option>
+                <option value="intitle:&quot;klederdracht&quot; OR intitle:&quot;streekdracht&quot;">🔍 intitle:"klederdracht" (Dwingt dracht in paginatitel)</option>
+            </select>
+        </div>
+
+        <div class="box">
+            <h2>IV. Bestanden & Uitsluitingen</h2>
+            <label for="fileFilter">Bestandstype (filetype:):</label>
+            <select id="fileFilter" onchange="generateDork()">
+                <option value="">Alle bestandstypen (Webpagina's & documenten)</option>
+                <option value="filetype:pdf">Alleen PDF (Wetenschappelijke artikelen, museumgidsen)</option>
+                <option value="filetype:doc OR filetype:docx">Word documenten (.doc / .docx)</option>
+            </select>
+
+            <label style="margin-top: 1rem;" for="excludeInput">Uitsluiten (bijv. -wikipedia -pinterest):</label>
+            <input type="text" id="excludeInput" placeholder="-wikipedia -pinterest -bol.com..." oninput="generateDork()">
+        </div>
+    </div>
+
+    <div class="output-section">
+        <label>Gegenereerde Booleaanse Zoekstring:</label>
+        <div class="dork-box" id="dorkOutput">Selecteer parameters...</div>
+        
+        <div class="btn-group">
+            <button class="action-btn btn-primary" onclick="searchGoogle()">🔎 Zoek in Google</button>
+            <button class="action-btn btn-accent" onclick="searchScholar()">🎓 Zoek in Google Scholar</button>
+            <button class="action-btn btn-secondary" onclick="copyDork()">📋 Kopiëer Zoekstring</button>
+            <button class="action-btn btn-reset" onclick="resetAll()">✖ Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data uit de Hoofdmatrix
+    const domainTags = {
+        algemeen: ["Zeeuwse klederdracht", "streekdracht", "streekkleding Zeeland", "volkskunst", "klederdracht", "kostuumgeschiedenis"],
+        geografisch: ["Walcheren", "Arnemuiden", "Zuid-Beveland", "Noord-Beveland", "Tholen", "Schouwen", "Duiveland", "Zeeuws-Vlaanderen", "Axel", "Cadzand"],
+        religieus: ["confessioneel", "religieus", "katholiek", "protestants", "reformatie", "gereformeerd", "scheiding", "splitsing", "zuilen"],
+        materieel: ["muts", "hul", "bovenmuts", "ondermuts", "kornet", "jak", "beuk", "doek", "rok", "schort", "sieraad", "oorijzer", "kloskant", "Beveren", "granaten", "meekrap"],
+        behoud: ["museum", "collectie", "beheer", "Stichting Streekdracht", "Meestoof", "Zeeuws Museum", "educatie", "reconstructie", "erfgoed"]
+    };
+
+    let activeTags = new Set();
+
+    // Laad attributen op basis van het gekozen zoekdomein
+    function loadTags() {
+        const domain = document.getElementById('domainSelect').value;
+        const container = document.getElementById('tagContainer');
+        container.innerHTML = '';
+        activeTags.clear();
+
+        domainTags[domain].forEach((tag, idx) => {
+            const el = document.createElement('div');
+            // Standaard selecteren we de eerste 2 tags van het domein
+            el.className = 'tag' + (idx < 2 ? ' active' : '');
+            el.textContent = tag;
+            if (idx < 2) activeTags.add(tag);
+            
+            el.onclick = () => {
+                if (activeTags.has(tag)) {
+                    activeTags.delete(tag);
+                    el.classList.remove('active');
+                } else {
+                    activeTags.add(tag);
+                    el.classList.add('active');
+                }
+                generateDork();
+            };
+            container.appendChild(el);
+        });
+        generateDork();
+    }
+
+    // Bouw de uiteindelijke Booleaanse string op
+    function generateDork() {
+        let parts = [];
+        
+        // 1. Tags & Custom keywords (OR-cluster)
+        let themeTerms = Array.from(activeTags).map(t => t.includes(' ') ? `"${t}"` : t);
+        const custom = document.getElementById('customKeywords').value.trim();
+        if (custom) {
+            themeTerms.push(...custom.split(' ').filter(x => x).map(t => t.includes(' ') ? `"${t}"` : t));
+        }
+        
+        if (themeTerms.length > 1) {
+            parts.push(`(${themeTerms.join(' OR ')})`);
+        } else if (themeTerms.length === 1) {
+            parts.push(themeTerms[0]);
+        }
+
+        // 2. Locatie Filter
+        const loc = document.getElementById('locationFilter').value;
+        if (loc) parts.push(loc);
+
+        // 3. Confessionele Filter
+        const conf = document.getElementById('confessionFilter').value;
+        if (conf) parts.push(conf);
+
+        // 4. Status Filter
+        const status = document.getElementById('statusFilter').value;
+        if (status) parts.push(status);
+
+        // 5. Site / Domein
+        const site = document.getElementById('siteFilter').value;
+        if (site) parts.push(site);
+
+        // 6. Bestandsformaat
+        const file = document.getElementById('fileFilter').value;
+        if (file) parts.push(file);
+
+        // 7. Uitsluitingen (-term)
+        const exclude = document.getElementById('excludeInput').value.trim();
+        if (exclude) {
+            exclude.split(' ').forEach(w => {
+                if (w && !w.startsWith('-')) parts.push(`-${w}`);
+                else if (w) parts.push(w);
+            });
+        }
+
+        const query = parts.join(' AND ').replace(/ AND site:/g, ' site:').replace(/ AND intitle:/g, ' intitle:').replace(/ AND filetype:/g, ' filetype:').replace(/ AND -/g, ' -');
+        document.getElementById('dorkOutput').textContent = query || 'Selecteer parameters of tags...';
+        return query;
+    }
+
+    // Laad direct de logica in voor een praktijkscenario
+    function applyScenario(number) {
+        resetAll(false); // Reset zonder te hergenereren
+        
+        if (number === 1) {
+            // Mutsensplitsing Zuid-Beveland
+            document.getElementById('domainSelect').value = 'religieus';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("confessioneel");
+            activeTags.add("splitsing");
+            document.getElementById('locationFilter').value = '("Zuid-Beveland" OR "Noord-Beveland" OR Beveland)';
+            document.getElementById('customKeywords').value = 'muts OR dracht';
+            document.getElementById('excludeInput').value = '-wikipedia';
+        } else if (number === 2) {
+            // Economische herkomst Thoolse dracht & meekrap
+            document.getElementById('domainSelect').value = 'materieel';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("kloskant");
+            activeTags.add("Beveren");
+            activeTags.add("granaten");
+            activeTags.add("meekrap");
+            document.getElementById('locationFilter').value = 'Tholen';
+            document.getElementById('customKeywords').value = 'Bohemen OR onderrokstof OR "Noord-Frankrijk" OR meestoof';
+        } else if (number === 3) {
+            // Status allerlaatste dagelijkse draagsters
+            document.getElementById('domainSelect').value = 'geografisch';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("Walcheren");
+            activeTags.add("Arnemuiden");
+            document.getElementById('statusFilter').value = '("laatste draagster" OR "dagelijks gebruik" OR "2025" OR status)';
+            document.getElementById('customKeywords').value = '"Pieter Verhage" OR dracht';
+        } else if (number === 4) {
+            // Sobere protestantse dracht Noord-Beveland
+            document.getElementById('domainSelect').value = 'religieus';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("protestants");
+            document.getElementById('locationFilter').value = '("Zuid-Beveland" OR "Noord-Beveland" OR Beveland)';
+            document.getElementById('customKeywords').value = '"Noord-Beveland" AND (sober OR ingetogen OR grijstinten OR minimalistisch OR "geen splitsing")';
+        } else if (number === 5) {
+            // Museale inventarisatie Zeeland
+            document.getElementById('domainSelect').value = 'behoud';
+            loadTags();
+            activeTags.clear();
+            activeTags.add("museum");
+            activeTags.add("collectie");
+            activeTags.add("erfgoed");
+            document.getElementById('customKeywords').value = '"Zeeuws Museum" OR "Museum Arnemuiden" OR "De Meestoof" OR "Erfgoed Goes" OR "Grutte Moole" OR Zierikzee';
+        }
+
+        // Visuele tags verversen
+        document.querySelectorAll('.tag').forEach(el => {
+            if (activeTags.has(el.textContent)) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+        
+        generateDork();
+    }
+
+    // Actieknoppen
+    function searchGoogle() {
+        const q = generateDork();
+        if (q && q !== 'Selecteer parameters of tags...') {
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+        }
+    }
+
+    function searchScholar() {
+        const q = generateDork();
+        if (q && q !== 'Selecteer parameters of tags...') {
+            window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(q)}`, '_blank');
+        }
+    }
+
+    function copyDork() {
+        const q = generateDork();
+        navigator.clipboard.writeText(q);
+        alert('Zoekstring gekopieerd naar het klembord!');
+    }
+
+    function resetAll(shouldGenerate = true) {
+        document.getElementById('domainSelect').value = 'algemeen';
+        document.getElementById('locationFilter').value = '';
+        document.getElementById('confessionFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('siteFilter').value = '';
+        document.getElementById('fileFilter').value = '';
+        document.getElementById('excludeInput').value = '';
+        document.getElementById('customKeywords').value = '';
+        if (shouldGenerate) loadTags();
+    }
+
+    // Init direct bij het inladen
+    loadTags();
+</script>
+</body>
+</html>
