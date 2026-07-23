@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond-181: Wolfram & Hexagram Simulatie</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #38bdf8; margin-bottom: 5px; }
+        .subtitle { color: #94a3b8; margin-bottom: 20px; text-align: center; }
+        
+        .engine-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        canvas {
+            background: #000;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+        
+        .panel-title {
+            color: #facc15;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .math-bar {
+            margin-top: 20px;
+            background: #1e293b;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border-left: 4px solid #f472b6;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>💎 Diamond-181 Protocol Engine</h1>
+    <div class="subtitle">Simulatie van Wolfram Elementary Cellular Automaton (Rule 181) & Gecentreerde Stergetallen (37 → 181)</div>
+
+    <div class="engine-container">
+        <!-- LINKER PANEEL: WOLFRAM RULE 181 -->
+        <div class="panel">
+            <div class="panel-title">Wolfram Rule 181 (Binair: 10110101)</div>
+            <canvas id="wolframCanvas" width="450" height="450"></canvas>
+            <div style="margin-top:10px; font-size: 0.85rem; color: #94a3b8;">
+                Mod[1 + pq + r + pr + pqr, 2] | Big Bang: 000 → 1
+            </div>
+        </div>
+
+        <!-- RECHTER PANEEL: 37 & 181 STERGETAL GEOMETRIE -->
+        <div class="panel">
+            <div class="panel-title">Hexagram Matrix: S(3)=37 & S(6)=181</div>
+            <canvas id="hexCanvas" width="450" height="450"></canvas>
+            <div style="margin-top:10px; font-size: 0.85rem; color: #94a3b8;">
+                Goud = Seconden (37) | Cyaan = Target Priem (181)
+            </div>
+        </div>
+    </div>
+
+    <div class="math-bar">
+        VERIFICATIE: S(6) - S(3) = 181 - 37 = 144 = 12² (De 12-Uurs Tijdcyclus Symmetrie)
+    </div>
+
+    <script>
+        /* --- 1. WOLFRAM RULE 181 CELLULAR AUTOMATON ENGINE --- */
+        const wCanvas = document.getElementById('wolframCanvas');
+        const wCtx = wCanvas.getContext('2d');
+        const cellSize = 3;
+        const cols = Math.floor(wCanvas.width / cellSize);
+        const rows = Math.floor(wCanvas.height / cellSize);
+
+        // Rule 181 in binaire array: [1, 0, 1, 1, 0, 1, 0, 1] (voor index 7 tot 0)
+        const rule181 = [1, 0, 1, 0, 1, 1, 0, 1];
+
+        let grid = new Array(cols).fill(0);
+        grid[Math.floor(cols / 2)] = 1; // Start met één actieve cel in het midden
+
+        function drawWolfram() {
+            wCtx.fillStyle = '#000';
+            wCtx.fillRect(0, 0, wCanvas.width, wCanvas.height);
+
+            let currentGrid = [...grid];
+
+            for (let y = 0; y < rows; y++) {
+                let nextGrid = new Array(cols).fill(0);
+
+                for (let x = 0; x < cols; x++) {
+                    // Teken de cel
+                    if (currentGrid[x] === 1) {
+                        wCtx.fillStyle = (y % 2 === 0) ? '#38bdf8' : '#f472b6'; // Weef-effect kleur
+                        wCtx.fillRect(x * cellSize, y * cellSize, cellSize - 0.5, cellSize - 0.5);
+                    }
+
+                    // Bepaal de binaire buur-index (links, zelf, rechts)
+                    let left = x > 0 ? currentGrid[x - 1] : 0;
+                    let self = currentGrid[x];
+                    let right = x < cols - 1 ? currentGrid[x + 1] : 0;
+                    
+                    let neighborhood = (left << 2) | (self << 1) | right; // Binair getal 0-7
+                    nextGrid[x] = rule181[neighborhood];
+                }
+                currentGrid = nextGrid;
+            }
+        }
+
+        /* --- 2. HEXAGRAM STERGETALLEN ENGINE (37 -> 181) --- */
+        const hCanvas = document.getElementById('hexCanvas');
+        const hCtx = hCanvas.getContext('2d');
+        const center = { x: hCanvas.width / 2, y: hCanvas.height / 2 };
+        let rotation = 0;
+
+        // Genereert coördinaten voor het n-de stergetal (Gecentreerd hexagram)
+        function generateStarPoints(n, spacing) {
+            let points = [{ x: 0, y: 0 }]; // Centrum
+            
+            // 6 driehoekige sectoren
+            for (let layer = 1; layer < n; layer++) {
+                for (let side = 0; side < 6; side++) {
+                    let angle1 = (side * 60) * (Math.PI / 180);
+                    let angle2 = ((side + 1) * 60) * (Math.PI / 180);
+                    
+                    for (let step = 0; step < layer; step++) {
+                        let t = step / layer;
+                        // Lineaire interpolatie tussen de hoekpunten van de zeskant
+                        let r1 = layer * spacing;
+                        let x1 = r1 * Math.cos(angle1);
+                        let y1 = r1 * Math.sin(angle1);
+                        let x2 = r1 * Math.cos(angle2);
+                        let y2 = r1 * Math.sin(angle2);
+
+                        points.push({
+                            x: x1 * (1 - t) + x2 * t,
+                            y: y1 * (1 - t) + y2 * t
+                        });
+                    }
+                }
+            }
+            return points;
+        }
+
+        const points181 = generateStarPoints(6, 32); // n=6 -> 181 punten
+        const points37 = generateStarPoints(3, 32);  // n=3 -> 37 punten
+
+        function drawHexagrams() {
+            hCtx.fillStyle = '#0b1329';
+            hCtx.fillRect(0, 0, hCanvas.width, hCanvas.height);
+
+            hCtx.save();
+            hCtx.translate(center.x, center.y);
+            hCtx.rotate(rotation);
+
+            // Teken de buitenste 181 matrix (Cyaan/Blauw)
+            points181.forEach((pt, index) => {
+                hCtx.beginPath();
+                hCtx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+                hCtx.fillStyle = '#1e293b';
+                hCtx.fill();
+                hCtx.lineWidth = 1.5;
+                hCtx.strokeStyle = '#38bdf8';
+                hCtx.stroke();
+            });
+
+            // Teken de binnenste 37 matrix (Goud/Geel - exact over elkaar)
+            points37.forEach((pt) => {
+                hCtx.beginPath();
+                hCtx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+                hCtx.fillStyle = '#facc15';
+                hCtx.fill();
+                hCtx.shadowColor = '#facc15';
+                hCtx.shadowBlur = 8;
+            });
+
+            hCtx.restore();
+            rotation += 0.003; // Rustige rotatie van het kristalrooster
+            requestAnimationFrame(drawHexagrams);
+        }
+
+        // Start engines
+        drawWolfram();
+        drawHexagrams();
+    </script>
+</body>
+</html>
