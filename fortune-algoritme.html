@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX Voronoi Confinement Resonator (Index 13)</title>
+    <!-- D3.js en D3-Delaunay voor exacte Voronoi-tessellatie -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6"></script>
+    <style>
+        :root {
+            --bg-color: #090c10;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --t13-color: rgba(31, 111, 235, 0.35); /* Resonante Kern (91 cellen) */
+            --t12-color: rgba(35, 134, 54, 0.3);   /* Feedback Kern (78 cellen) */
+            --delay-color: rgba(210, 153, 34, 0.2); /* Extensie Delay Line (65 cellen) */
+            --zero-div: #ff7b72;                    /* Modulo 21 Nuldeler */
+            --text-main: #c9d1d9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin-bottom: 5px; font-size: 1.6rem; letter-spacing: 1px; color: #58a6ff; }
+        p.subtitle { color: #8b949e; font-size: 0.9rem; margin-top: 0; margin-bottom: 20px; text-align: center; max-width: 800px; }
+
+        .dashboard {
+            display: flex;
+            gap: 20px;
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 720px;
+            height: 520px;
+            background: #0d1117;
+            border-radius: 8px;
+            border: 1px solid #21262d;
+            overflow: hidden;
+        }
+
+        canvas { display: block; width: 100%; height: 100%; }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 320px;
+            gap: 15px;
+        }
+
+        .panel-box {
+            background: #010409;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+        .legend-box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+
+        button {
+            background: #21262d;
+            color: var(--text-main);
+            border: 1px solid #363b42;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover { background: #30363d; border-color: #8b949e; }
+        button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+        button.primary:hover { background: #2ea043; }
+        button.active { background: #1f6feb; border-color: #388bfd; color: #fff; }
+
+        .slider-group { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        .slider-group label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #8b949e; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #58a6ff; }
+
+        .status-display {
+            font-family: monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #7ee787;
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>VORTEX Voronoi Confinement Resonator</h1>
+    <p class="subtitle">Index 13 / Hexagram 47 (De Beklemming): Ruimtelijke Voronoi-grenzen en Modulo 21 Akoestische Absorptie op een 18×13 Matrix.</p>
+
+    <div class="dashboard">
+        <div id="canvas-container">
+            <canvas id="voronoi-canvas" width="720" height="520"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="panel-box">
+                <strong style="color: #fff;">Topologische Legenda:</strong>
+                <div class="legend-item">
+                    <span class="legend-box" style="background: rgba(31, 111, 235, 0.6);"></span>
+                    <span><strong>T13 Kern (91 cellen):</strong> Resonant / Index 13</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-box" style="background: rgba(35, 134, 54, 0.6);"></span>
+                    <span><strong>T12 Kern (78 cellen):</strong> Feedback / Nuldeler 15</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-box" style="background: rgba(210, 153, 34, 0.6);"></span>
+                    <span><strong>5×13 Extensie (65 cellen):</strong> Delay-Line / Index 2</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-box" style="border: 2px solid var(--zero-div); background: transparent;"></span>
+                    <span><strong>Mod 21 Nuldeler:</strong> Akoestische absorptieknoop</span>
+                </div>
+            </div>
+
+            <div class="panel-box">
+                <strong style="color: #fff;">Confinement Parameters:</strong>
+                <div class="slider-group">
+                    <label><span>Lokale Torsie (Jitter)</span><span id="val-jitter">15%</span></label>
+                    <input type="range" id="slider-jitter" min="0" max="45" value="15">
+                </div>
+                <div class="slider-group">
+                    <label><span>Voronoi Celwand Dikte</span><span id="val-border">1.5px</span></label>
+                    <input type="range" id="slider-border" min="1" max="5" step="0.5" value="1.5">
+                </div>
+            </div>
+
+            <div class="panel-box status-display" id="status-box">
+                Klik op een cel om lokale torsie te activeren. De Voronoi-grens absorbeert de jitter en voorkomt fatale clustering.
+            </div>
+
+            <div class="btn-group">
+                <button class="primary" id="btn-audio">🔇 Audio Resonantie: UIT</button>
+                <button id="btn-pulse">Trigger Confinement Pulse</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const COLS = 18;
+        const ROWS = 13;
+        const TOTAL_CELLS = COLS * ROWS; // 234
+        const MODULO = 21;
+        const ZERO_DIVISORS = [0, 3, 6, 7, 9, 12, 14, 15, 18];
+
+        const canvas = document.getElementById('voronoi-canvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const cellWidth = width / COLS;
+        const cellHeight = height / ROWS;
+
+        const sliderJitter = document.getElementById('slider-jitter');
+        const valJitter = document.getElementById('val-jitter');
+        const sliderBorder = document.getElementById('slider-border');
+        const valBorder = document.getElementById('val-border');
+        const statusBox = document.getElementById('status-box');
+        const btnAudio = document.getElementById('btn-audio');
+
+        let audioCtx = null;
+        let audioEnabled = false;
+        let jitterAmount = 15;
+        let borderWidth = 1.5;
+
+        // Knooppunten array (Seeds)
+        const seeds = [];
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                const index = r * COLS + c;
+                const modVal = index % MODULO;
+                const isZeroDiv = ZERO_DIVISORS.includes(modVal);
+
+                // Geometrische zone bepaling
+                let zone = 'delay';
+                let fillStyle = 'rgba(210, 153, 34, 0.15)';
+                let strokeColor = 'rgba(210, 153, 34, 0.4)';
+                
+                if (c < 13) {
+                    if (r >= c) {
+                        zone = 't13'; // 91 cellen
+                        fillStyle = 'rgba(31, 111, 235, 0.25)';
+                        strokeColor = 'rgba(31, 111, 235, 0.6)';
+                    } else {
+                        zone = 't12'; // 78 cellen
+                        fillStyle = 'rgba(35, 134, 54, 0.2)';
+                        strokeColor = 'rgba(35, 134, 54, 0.5)';
+                    }
+                }
+
+                // Basiscoördinaten (perfect in het midden van hun rastercel)
+                const baseX = (c + 0.5) * cellWidth;
+                const baseY = (r + 0.5) * cellHeight;
+
+                seeds.push({
+                    index, r, c, modVal, isZeroDiv, zone, fillStyle, strokeColor,
+                    baseX, baseY,
+                    x: baseX, y: baseY,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    pulse: 0
+                });
+            }
+        }
+
+        // Web Audio API Resonantie
+        btnAudio.addEventListener('click', () => {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            audioEnabled = !audioEnabled;
+            btnAudio.className = audioEnabled ? 'primary active' : 'primary';
+            btnAudio.textContent = audioEnabled ? '🔊 Audio Resonantie: AAN' : '🔇 Audio Resonantie: UIT';
+        });
+
+        function triggerVoronoiSound(seed) {
+            if (!audioEnabled || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            const carrierFreq = 110 + (seed.modVal * 30);
+            const modFreq = carrierFreq * (seed.zone === 't13' ? 1.5 : 0.75);
+
+            const carrier = audioCtx.createOscillator();
+            const modulator = audioCtx.createOscillator();
+            const modGain = audioCtx.createGain();
+            const masterGain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            carrier.type = seed.zone === 't13' ? 'sawtooth' : 'sine';
+            modulator.type = 'sine';
+            modulator.frequency.setValueAtTime(modFreq, now);
+            modGain.gain.setValueAtTime(seed.isZeroDiv ? 20 : 150, now);
+            carrier.frequency.setValueAtTime(carrierFreq, now);
+
+            filter.type = 'lowpass';
+            if (seed.isZeroDiv) {
+                // Akoestische absorptie door Nuldeler (snelle demping)
+                filter.frequency.setValueAtTime(300, now);
+                filter.Q.setValueAtTime(1, now);
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            } else {
+                // Harmonische resonantie (beklemming loslaten)
+                filter.frequency.setValueAtTime(3200, now);
+                filter.Q.setValueAtTime(8, now);
+                masterGain.gain.setValueAtTime(0.18, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            }
+
+            modulator.connect(modGain);
+            modGain.connect(carrier.frequency);
+            carrier.connect(filter);
+            filter.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+
+            modulator.start(now);
+            carrier.start(now);
+            carrier.stop(now + 0.4);
+            modulator.stop(now + 0.4);
+        }
+
+        // Sliders event listeners
+        sliderJitter.addEventListener('input', (e) => {
+            jitterAmount = parseFloat(e.target.value);
+            valJitter.textContent = `${jitterAmount}%`;
+        });
+
+        sliderBorder.addEventListener('input', (e) => {
+            borderWidth = parseFloat(e.target.value);
+            valBorder.textContent = `${borderWidth}px`;
+        });
+
+        // Trigger globale pulse
+        document.getElementById('btn-pulse').addEventListener('click', () => {
+            seeds.forEach(s => {
+                s.pulse = 1.0;
+                s.vx = (Math.random() - 0.5) * 4;
+                s.vy = (Math.random() - 0.5) * 4;
+            });
+            if (seeds.length > 0) triggerVoronoiSound(seeds[Math.floor(Math.random() * seeds.length)]);
+            statusBox.innerHTML = `<strong>Confinement Pulse Geactiveerd!</strong><br>Alle 234 seeds vertonen torsie. De Voronoi-wanden verhinderen data-overflow.`;
+        });
+
+        // Interactiviteit bij klikken op canvas
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Zoek dichtstbijzijnde seed
+            let closest = null;
+            let minDist = Infinity;
+            seeds.forEach(s => {
+                const d = Math.hypot(s.x - mouseX, s.y - mouseY);
+                if (d < minDist) { minDist = d; closest = s; }
+            });
+
+            if (closest) {
+                closest.pulse = 1.0;
+                closest.vx = (Math.random() - 0.5) * 6;
+                closest.vy = (Math.random() - 0.5) * 6;
+                triggerVoronoiSound(closest);
+                statusBox.innerHTML = `<strong>Knooppunt (${closest.r}, ${closest.c}) Actief [Index: ${closest.index}]</strong><br>` +
+                                      `Zone: ${closest.zone.toUpperCase()} | Mod 21: ${closest.modVal} ${closest.isZeroDiv ? '(Nuldeler / Absorptie)' : '(Eenheid)'}<br>` +
+                                      `De Voronoi-wand treedt op als TRIMMAX-limiet om clustering te stoppen.`;
+            }
+        });
+
+        // Animatie & Voronoi Tessellatie Loop
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Update coördinaten met Jitter (Torsie) en TRIMMAX Confinement
+            const maxOffset = (cellWidth / 2) * (jitterAmount / 100);
+            const points = [];
+
+            seeds.forEach(s => {
+                s.x += s.vx;
+                s.y += s.vy;
+
+                // Fysieke Voronoi / TRIMMAX kooi: houd seed strikt rondom zijn basiscoördinaat
+                const dx = s.x - s.baseX;
+                const dy = s.y - s.baseY;
+                
+                if (Math.abs(dx) > maxOffset) { s.vx *= -1; s.x = s.baseX + Math.sign(dx) * maxOffset; }
+                if (Math.abs(dy) > maxOffset) { s.vy *= -1; s.y = s.baseY + Math.sign(dy) * maxOffset; }
+
+                // Lichte wrijving / absorptie naar rusttoestand
+                s.vx *= 0.96;
+                s.vy *= 0.96;
+                if (s.pulse > 0) s.pulse -= 0.04;
+
+                points.push(s.x, s.y);
+            });
+
+            // 2. Bereken echte Voronoi celgrenzen via d3-delaunay
+            const delaunay = new d3.Delaunay(points);
+            const voronoi = delaunay.voronoi([0, 0, width, height]);
+
+            // 3. Teken de Voronoi-cellen en grenzen
+            seeds.forEach((s, i) => {
+                const polygon = voronoi.cellPolygon(i);
+                if (!polygon) return;
+
+                ctx.beginPath();
+                ctx.moveTo(polygon[0][0], polygon[0][1]);
+                for (let j = 1; j < polygon.length; j++) {
+                    ctx.lineTo(polygon[j][0], polygon[j][1]);
+                }
+                ctx.closePath();
+
+                // Vulkleur op basis van zone & puls
+                ctx.fillStyle = s.fillStyle;
+                if (s.pulse > 0) {
+                    ctx.fillStyle = s.zone === 't13' ? `rgba(88, 166, 255, ${0.3 + s.pulse * 0.5})` : `rgba(126, 231, 135, ${0.3 + s.pulse * 0.5})`;
+                }
+                ctx.fill();
+
+                // Voronoi celwanden (De Beklemming muren)
+                ctx.lineWidth = borderWidth;
+                ctx.strokeStyle = s.strokeColor;
+                if (s.isZeroDiv) {
+                    ctx.strokeStyle = 'rgba(255, 123, 114, 0.7)'; // Rood voor nuldelers
+                    if (s.pulse > 0) ctx.strokeStyle = '#ff7b72';
+                }
+                ctx.stroke();
+
+                // Teken het knooppunt (Seed)
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.isZeroDiv ? 3.5 : 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = s.isZeroDiv ? '#ff7b72' : '#fff';
+                ctx.fill();
+            });
+
+            requestAnimationFrame(render);
+        }
+
+        render();
+    </script>
+</body>
+</html>
