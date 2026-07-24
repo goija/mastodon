@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11x11 Discrete Matrix Resonator (Mod 21 / T11+T10)</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --t11-color: #1f6feb; /* Resonante zone (66 cellen) */
+            --t10-color: #238636; /* Feedback zone (55 cellen) */
+            --zero-div-color: #da3633; /* Modulo 21 Nuldeler (Absorptie) */
+            --text-main: #c9d1d9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin-bottom: 5px; font-size: 1.5rem; letter-spacing: 1px; }
+        p.subtitle { color: #8b949e; font-size: 0.9rem; margin-top: 0; margin-bottom: 20px; }
+
+        .dashboard {
+            display: flex;
+            gap: 30px;
+            background: var(--panel-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid #30363d;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 11x11 Grid Layout */
+        #matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 42px);
+            grid-template-rows: repeat(11, 42px);
+            gap: 6px;
+        }
+
+        .cell {
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s, filter 0.2s, box-shadow 0.2s;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cell:hover {
+            transform: scale(1.15);
+            z-index: 10;
+            filter: brightness(1.3);
+        }
+
+        .cell.active {
+            transform: scale(0.95);
+            filter: brightness(2);
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        /* Geometrische zones gebaseerd op Theon van Smyrna */
+        .zone-t11 { background-color: rgba(31, 111, 235, 0.25); color: #58a6ff; border-color: #1f6feb; }
+        .zone-t10 { background-color: rgba(35, 134, 54, 0.2); color: #7ee787; border-color: #238636; }
+        
+        /* Modulo 21 Nuldelers (Akoestische absorptie) */
+        .zero-divisor {
+            background-color: rgba(218, 54, 51, 0.3) !important;
+            color: #ff7b72 !important;
+            border: 1px dashed var(--zero-div-color) !important;
+        }
+
+        .zero-divisor::after {
+            content: '•';
+            position: absolute;
+            bottom: 1px;
+            right: 4px;
+            font-size: 0.8rem;
+            color: #ff7b72;
+        }
+
+        /* Bedieningspaneel & Legenda */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 300px;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .legend-box { width: 16px; height: 16px; border-radius: 3px; display: inline-block; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        
+        button {
+            background: #21262d;
+            color: var(--text-main);
+            border: 1px solid #363b42;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        button:hover { background: #30363d; border-color: #8b949e; }
+        button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+        button.primary:hover { background: #2ea043; }
+
+        .status-box {
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: #010409;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            min-height: 60px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>11×11 Discrete Matrix Resonator</h1>
+    <p class="subtitle">Theon van Smyrna Splitsing (66+55=121) & Modulo 21 Akoestische Absorptie</p>
+
+    <div class="dashboard">
+        <div id="matrix-grid"></div>
+
+        <div class="controls">
+            <div>
+                <div class="legend">
+                    <strong>Geometrische en Modulaire Structuur:</strong>
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: var(--t11-color);"></span>
+                        <span><strong>T11 Zone (66 cellen):</strong> Hexagonaal / Resonant (Hoog FM index)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box" style="background: var(--t10-color);"></span>
+                        <span><strong>T10 Zone (55 cellen):</strong> Complementair / Feedback</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box" style="border: 1px dashed var(--zero-div-color); background: rgba(218, 54, 51, 0.3);"></span>
+                        <span><strong>Mod 21 Nuldeler:</strong> Akoestische absorptie (Snelle demping)</span>
+                    </div>
+                </div>
+
+                <div class="status-box" id="status-display">
+                    Klik op een knooppunt of start propagatie om de Web Audio API synthesizer te activeren.
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="primary" id="btn-propagate">Start Diagonale Propagatie</button>
+                <button id="btn-random">Trigger Willekeurige Constellatie</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 11;
+        const MODULO = 21;
+        // Nuldelers in Z/21Z (veelvouden van 3 en 7)
+        const ZERO_DIVISORS = [0, 3, 6, 7, 9, 12, 14, 15, 18]; 
+
+        const gridContainer = document.getElementById('matrix-grid');
+        const statusDisplay = document.getElementById('status-display');
+        let audioCtx = null;
+
+        // Web Audio API initialisatie (vereist gebruikersinteractie)
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // FM-Synthese gebaseerd op roostecoördinaten en modulo-eigenschappen
+        function triggerCellSound(row, col, index, isT11, isZeroDivisor) {
+            initAudio();
+
+            const now = audioCtx.currentTime;
+            
+            // Draaggolf frequentie berekend via roostecoördinaten
+            const carrierFreq = 110 + (row * 35) + (col * 22); 
+            
+            // Modulatie-index β: Hoger in de resonante T11 zone, lager in T10
+            const modIndex = isT11 ? 180 : 45; 
+            const modFreq = carrierFreq * (isT11 ? 1.5 : 0.75);
+
+            // Audio Nodes
+            const carrier = audioCtx.createOscillator();
+            const modulator = audioCtx.createOscillator();
+            const modGain = audioCtx.createGain();
+            const masterGain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            carrier.type = isT11 ? 'sawtooth' : 'sine';
+            modulator.type = 'sine';
+
+            modulator.frequency.setValueAtTime(modFreq, now);
+            modGain.gain.setValueAtTime(modIndex, now);
+
+            carrier.frequency.setValueAtTime(carrierFreq, now);
+
+            // Modulatie routing (FM)
+            modulator.connect(modGain);
+            modGain.connect(carrier.frequency);
+
+            // Filter instellingen (Nuldelers ageren als akoestische absorptie / low-pass)
+            filter.type = 'lowpass';
+            if (isZeroDivisor) {
+                // Akoestische absorptie: Filter slaat dicht en energie dooft extreem snel uit
+                filter.frequency.setValueAtTime(300, now);
+                filter.Q.setValueAtTime(1, now);
+                masterGain.gain.setValueAtTime(0.15, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            } else {
+                // Heldere harmonische propagatie voor eenheden
+                filter.frequency.setValueAtTime(3500, now);
+                filter.Q.setValueAtTime(8, now);
+                masterGain.gain.setValueAtTime(0.25, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            }
+
+            carrier.connect(filter);
+            filter.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+
+            modulator.start(now);
+            carrier.start(now);
+
+            const stopTime = now + (isZeroDivisor ? 0.15 : 0.65);
+            modulator.stop(stopTime);
+            carrier.stop(stopTime);
+
+            // Status update in dashboard
+            const zoneText = isT11 ? 'T11 (Hex/Resonant)' : 'T10 (Feedback)';
+            const modText = isZeroDivisor ? ' [NULDELER / ABSORPTIE]' : '';
+            statusDisplay.innerHTML = `<strong>Knooppunt (${row}, ${col})</strong> - Index: ${index}<br>` +
+                                      `Zone: ${zoneText}${modText}<br>` +
+                                      `Freq: ${carrierFreq.toFixed(1)} Hz | FM β: ${modIndex}`;
+        }
+
+        // Genereren van de 11x11 Matrix
+        const cells = [];
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const index = r * GRID_SIZE + c;
+                const modVal = index % MODULO;
+                
+                // Theon van Smyrna splitsing:
+                // Benedendriehoek inclusief diagonaal = 66 cellen (T11 / H6)
+                // Bovendriehoek = 55 cellen (T10)
+                const isT11 = (r >= c); 
+                const isZeroDivisor = ZERO_DIVISORS.includes(modVal);
+
+                const cellEl = document.createElement('div');
+                cellEl.classList.add('cell');
+                cellEl.classList.add(isT11 ? 'zone-t11' : 'zone-t10');
+                
+                if (isZeroDivisor) {
+                    cellEl.classList.add('zero-divisor');
+                }
+
+                cellEl.textContent = modVal;
+                cellEl.dataset.row = r;
+                cellEl.dataset.col = c;
+                cellEl.dataset.index = index;
+
+                cellEl.addEventListener('click', () => {
+                    cellEl.classList.add('active');
+                    setTimeout(() => cellEl.classList.remove('active'), 200);
+                    triggerCellSound(r, c, index, isT11, isZeroDivisor);
+                });
+
+                gridContainer.appendChild(cellEl);
+                cells.push({ el: cellEl, r, c, index, isT11, isZeroDivisor });
+            }
+        }
+
+        // Propagatie Simulatie: Golf beweegt diagonaal vanuit de oorsprong
+        document.getElementById('btn-propagate').addEventListener('click', () => {
+            initAudio();
+            let step = 0;
+            const maxSteps = (GRID_SIZE * 2) - 1;
+
+            const interval = setInterval(() => {
+                if (step >= maxSteps) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                // Activeer alle cellen op de huidige golffront-diagonaal (r + c === step)
+                cells.forEach(cell => {
+                    if (cell.r + cell.c === step) {
+                        cell.el.classList.add('active');
+                        setTimeout(() => cell.el.classList.remove('active'), 300);
+                        
+                        // We triggeren geluid met een kleine willekeurige vertraging voor chorus-effect
+                        setTimeout(() => {
+                            triggerCellSound(cell.r, cell.c, cell.index, cell.isT11, cell.isZeroDivisor);
+                        }, Math.random() * 40);
+                    }
+                });
+
+                step++;
+            }, 180);
+        });
+
+        // Willekeurige constellatie trigger
+        document.getElementById('btn-random').addEventListener('click', () => {
+            initAudio();
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const randomCell = cells[Math.floor(Math.random() * cells.length)];
+                    randomCell.el.classList.add('active');
+                    setTimeout(() => randomCell.el.classList.remove('active'), 250);
+                    triggerCellSound(randomCell.r, randomCell.c, randomCell.index, randomCell.isT11, randomCell.isZeroDivisor);
+                }, i * 90);
+            }
+        });
+    </script>
+</body>
+</html>
