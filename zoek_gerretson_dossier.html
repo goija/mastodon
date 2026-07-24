@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onderzoeksplatform & Dossier Gerretson (1890-1940)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #f59e0b;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --border: #374151;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container & Netwerk Grafiek */
+        #graph-container {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #172033 0%, var(--bg-dark) 100%);
+        }
+
+        svg { width: 100%; height: 100%; cursor: grab; }
+        svg:active { cursor: grabbing; }
+
+        /* Zijbalk / Onderzoeksmodule */
+        #sidebar {
+            width: 500px;
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            z-index: 10;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: #0d131f;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        #panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Secties & Kaarten */
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .info-title { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .info-role { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; }
+
+        .archive-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .archive-box h4 { font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 6px; }
+        .archive-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+        
+        .archive-link {
+            display: inline-block;
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+            background: #0f172a;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+        .archive-link:hover { background: #1e293b; border-color: var(--accent-blue); }
+
+        /* Dork & Zoekmachine Tools */
+        .dork-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dork-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .engine-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #374151;
+            color: #e2e8f0;
+            text-transform: uppercase;
+        }
+
+        .dork-title { font-size: 0.85rem; font-weight: 600; color: #f8fafc; }
+
+        .dork-code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.75rem;
+            background: #1e293b;
+            color: var(--accent-green);
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            border: 1px dashed #475569;
+        }
+
+        .dork-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+        .btn-dork {
+            flex: 1;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-dork:hover { background: #1d4ed8; }
+
+        .btn-copy {
+            background: #374151;
+            color: #cbd5e1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-copy:hover { background: #4b5563; color: white; }
+
+        /* Filter Controls */
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(17, 24, 39, 0.9);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 5;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .legend-item:hover { opacity: 0.8; }
+        .legend-color { width: 14px; height: 14px; border-radius: 50%; }
+
+        /* Graph Stijlen */
+        .link { stroke-opacity: 0.5; stroke-width: 2px; transition: stroke-opacity 0.2s; }
+        .link.conflict { stroke-dasharray: 5, 5; stroke: var(--accent-red) !important; stroke-width: 2.5px; }
+        .node circle { stroke: #fff; stroke-width: 2px; transition: transform 0.2s, stroke-width 0.2s; }
+        .node:hover circle { transform: scale(1.15); stroke-width: 3px; }
+        .node text { font-size: 12px; font-weight: 600; fill: #e2e8f0; pointer-events: none; text-shadow: 0 1px 4px #000, 0 0 8px #000; }
+    </style>
+</head>
+<body>
+
+    <div id="graph-container">
+        <div class="controls">
+            <strong style="font-size: 0.9rem; margin-bottom: 4px; color: #fff;">Domeinen (Klik om te filteren)</strong>
+            <div class="legend-item" onclick="filterGroup('all')"><span class="legend-color" style="background: #ffffff;"></span><span>Toon Volledig Netwerk</span></div>
+            <div class="legend-item" onclick="filterGroup('kapitaal')"><span class="legend-color" style="background: var(--accent-gold);"></span><span>Kapitaal & Olie (BPM/Shell)</span></div>
+            <div class="legend-item" onclick="filterGroup('politiek')"><span class="legend-color" style="background: var(--accent-blue);"></span><span>Politiek & Militair (Staat/KNIL)</span></div>
+            <div class="legend-item" onclick="filterGroup('academie')"><span class="legend-color" style="background: var(--accent-purple);"></span><span>Conservatieve Academie (Utrecht)</span></div>
+            <div class="legend-item" onclick="filterGroup('ethisch')"><span class="legend-color" style="background: var(--accent-green);"></span><span>Reformistische Academie (Leiden)</span></div>
+        </div>
+        <svg id="network"></svg>
+    </div>
+
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h1>Onderzoeksplatform Dossier Gerretson</h1>
+            <p>Klik op een knooppunt om de archiefbronnen, historische inventarissen en gerichte zoek-dorks te activeren.</p>
+        </div>
+        <div id="panel-content">
+            <div style="text-align: center; color: var(--text-muted); margin-top: 40px;">
+                <p style="font-size: 1rem; margin-bottom: 10px;">👈 Selecteer een persoon of instelling in het netwerk.</p>
+                <p style="font-size: 0.85rem;">Het systeem laadt direct de relevante primaire bronnen, inventarisnummers en geautomatiseerde zoekopdrachten voor Delpher, Nationaal Archief en Oorlogsbronnen.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. DATABASE MET HISTORISCHE ARCHIEVEN EN DORKS
+        const graphData = {
+            nodes: [
+                {
+                    id: 'gerretson', label: 'F.C. Gerretson', group: 'academie', radius: 26,
+                    role: 'De intellectuele spil en hofhistoricus. Secretaris bij de BPM, dichter (pseudoniem Geerten Gossaert), en buitengewoon hoogleraar koloniale geschiedenis aan de Utrechtse "olie-faculteit".',
+                    archives: [
+                        { name: 'Nationaal Archief (NA)', title: 'Collectie F.C. Gerretson (1884-1958)', inv: 'Toegang 2.21.183.27', desc: 'Bevat correspondentie met Colijn, Deterding en stukken betreffende de strijd tegen de Leidse indologen en zijn werk voor de BPM.', url: 'https://www.nationaalarchief.nl/onderzoeken/archief/2.21.183.27' },
+                        { name: 'Huygens ING', title: 'Biografisch Woordenboek van Nederland', inv: 'BWN lemma Gerretson', desc: 'Diepgaande biografische analyse van zijn wetenschappelijke, literaire en zakelijke dubbelrollen.', url: 'https://resources.huygens.knaw.nl/bwn1880-2000/lemmata/bwn2/gerretson' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Strijd rond de Olie-faculteit (1925-1930)', query: '("F.C. Gerretson" OR "Geerten Gossaert") AND ("olie-faculteit" OR "Utrecht") AND "Leiden"', url: 'https://www.delpher.nl/nl/kranten/results?query=%28%22F.C.+Gerretson%22+OR+%22Geerten+Gossaert%22%29+AND+%28%22olie-faculteit%22+OR+%22Utrecht%22%29+AND+%22Leiden%22' },
+                        { engine: 'Google Scholar', label: 'Academische publicaties over Gerretson & BPM', query: '"F.C. Gerretson" AND ("Bataafsche Petroleum Maatschappij" OR "Indologen")', url: 'https://scholar.google.com/scholar?q=%22F.C.+Gerretson%22+AND+%28%22Bataafsche+Petroleum+Maatschappij%22+OR+%22Indologen%22%29' },
+                        { engine: 'Google Dork (NA)', label: 'Directe archiefstukken Nationaal Archief', query: 'site:nationaalarchief.nl "2.21.183.27" OR "Gerretson" "Colijn" "petroleum"', url: 'https://www.google.com/search?q=site%3Anationaalarchief.nl+%222.21.183.27%22+OR+%22Gerretson%22+%22Colijn%22+%22petroleum%22' },
+                        { engine: 'Oorlogsbronnen', label: 'Politieke en behoudende stellingname j\'30/WOII', query: '"F.C. Gerretson" AND ("Vaderlandsche Club" OR "koloniaal")', url: 'https://www.oorlogsbronnen.nl/zoeken?q=%22F.C.+Gerretson%22+AND+%28%22Vaderlandsche+Club%22+OR+%22koloniaal%22%29' }
+                    ]
+                },
+                {
+                    id: 'bpm', label: 'BPM / Koninklijke Olie', group: 'kapitaal', radius: 30,
+                    role: 'De Bataafsche Petroleum Maatschappij (werkmaatschappij van Koninklijke Olie/Shell). De motor achter extractie in Indië en geldschieter voor het conservatieve bestuursnetwerk.',
+                    archives: [
+                        { name: 'Nationaal Archief', title: 'Archief Ministerie van Koloniën: Indische Mijnwet', inv: 'Toegang 2.10.36', desc: 'Concessiedossiers, oliewinning op Sumatra en Borneo, en ambtelijke correspondentie over monopolievorming.', url: 'https://www.nationaalarchief.nl/onderzoeken/archief/2.10.36' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Debat Indische Mijnwet & Oliebelangen', query: '"Bataafsche Petroleum Maatschappij" AND ("Mijnwet" OR "concessie" OR "Colijn")', url: 'https://www.delpher.nl/nl/kranten/results?query=%22Bataafsche+Petroleum+Maatschappij%22+AND+%28%22Mijnwet%22+OR+%22concessie%22+OR+%22Colijn%22%29' },
+                        { engine: 'Google Dork', label: 'PDF-studies naar BPM en Utrechtse Indologen', query: 'filetype:pdf ("Koninklijke Olie" OR "BPM") AND "Fonds ten behoeve van Indologische Studiën"', url: 'https://www.google.com/search?q=filetype%3Apdf+%28%22Koninklijke+Olie%22+OR+%22BPM%22%29+AND+%22Fonds+ten+behoeve+van+Indologische+Studi%C3%ABn%22' },
+                        { engine: 'Delpher Boeken', label: 'Gerretson\'s monumentale bedrijfsgeschiedenis', query: 'title:"Geschiedenis van de Koninklijke" AND author:"Gerretson"', url: 'https://www.delpher.nl/nl/boeken/results?query=title%3A%22Geschiedenis+van+de+Koninklijke%22+AND+author%3A%22Gerretson%22' }
+                    ]
+                },
+                {
+                    id: 'colijn', label: 'H. Colijn', group: 'politiek', radius: 28,
+                    role: 'De centrale machtsmakelaar. Ex-KNIL officier onder Van Heutsz, minister van Oorlog, directeur bij BPM, en meervoudig minister-president van Nederland.',
+                    archives: [
+                        { name: 'Historisch Centrum (VU)', title: 'Archief-Colijn & Brieveninventaris', inv: 'Collectie H. Colijn (1869-1944)', desc: 'Correspondentie over de verwevenheid tussen Nederlands regeringsbeleid, oliediplomatie en koloniale pacificatie.', url: 'https://www.geheugenvandevu.nl/' },
+                        { name: 'Huygens ING', title: 'Briefwisseling H. Colijn (online editie)', inv: 'Digitale bronnenpublicatie', desc: 'Gepubliceerde en geannoteerde brieven tussen Colijn, Deterding, Gerretson en ministers van Koloniën.', url: 'https://resources.huygens.knaw.nl/' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Overstap van politiek naar BPM directie (1914)', query: '"H. Colijn" AND ("B.P.M." OR "Carel van Bylandtlaan" OR "Deterding")', url: 'https://www.delpher.nl/nl/kranten/results?query=%22H.+Colijn%22+AND+%28%22B.P.M.%22+OR+%22Carel+van+Bylandtlaan%22+OR+%22Deterding%22%29' },
+                        { engine: 'Google Dork', label: 'Colijn, Gerretson en de Indische Mijnwet', query: '"Colijn" AND "Gerretson" AND "Indische Mijnwet" OR "petroleum-politiek"', url: 'https://www.google.com/search?q=%22Colijn%22+AND+%22Gerretson%22+AND+%22Indische+Mijnwet%22+OR+%22petroleum-politiek%22' }
+                    ]
+                },
+                {
+                    id: 'utrecht', label: 'Universiteit Utrecht (UU)', group: 'academie', radius: 24,
+                    role: 'De in 1925 opgerichte Indologische Faculteit (de "olie- of suiker-faculteit"). Financiële steun van de BPM moest een conservatief alternatief voor Leiden garanderen.',
+                    archives: [
+                        { name: 'Het Utrechts Archief', title: 'Archief van de Universiteit Utrecht', inv: 'Toegang 123 - Indologische Studiën', desc: 'Notulen van curators, oprichtingsakten van het Indologisch Fonds en benoemingsdossiers van Gerretson en Treub.', url: 'https://hetutrechtsarchief.nl/' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Publieke hoon en debat over "petroleum-faculteit"', query: '("olie-faculteit" OR "petroleum-faculteit" OR "suiker-faculteit") AND ("Utrecht" OR "Gerretson")', url: 'https://www.delpher.nl/nl/kranten/results?query=%28%22olie-faculteit%22+OR+%22petroleum-faculteit%22+OR+%22suiker-faculteit%22%29+AND+%28%22Utrecht%22+OR+%22Gerretson%22%29' },
+                        { engine: 'Google Dork', label: 'Oprichtingsstatuten en geldschieters', query: '"Fonds ten behoeve van Indologische Studiën" AND ("BPM" OR "Shell" OR "Treub" OR "Ondernemersraad")', url: 'https://www.google.com/search?q=%22Fonds+ten+behoeve+van+Indologische+Studi%C3%ABn%22+AND+%28%22BPM%22+OR+%22Shell%22+OR+%22Treub%22+OR+%22Ondernemersraad%22%29' }
+                    ]
+                },
+                {
+                    id: 'leiden', label: 'Universiteit Leiden', group: 'ethisch', radius: 24,
+                    role: 'Het traditionele bolwerk voor Indische bestuursambtenaren (Van Vollenhoven, Snouck Hurgronje). Pleitte voor ethische politiek, inheemse emancipatie en respect voor het adatrecht.',
+                    archives: [
+                        { name: 'Universitaire Bibliotheek Leiden', title: 'Archief Cornelis van Vollenhoven & Snouck Hurgronje', inv: 'Bijzondere Collecties UBL', desc: 'Stukken over het verzet tegen de westerse kapitaalbelangen in Indië en de confrontatie met het Utrechtse kamp.', url: 'https://www.library.universiteitleiden.nl/special-collections' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Tijdschriften', label: 'Het manifest "De aanslag op Leiden" (De Gids, 1925)', query: '"De aanslag op Leiden" AND ("Van Vollenhoven" OR "Snouck Hurgronje" OR "Krom")', url: 'https://www.delpher.nl/nl/tijdschriften/results?query=%22De+aanslag+op+Leiden%22+AND+%28%22Van+Vollenhoven%22+OR+%22Snouck+Hurgronje%22+OR+%22Krom%22%29' },
+                        { engine: 'Google Scholar', label: 'De wetenschappelijke strijd: Adatrecht vs Koloniaal Gezag', query: '"Van Vollenhoven" AND "Gerretson" AND ("Adatrecht" OR "Koloniale Opleidingsstrijd")', url: 'https://scholar.google.com/scholar?q=%22Van+Vollenhoven%22+AND+%22Gerretson%22+AND+%28%22Adatrecht%22+OR+%22Koloniale+Opleidingsstrijd%22%29' }
+                    ]
+                },
+                {
+                    id: 'deterding', label: 'Henri Deterding', group: 'kapitaal', radius: 20,
+                    role: 'Algemeen directeur Koninklijke Olie. Stuurde aan op meedogenloze zakelijke expansie en raakte eind jaren \'30 in diskrediet door openlijke financiële steun aan nazi-Duitsland.',
+                    archives: [
+                        { name: 'Nationaal Archief / NIOD', title: 'Dossiers Deterding & pro-Duitse connecties', inv: 'Diverse archiefvormers WOII', desc: 'Stukken over zijn politieke stellingname, antisovjet-campagnes en de verdediging van de raffinaderijen via vernielingskorpsen.', url: 'https://www.oorlogsbronnen.nl/' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Deterding\'s 25-jarig BPM jubileum & opdrachten', query: '"Henri Deterding" AND ("25-jarig jubileum" OR "Gerretson" OR "geschiedschrijving")', url: 'https://www.delpher.nl/nl/kranten/results?query=%22Henri+Deterding%22+AND+%28%2225-jarig+jubileum%22+OR+%22Gerretson%22+OR+%22geschiedschrijving%22%29' },
+                        { engine: 'Oorlogsbronnen', label: 'Deterding en controversiële politieke invloed', query: '"Henri Deterding" AND ("Duitsland" OR "olie" OR "geopolitiek")', url: 'https://www.oorlogsbronnen.nl/zoeken?q=%22Henri+Deterding%22+AND+%28%22Duitsland%22+OR+%22olie%22+OR+%22geopolitiek%22%29' }
+                    ]
+                },
+                {
+                    id: 'treub', label: 'M.W.F. Treub / Ondernemersraad', group: 'kapitaal', radius: 20,
+                    role: 'Oud-minister van Financiën, daarna lobbyheer. Voorzitter van de Ondernemersraad voor Nederlandsch-Indië die het grootkapitaal bundelde tegen sociale hervormingen.',
+                    archives: [],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Lobbykracht van de Ondernemersraad', query: '"Ondernemersraad voor Nederlandsch-Indië" AND ("Treub" OR "B.P.M." OR "suikersyndicaat")', url: 'https://www.delpher.nl/nl/kranten/results?query=%22Ondernemersraad+voor+Nederlandsch-Indi%C3%AB%22+AND+%28%22Treub%22+OR+%22B.P.M.%22+OR+%22suikersyndicaat%22%29' }
+                    ]
+                },
+                {
+                    id: 'knil', label: 'KNIL & Koloniaal Gezag', group: 'politiek', radius: 20,
+                    role: 'Het Koninklijk Nederlandsch-Indisch Leger en de bestuursambtenaren in Batavia, verantwoordelijk voor de rust en orde rondom petroleumsteden zoals Balikpapan en Plaju.',
+                    archives: [
+                        { name: 'NIMH / Nationaal Archief', title: 'Militaire Verslagen & Pacificatie Atjeh/Borneo', inv: 'Archief KNIL & Gouverneur-Generaal', desc: 'Operationele rapporten over het militair veiligstellen van grondstoffen en concessiegebieden.', url: 'https://www.nationaalarchief.nl/' }
+                    ],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'Militaire beveiliging olie-installaties', query: '("K.N.I.L." OR "KNIL" OR "leger") AND ("Balikpapan" OR "Pladjoe" OR "aardolie" OR "concessie")', url: 'https://www.delpher.nl/nl/kranten/results?query=%28%22K.N.I.L.%22+OR+%22KNIL%22+OR+%22leger%22%29+AND+%28%22Balikpapan%22+OR+%22Pladjoe%22+OR+%22aardolie%22+OR+%22concessie%22%29' },
+                        { engine: 'Oorlogsbronnen', label: 'De Vernielingskorpsen olievelden (1941-1942)', query: '("vernielingskorps" OR "olievelden" OR "BPM") AND ("Japan" OR "inval" OR "Balikpapan")', url: 'https://www.oorlogsbronnen.nl/zoeken?q=%28%22vernielingskorps%22+OR+%22olievelden%22+OR+%22BPM%22%29+AND+%28%22Japan%22+OR+%22inval%22+OR+%22Balikpapan%22%29' }
+                    ]
+                },
+                {
+                    id: 'loudon', label: 'Hugo Loudon', group: 'kapitaal', radius: 18,
+                    role: 'Medeoprichter van Koninklijke Olie en vertegenwoordiger van de aristocratische elite in het concern.',
+                    archives: [],
+                    dorks: [
+                        { engine: 'Delpher Kranten', label: 'De rol van de familie Loudon in de olie', query: '"Hugo Loudon" AND ("Koninklijke Olie" OR "B.P.M.")', url: 'https://www.delpher.nl/nl/kranten/results?query=%22Hugo+Loudon%22+AND+%28%22Koninklijke+Olie%22+OR+%22B.P.M.%22%29' }
+                    ]
+                }
+            ],
+            links: [
+                { source: 'deterding', target: 'bpm', relation: 'Leiding & Oprichting' },
+                { source: 'loudon', target: 'bpm', relation: 'Leiding & Oprichting' },
+                { source: 'treub', target: 'bpm', relation: 'Lobby & Belangenbehartiging' },
+                { source: 'colijn', target: 'bpm', relation: 'Directeur & Strategisch Adviseur' },
+                { source: 'colijn', target: 'knil', relation: 'Oud-officier Atjeh & Minister van Koloniën' },
+                { source: 'colijn', target: 'gerretson', relation: 'Ontdekker, politiek mentor en werkgever' },
+                { source: 'deterding', target: 'gerretson', relation: 'Opdrachtgever en financier jubileumboek BPM' },
+                { source: 'gerretson', target: 'utrecht', relation: 'Bijzonder Hoogleraar Koloniale Geschiedenis' },
+                { source: 'bpm', target: 'utrecht', relation: 'Directe financiering Indologisch Fonds' },
+                { source: 'knil', target: 'bpm', relation: 'Militaire bescherming olievelden' },
+                { source: 'utrecht', target: 'leiden', relation: 'Ideologische strijd ("De aanslag op Leiden")', conflict: true }
+            ]
+        };
+
+        const colorMap = { kapitaal: '#f59e0b', politiek: '#38bdf8', academie: '#c084fc', ethisch: '#34d399' };
+        const groupNames = { kapitaal: 'Kapitaal & Olie', politiek: 'Politiek & Militair', academie: 'Conservatieve Academie', ethisch: 'Reformistische Academie' };
+
+        // 2. D3 SETUP & SIMULATIE
+        const container = document.getElementById('graph-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const svg = d3.select('#network').attr('viewBox', `0 0 ${width} ${height}`);
+        const g = svg.append('g');
+
+        svg.call(d3.zoom().extent([[0, 0], [width, height]]).scaleExtent([0.4, 3]).on('zoom', (e) => g.attr('transform', e.transform)));
+
+        const simulation = d3.forceSimulation(graphData.nodes)
+            .force('link', d3.forceLink(graphData.links).id(d => d.id).distance(130))
+            .force('charge', d3.forceManyBody().strength(-550))
+            .force('center', d3.forceCenter(width / 2, height / 2))
+            .force('collision', d3.forceCollide().radius(d => d.radius + 15));
+
+        const link = g.append('g').selectAll('line').data(graphData.links).join('line')
+            .attr('class', d => d.conflict ? 'link conflict' : 'link').attr('stroke', '#475569');
+
+        const node = g.append('g').selectAll('g').data(graphData.nodes).join('g')
+            .attr('class', 'node')
+            .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+            .on('click', handleNodeClick);
+
+        node.append('circle').attr('r', d => d.radius).attr('fill', d => colorMap[d.group]);
+        node.append('text').attr('x', d => d.radius + 6).attr('y', 4).text(d => d.label);
+
+        simulation.on('tick', () => {
+            link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+            node.attr('transform', d => `translate(${d.x},${d.y})`);
+        });
+
+        // 3. INTERACTIE & GENEREREN VAN ONDERZOEKSDOSSIER
+        function handleNodeClick(event, d) {
+            d3.selectAll('circle').attr('stroke', '#fff').attr('stroke-width', 2);
+            d3.selectAll('.link').attr('stroke-opacity', 0.15);
+
+            d3.select(event.currentTarget).select('circle').attr('stroke', '#38bdf8').attr('stroke-width', 4);
+
+            const connectedLinks = graphData.links.filter(l => l.source.id === d.id || l.target.id === d.id);
+            const connectedNodeIds = new Set();
+            
+            link.filter(l => l.source.id === d.id || l.target.id === d.id)
+                .attr('stroke-opacity', 1).attr('stroke', l => l.conflict ? '#ef4444' : '#38bdf8');
+
+            connectedLinks.forEach(l => {
+                connectedNodeIds.add(l.source.id);
+                connectedNodeIds.add(l.target.id);
+            });
+
+            node.filter(n => connectedNodeIds.has(n.id)).select('circle').attr('stroke', '#38bdf8');
+
+            // Render Sidebar
+            const panel = document.getElementById('panel-content');
+            
+            // Archiefbronnen HTML
+            let archivesHtml = '';
+            if (d.archives && d.archives.length > 0) {
+                archivesHtml = `
+                    <div class="section-title">🏛️ Primaire Archiefbronnen & Inventarissen</div>
+                    ${d.archives.map(a => `
+                        <div class="archive-box">
+                            <h4>${a.name} — ${a.title}</h4>
+                            <p><strong>Inventaris:</strong> ${a.inv}<br>${a.desc}</p>
+                            <a href="${a.url}" target="_blank" class="archive-link">Open Archiefinventaris ↗</a>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            // Zoek Dorks HTML
+            let dorksHtml = '';
+            if (d.dorks && d.dorks.length > 0) {
+                dorksHtml = `
+                    <div class="section-title" style="margin-top: 10px;">🔍 Live Archief- & Google Dorks</div>
+                    ${d.dorks.map((dork, i) => `
+                        <div class="dork-card">
+                            <div class="dork-header">
+                                <span class="dork-title">${dork.label}</span>
+                                <span class="engine-tag">${dork.engine}</span>
+                            </div>
+                            <div class="dork-code" id="dork-code-${i}">${dork.query}</div>
+                            <div class="dork-actions">
+                                <a href="${dork.url}" target="_blank" class="btn-dork">⚡ Zoek direct in ${dork.engine.split(' ')[0]} ↗</a>
+                                <button class="btn-copy" onclick="copyDork('dork-code-${i}', this)">Kopieer query</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            // Directe verbindingen HTML
+            let connectionsHtml = connectedLinks.map(l => {
+                const otherNode = l.source.id === d.id ? l.target : l.source;
+                return `<div style="font-size: 0.85rem; background: #0f172a; padding: 8px 12px; border-radius: 6px; border-left: 3px solid ${colorMap[otherNode.group]}; margin-bottom: 6px;">
+                    <strong style="color: #fff;">${otherNode.label}</strong>: ${l.relation}
+                </div>`;
+            }).join('');
+
+            panel.innerHTML = `
+                <div>
+                    <span class="badge" style="background-color: ${colorMap[d.group]}20; color: ${colorMap[d.group]}; border: 1px solid ${colorMap[d.group]}">
+                        ${groupNames[d.group]}
+                    </span>
+                    <div class="info-title">${d.label}</div>
+                    <div class="info-role">${d.role}</div>
+                </div>
+                
+                <div class="section-title">🔗 Directe Machtsverbindingen</div>
+                <div>${connectionsHtml}</div>
+
+                ${archivesHtml}
+                ${dorksHtml}
+            `;
+        }
+
+        // Kopieer functie voor dork queries
+        window.copyDork = function(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'Gekopieerd!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = '#374151';
+                }, 1500);
+            });
+        };
+
+        // Filter Controls
+        window.filterGroup = function(group) {
+            if (group === 'all') {
+                node.transition().style('opacity', 1);
+                link.transition().style('opacity', 0.5);
+            } else {
+                node.transition().style('opacity', d => d.group === group ? 1 : 0.15);
+                link.transition().style('opacity', l => (l.source.group === group || l.target.group === group) ? 0.8 : 0.05);
+            }
+        };
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x; d.fy = d.y;
+        }
+        function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null; d.fy = null;
+        }
+
+        window.addEventListener('resize', () => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            svg.attr('viewBox', `0 0 ${w} ${h}`);
+            simulation.force('center', d3.forceCenter(w / 2, h / 2));
+            simulation.alpha(0.3).restart();
+        });
+    </script>
+</body>
+</html>
