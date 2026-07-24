@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wereldwijde Maritieme, Juridische en Funeraire Atlas</title>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: #131c2e;
+            --card-bg: #1e293b;
+            --card-hover: #27354f;
+            --accent-blue: #38bdf8;
+            --accent-gold: #fbbf24;
+            --accent-green: #34d399;
+            --accent-purple: #c084fc;
+            --accent-red: #f87171;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --player-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 6rem;
+        }
+
+        /* Header & Navigatie */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border-bottom: 2px solid var(--border-color);
+            padding: 2.5rem 1rem 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        header h1 span {
+            color: var(--accent-gold);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 900px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-btn {
+            background: var(--panel-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            border-color: var(--accent-blue);
+            background: var(--card-bg);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Container & Layout */
+        .container {
+            max-width: 1350px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Module 1: Zoekmachine & Raster */
+        .search-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 950px) {
+            .search-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: var(--panel-bg);
+            padding: 1.8rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            align-self: start;
+            position: sticky;
+            top: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .filter-group {
+            margin-bottom: 1.3rem;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--card-bg);
+            color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: var(--border-color);
+        }
+
+        .metrics-box {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .metrics-box strong {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        /* Raster Kaarten */
+        .nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .node-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .node-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .node-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .badge-voc { background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .badge-wic { background: rgba(251, 191, 36, 0.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .badge-bestuur { background: rgba(52, 211, 153, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .badge-militaire { background: rgba(248, 113, 113, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        .node-meta {
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .node-desc {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .archival-box {
+            background: var(--bg-dark);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            margin-bottom: 1.2rem;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .archival-box strong {
+            color: var(--accent-blue);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            border: none;
+            background: var(--accent-blue);
+            color: #000;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-hover);
+            color: #fff;
+        }
+
+        .btn-link {
+            padding: 0.65rem 0.8rem;
+            background: var(--card-bg);
+            color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-link:hover {
+            background: var(--border-color);
+        }
+
+        .highlight {
+            background-color: rgba(251, 191, 36, 0.35);
+            color: #fff;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* Module 2: Route & Erfenis Simulator */
+        .simulator-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .persona-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .persona-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .persona-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .persona-card.active {
+            border-color: var(--accent-gold);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .persona-card h4 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .persona-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .journey-steps {
+            position: relative;
+            border-left: 3px solid var(--accent-blue);
+            margin-left: 1rem;
+            padding-left: 2rem;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 2rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 1.5rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            border: 3px solid var(--panel-bg);
+        }
+
+        .step-tag {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .step-item h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Vaste Webplayer onderin */
+        .webplayer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--player-bg);
+            border-top: 2px solid var(--accent-blue);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .webplayer-bar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.8rem;
+                text-align: center;
+            }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 280px;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 24px;
+            width: 32px;
+        }
+
+        .vis-bar {
+            width: 4px;
+            background: var(--accent-blue);
+            border-radius: 2px 2px 0 0;
+            height: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .playing .vis-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .vis-bar:nth-child(2) { animation: bounce 0.4s infinite alternate 0.1s; }
+        .playing .vis-bar:nth-child(3) { animation: bounce 0.7s infinite alternate 0.2s; }
+        .playing .vis-bar:nth-child(4) { animation: bounce 0.5s infinite alternate 0.15s; }
+        .playing .vis-bar:nth-child(5) { animation: bounce 0.65s infinite alternate 0.05s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 24px; background: var(--accent-gold); }
+        }
+
+        .player-text h4 {
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 320px;
+        }
+
+        .player-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ctrl-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--accent-blue);
+            color: #000;
+            transform: scale(1.08);
+        }
+
+        .ctrl-btn-primary {
+            background: var(--accent-blue);
+            color: #000;
+            width: 46px;
+            height: 46px;
+            font-size: 1.3rem;
+        }
+
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-volume input[type="range"] {
+            width: 100px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Wereldwijde Maritieme, Juridische & <span>Funeraire Atlas</span></h1>
+    <p>Doorzoekbare databank en routesimulator voor schepenbanken, weeskamers, factorijen en historische begraafplaatsen van de VOC, WIC en het Europese vasteland (16e - 20e eeuw).</p>
+    
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('zoeker')">🔍 Atlas Zoekmachine & Raster</button>
+        <button class="tab-btn" onclick="switchTab('simulator')">🧭 Historische Route & Erfenis Simulator</button>
+    </div>
+</header>
+
+<div class="container">
+    <div id="tab-zoeker" class="tab-content active">
+        <div class="search-layout">
+            <aside class="sidebar">
+                <h2>🔍 Filter & Zoekcriteria</h2>
+                
+                <div class="filter-group">
+                    <label for="search-input">Vrij Zoeken</label>
+                    <input type="text" id="search-input" placeholder="Bijv. Batavia, Loncke, 1.04.18.03, Beth Haim..." oninput="executeSearch()">
+                </div>
+
+                <div class="filter-group">
+                    <label for="network-select">Historische Sfeer / Netwerk</label>
+                    <select id="network-select" onchange="executeSearch()">
+                        <option value="alle">Alle Historische Netwerken</option>
+                        <option value="voc">VOC & Aziatisch Handelsnetwerk</option>
+                        <option value="wic">WIC, MCC & Atlantische Wereld</option>
+                        <option value="bestuur">Europees & Binnenlands Bestuur</option>
+                        <option value="militaire">Wereldwijde Oorlogsgraven & Erevelden</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="category-select">Categorie / Brontype</label>
+                    <select id="category-select" onchange="executeSearch()">
+                        <option value="alle">Alle Categorieën & Brontypen</option>
+                        <option value="rechtspraak">Schepenbanken & Weeskamers</option>
+                        <option value="funerair">Begraafplaatsen & Funerair Erfgoed</option>
+                        <option value="handel">Handelsfactorijen & Maritieme Havens</option>
+                    </select>
+                </div>
+
+                <button class="btn-reset" onclick="resetFilters()">↺ Wis Alle Filters</button>
+
+                <div class="metrics-box">
+                    <div style="margin-bottom: 0.5rem;">Geselecteerde knooppunten: <strong id="stat-count">0</strong></div>
+                    <div style="margin-bottom: 0.5rem;">Gekoppelde archiefreeksen: <strong id="stat-series">14</strong></div>
+                    <div>Dekking tijdvak: <strong>1500 – 1945</strong></div>
+                </div>
+            </aside>
+
+            <main class="nodes-grid" id="nodes-container">
+                </main>
+        </div>
+    </div>
+
+    <div id="tab-simulator" class="tab-content">
+        <div class="simulator-panel">
+            <h2 style="color: #fff; margin-bottom: 0.5rem;">Historische Route & Erfenis Simulator</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Selecteer een historisch profiel om visueel stap-voor-stap te zien langs welke havensteden hun reis liep, bij welke schepenbank hun bezit en testament werd geregistreerd, via welke weeskamer hun nalatenschap werd afgewikkeld en waar hun grafzerk of gedenkteken zich bevindt.
+            </p>
+
+            <div class="persona-selector">
+                <div class="persona-card active" onclick="selectPersona('voc')">
+                    <h4>⚓ VOC Opperkoopman</h4>
+                    <p>Vertrek Middelburg ➔ Batavia ➔ Weeskamer Middelburg</p>
+                </div>
+                <div class="persona-card" onclick="selectPersona('wic')">
+                    <h4>🌱 WIC Plantage-eigenaar</h4>
+                    <p>Amsterdam ➔ Paramaribo ➔ Jodensavanne</p>
+                </div>
+                <div class="persona-card" onclick="selectPersona('zeeuw')">
+                    <h4>⛵ Zeeuwse Beurtschipper</h4>
+                    <p>Tholen (Kaaij) ➔ Roosendaalse Vliet ➔ RAZE Tholen</p>
+                </div>
+                <div class="persona-card" onclick="selectPersona('vlieger')">
+                    <h4>🛩️ Geallieerde Vlieger (WOII)</h4>
+                    <p>US 8th Air Force ➔ Neder-Betuwe ➔ Margraten Ereveld</p>
+                </div>
+            </div>
+
+            <div id="journey-content" class="journey-steps">
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="webplayer-bar">
+    <div class="player-info">
+        <div class="visualizer" id="visualizer">
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+        </div>
+        <div class="player-text">
+            <h4 id="player-title">Geen archiefcast geselecteerd</h4>
+            <p id="player-sub">Selecteer een knooppunt of lezing om de audioreconstructie af te spelen</p>
+        </div>
+    </div>
+
+    <div class="player-controls">
+        <button class="ctrl-btn ctrl-btn-primary" id="play-pause-btn" onclick="togglePlay()" title="Afspelen/Pauzeren">▶</button>
+        <button class="ctrl-btn" onclick="stopPlayer()" title="Stop">■</button>
+    </div>
+
+    <div class="player-volume">
+        <span style="font-size: 1.1rem;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" onchange="updateVolume(this.value)">
+    </div>
+</div>
+
+<audio id="html5-audio" crossorigin="anonymous"></audio>
+
+<script>
+    // 1. DATABASE MET HISTORISCHE KNOOPPUNTEN (NODES)
+    const atlasDatabase = [
+        {
+            id: "VOC-BATAVIA-SB",
+            title: "Schepenbank & Weeskamer van Batavia",
+            network: "voc",
+            category: "rechtspraak",
+            location: "Batavia (Jakarta), Java, Indonesië",
+            period: "1620 – 1809",
+            badge: "badge-voc",
+            networkLabel: "VOC & Azië",
+            desc: "De Schepenbank van Batavia vormde het juridische hart van de VOC-hoofdstad in Azië. Hier werden transportakten van onroerend goed, hypotheken, testamenten en civiele vonnissen van VOC-dienaren en vrijburgers vastgelegd. De daaraan gekoppelde Weeskamer beheerde de nalatenschappen van overleden compagniepersoneel en stuurde boedelrekeningen naar de Republiek.",
+            archival: "Nationaal Archief Den Haag, toegang 1.04.18.03 (Schepenbank Batavia) & 1.04.18.02 (Weeskamer). Inventarisnummers 11942 e.v.",
+            url: "https://www.nationaalarchief.nl/onderzoeken/archief/1.04.18.03",
+            audioTitle: "Archiefcast: De boedels van Batavia en de overzeese weeskamer",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "VOC-TAMAN-PRASASTI",
+            title: "Begraafplaats Taman Prasasti (Weltevreden)",
+            network: "voc",
+            category: "funerair",
+            location: "Jakarta, Indonesië",
+            period: "1795 – heden (Grafzerken vanaf 17e eeuw)",
+            badge: "badge-voc",
+            networkLabel: "VOC & Azië",
+            desc: "Voormalig Kerkhof Weltevreden. Hier naartoe zijn honderden monumentale grafzerken overgebracht uit de Hollandsche Kerk en de Binnenportugeesche Kerk van Oud-Batavia. Een cruciaal stenen archief voor genealogisch onderzoek naar VOC-gouverneurs-generaal, opperkooplieden en legerofficieren.",
+            archival: "Epigrafische collecties Taman Prasasti; transcripties via Bloys van Treslong Prins en CBG Verzamelingen (Indische genealogie).",
+            url: "https://www.cbg.nl",
+            audioTitle: "Lezing: Grafzerken en heraldiek van de VOC-elite in Batavia",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "WIC-PARAMARIBO-JUSTITIE",
+            title: "Raad van Politie en Justitie in Suriname",
+            network: "wic",
+            category: "rechtspraak",
+            location: "Paramaribo, Suriname",
+            period: "1669 – 1828",
+            badge: "badge-wic",
+            networkLabel: "WIC & Atlantische Wereld",
+            desc: "De Raad van Politie en Justitie fungeerde als schepenbank en hoogste gerechtshof in de kolonie Suriname. Het archief bevat verkoopakten van plantages, hypothecatiën, manumissies (vrijlatingen), boedelrekeningen en testamenten van planters, administrateurs en vrijgelatenen.",
+            archival: "Nationaal Archief Den Haag, toegang 1.05.10.02 (Hof van Politie en Justitie) & 1.05.11.11 (Gedeputeerde Bestuursarchieven Suriname).",
+            url: "https://www.nationaalarchief.nl/onderzoeken/archief/1.05.10.02",
+            audioTitle: "Podcast: Plantage-archieven en manumissie-akten in Paramaribo",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "WIC-JODENSAVANNE",
+            title: "Sefardisch-Joodse Begraafplaats Jodensavanne & Cassipora",
+            network: "wic",
+            category: "funerair",
+            location: "Para-district, Suriname",
+            period: "1652 – 1832",
+            badge: "badge-wic",
+            networkLabel: "WIC & Atlantische Wereld",
+            desc: "Werelderfgoed en rustplaats van de Portugees-Joodse plantage-elite aan de Surinamerivier. Bevat honderden rijk gebeeldhouwde marmeren en hardstenen grafzerken met Hebreeuwse, Portugese en Nederlandse inscripties. Direct verbonden met families als De la Parra, Bueno de Mesquita en Nassy.",
+            archival: "Documentatie Jodensavanne Foundation; fotobeeldbank en epigrafische inventarissen Nationaal Archief en Avraham Berg.",
+            url: "https://jodensavanne.sr",
+            audioTitle: "Reportage: Marmeren zerken in het regenwoud van Jodensavanne",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "WIC-NIEUW-AMSTERDAM",
+            title: "Schepenbank Nieuw-Amsterdam (New York)",
+            network: "wic",
+            category: "rechtspraak",
+            location: "New York City & Albany (Fort Oranje), VS",
+            period: "1653 – 1674",
+            badge: "badge-wic",
+            networkLabel: "WIC & Atlantische Wereld",
+            desc: "In 1653 kreeg Nieuw-Amsterdam een stadsbestuur naar Amsterdams model, inclusief schout, burgemeesters en schepenen. De notulen en rechtsprotocollen leggen de vroegste grondeigendommen, handelstransacties en testamenten van Nederlandse kolonisten in Noord-Amerika vast (o.a. familie Van Rosevelt / Roosevelt).",
+            archival: "New York Municipal Archives & New Netherland Research Research Center (Albany); vertalingen door Charles Gehring.",
+            url: "https://www.newnetherlandinstitute.org",
+            audioTitle: "College: Het Amsterdamse schepenrecht in 17e-eeuws Manhattan",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "BESTUUR-THOLEN-RAZE",
+            title: "RAZE Schepenbanken & Weeskamers Eiland Tholen",
+            network: "bestuur",
+            category: "rechtspraak",
+            location: "Tholen, Oud-Vossemeer, Stavenisse & Scherpenisse",
+            period: "15e – 19e eeuw",
+            badge: "badge-bestuur",
+            networkLabel: "Europees & Binnenlands Bestuur",
+            desc: "De Rechterlijke, Weeskamer- en Notariële Archieven Zeeuwse Eilanden (RAZE) vormen de primaire bron voor vastgoed- en familiereconstructies op Tholen. Bevat transportregisters, weesakten en boedelscheidingen van lokale schepenbanken en de Nassause ambachtsheerlijkheden.",
+            archival: "Zeeuws Archief toegang 10 (RAZE); Gemeentearchief Tholen toegangen GAT_025 t/m GAT_036; Weeskamer Oud-Vossemeer inv.nr. 5588.",
+            url: "https://www.zeeuwsarchief.nl",
+            audioTitle: "Archiefcast: Transportakten en weesmeesters in de Thoolse polders",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "BESTUUR-ROOSENDAAL-VLIET",
+            title: "Schepenbank Roosendaal & Maritieme Vliet",
+            network: "bestuur",
+            category: "handel",
+            location: "Roosendaal & Bergen op Zoom, West-Brabant",
+            period: "15e – 18e eeuw",
+            badge: "badge-bestuur",
+            networkLabel: "Europees & Binnenlands Bestuur",
+            desc: "Knooppunt van turfwinning, beurtvaart en havenhandel langs de Roosendaalse Vliet en het Markiezaat van Bergen op Zoom. De schepenprotocollen documenteren contracten, scheepseigendommen en allianties van voorname schippers- en regentengeslachten zoals Loncke en Van Iersel.",
+            archival: "West-Brabants Archief (WBA) Bergen op Zoom, Schepenbank Roosendaal & Raad en Rekenkamer van de Markiezen van Bergen op Zoom.",
+            url: "https://www.westbrabantsarchief.nl",
+            audioTitle: "Audiotour: Schippersgilden en turfhandel langs de Roosendaalse Vliet",
+            audioUrl: "https://stream.omroepbrabant.nl/radio"
+        },
+        {
+            id: "BESTUUR-BETH-HAIM-OUDERKERK",
+            title: "Begraafplaats Beth Haim Ouderkerk aan de Amstel",
+            network: "bestuur",
+            category: "funerair",
+            location: "Ouderkerk aan de Amstel, Noord-Holland",
+            period: "1614 – heden",
+            badge: "badge-bestuur",
+            networkLabel: "Europees & Binnenlands Bestuur",
+            desc: "De oudste Portugees-Israëlitische begraafplaats van Nederland en de moeder-dodenakker van Sefardische gemeenschappen in de Atlantische wereld. Hier rusten wereldberoemde diplomaten, rabbijnen en kooplieden (zoals Menasseh ben Israel) onder rijk gebeeldhouwde marmeren zerken.",
+            archival: "Archief Portugees-Israëlitische Gemeente Amsterdam (Stadsarchief Amsterdam); David Castro en de Castro epigrafische indexen.",
+            url: "https://www.bethhaim.nl",
+            audioTitle: "Reportage: Marmeren sculpturen en grafpoëzie op Beth Haim",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            id: "MILITAIR-MARGRATEN",
+            title: "Netherlands American Cemetery and Memorial",
+            network: "militaire",
+            category: "funerair",
+            location: "Margraten, Limburg",
+            period: "1944 – 1945 (Tweede Wereldoorlog)",
+            badge: "badge-militaire",
+            networkLabel: "Wereldwijde Oorlogsgraven",
+            desc: "De enige Amerikaanse militaire begraafplaats in Nederland, beheerd door de American Battle Monuments Commission (ABMC). Hier rusten 8.301 Amerikaanse soldaten die vielen tijdens de bevrijding van Zuidoost-Nederland en de opmars in Duitsland. Op de Muren van de Vermisten staan 1.722 namen.",
+            archival: "ABMC Burials Database; Stichting Adoptie Graven Amerikaanse Begraafplaats Margraten; Nationaal Archief (oorlogsgraven).",
+            url: "https://www.abmc.gov",
+            audioTitle: "Documentaire: De adoptiegraven van Margraten en de opmars in 1944",
+            audioUrl: "https://stream.l1.nl/radio"
+        },
+        {
+            id: "MILITAIR-GROESBEEK-CWGC",
+            title: "Groesbeek & Bergen op Zoom Canadian War Cemeteries",
+            network: "militaire",
+            category: "funerair",
+            location: "Groesbeek (Gld) & Bergen op Zoom (N-Br)",
+            period: "1944 – 1945 (Slag om de Schelde & Rijnland)",
+            badge: "badge-militaire",
+            networkLabel: "Wereldwijde Oorlogsgraven",
+            desc: "twee monumentale geallieerde erevelden beheerd door de Commonwealth War Graves Commission (CWGC). In Bergen op Zoom rusten de Canadese en Britse militairen die vielen bij de Slag om de Schelde; in Groesbeek liggen 2.610 soldaten gesneuveld tijdens het Rijnland-offensief en Operation Veritable.",
+            archival: "Commonwealth War Graves Commission (CWGC) Online Register; Oorlogsgravenstichting (OGS) databases.",
+            url: "https://www.cwgc.org",
+            audioTitle: "Lezing: Canadese offers bij de bevrijding van de Scheldemonding",
+            audioUrl: "https://stream.omroepbrabant.nl/radio"
+        }
+    ];
+
+    // 2. SIMULATOR PROFIELEN
+    const personasData = {
+        voc: [
+            {
+                tag: "Stap 1: Vertrek & Soldijadministratie (1715)",
+                title: "Kamer Zeeland (Middelburg) & Admiraliteit",
+                desc: "Opperkoopman Cornelis vertrekt vanuit Vlissingen met een spiegelretourschip van de VOC Kamer Zeeland. Zijn scheepssoldijrekening en testament worden vooraf geregistreerd in het Oost-Indisch Huis te Middelburg (Zeeuws Archief, toegang VOC Kamer Zeeland)."
+            },
+            {
+                tag: "Stap 2: Overzeese Jurisdictie (1728)",
+                title: "Schepenbank van Batavia (Jakarta)",
+                desc: "Na jaren succesvolle handel in Azië koopt Cornelis een tuinhuis en landerijen aan de Tijgersgracht in Batavia. De eigendomsoverdracht en zijn geactualiseerde testament worden vastgelegd in de protocollen van de Schepenbank van Batavia (NA toegang 1.04.18.03)."
+            },
+            {
+                tag: "Stap 3: Boedelafwikkeling & Erfrecht (1734)",
+                title: "Weeskamer van Batavia & Terugmelding",
+                desc: "Cornelis overlijdt aan tropische koortsen. De Weeskamer van Batavia neemt direct het beheer van zijn nalatenschap over ten behoeve van zijn minderjarige kinderen. De boedelrekening en wisselbrieven worden per retourvloot naar de Weeskamer in Middelburg gestuurd."
+            },
+            {
+                tag: "Stap 4: Funerair Erfgoed & Stenen Archief (Heden)",
+                title: "Begraafplaats Taman Prasasti (Weltevreden)",
+                desc: "Zijn zware, rijk met familiewapen gebeeldhouwde grafzerk lag oorspronkelijk in de Hollandsche Kerk van Batavia. In de 19e eeuw is de zerk overgebracht naar begraafplaats Weltevreden (tegenwoordig Taman Prasasti), waar zijn epigrafische inscriptie bewaard is gebleven."
+            }
+        ],
+        wic: [
+            {
+                tag: "Stap 1: Kapitaalverstrekking & Notariaat (1680)",
+                title: "Amsterdamse Notarissen & WIC Kamer Amsterdam",
+                desc: "De Sefardische planter Abraham sluit voor notaris Van Someren in Amsterdam een bodemereij- en sociëteitscontract af voor de opzet van een suikerplantage aan de Surinamerivier onder bescherming van de Sociëteit van Suriname (NA toegang 1.05.03)."
+            },
+            {
+                tag: "Stap 2: Koloniaal Bestuur & Rechtspraak (1695)",
+                title: "Raad van Politie en Justitie te Paramaribo",
+                desc: "In Suriname groeit plantage 'Waterland' uit tot een florerende onderneming. Abraham registreert de aankoop van buurpercelen, hypotheken en manumissie-akten bij de secretarie van het Hof van Politie en Justitie in Paramaribo (NA toegang 1.05.10.02)."
+            },
+            {
+                tag: "Stap 3: Laatste Rustplaats & Epigrafie (1710)",
+                title: "Begraafplaats Jodensavanne & Cassipora",
+                desc: "Abraham overlijdt op zijn plantage en wordt met traditionele Sefardische rituelen begraven op de monumentale begraafplaats van Jodensavanne. Zijn marmeren grafzerk wordt per schip uit Amsterdam geïmporteerd, voorzien van Hebreeuwse poëzie en Portugese teksten."
+            },
+            {
+                tag: "Stap 4: Kruiskoppeling Moeder-Kerkhof (18e eeuw)",
+                title: "Relatie met Beth Haim Ouderkerk aan de Amstel",
+                desc: "Wanneer zijn oudste zoon en erfgenaam later repatrieert naar de Republiek om de familiezaken vanuit Amsterdam te beheren, wordt deze na zijn overlijden bijgezet op Beth Haim in Ouderkerk aan de Amstel, waarmee de funeraire cirkel van de Atlantische familie sluit."
+            }
+        ],
+        zeeuw: [
+            {
+                tag: "Stap 1: Maritiem Gilde & Beurtvaart (1698)",
+                title: "De Kaaij te Tholen & Herberg 'Het Wapen van Dort'",
+                desc: "Schipper Bastiaen Dirckse Bout onderhoudt de beurtvaart en graanlogistiek tussen Tholen, Rotterdam en Dordrecht. Aan de Kaaij te Tholen sluit hij vrachtcontracten en koopt hij herberg 'Het Wapen van Dort' van de familie Moeliker (RAZE inv.nr. 5183)."
+            },
+            {
+                tag: "Stap 2: Regionale Waterwegen & Turfhandel (1705)",
+                title: "Schepenbank Roosendaal & De Vliet",
+                desc: "Bastiaen navigeert via de Roosendaalse Vliet naar het Brabantse achterland om turf en hout te vervoeren. Bij de Schepenbank van Roosendaal en de Tol van de Markiezen van Bergen op Zoom worden zijn scheepstonnage en borgstellingen geregistreerd."
+            },
+            {
+                tag: "Stap 3: Oude Zakelijke Rechten (1712)",
+                title: "Weeskamer Oud-Vossemeer & Pachtcontracten",
+                desc: "Als pachter in de 1500 Gemetenpolder en investeerder in de meekrapstoven is Bastiaen nauw verweven met regentengeslachten zoals Van 't Rosevelt en Van Couwerve. Bij zijn overlijden treedt de Weeskamer van Tholen en Oud-Vossemeer op om de erfenis te verdelen."
+            },
+            {
+                tag: "Stap 4: Kerkelijk Erfgoed & Grafboeken (18e eeuw)",
+                title: "Grote of Sint-Michaëlskerk te Tholen",
+                desc: "Bastiaen wordt begraven binnen de muren van de Sint-Michaëlskerk in Tholen. Zijn graflocatie en het grafgeld worden nauwkeurig opgetekend in de kerkelijke grafboeken en rekeningen van de kerkmeesters (tegenwoordig bewaard in het Gemeentearchief Tholen)."
+            }
+        ],
+        vlieger: [
+            {
+                tag: "Stap 1: Inzet & Oorlogstheater (September 1944)",
+                title: "US 8th Air Force / Geallieerde Luchtstrijdkrachten",
+                desc: "1st Lieutenant James Roosevelt (fictief profiel gebaseerd op US verkenningsvliegers) stijgt op vanuit Engeland voor een luchtsteunmissie boven de Maas- en Rijnlinies tijdens Operation Market Garden en de bevrijding van Zuid-Nederland."
+            },
+            {
+                tag: "Stap 2: Neerstorting & Lokaal Verzet (1944)",
+                title: "Neder-Betuwe / Gelderse Rivierengebied",
+                desc: "Zijn jachtvliegtuig wordt geraakt door afweergeschut en stort neer in de polders van het Gelderse rivierengebied. Leden van het lokaal verzet bergen zijn lichaam tijdelijk op een dorpsbegraafplaats, wat heimelijk wordt genoteerd in gemeentelijke oorlogsdossiers."
+            },
+            {
+                tag: "Stap 3: Herbegrafenis & Militaire Registratie (1945)",
+                title: "American Battle Monuments Commission (ABMC)",
+                desc: "Na de bevrijding wordt zijn lichaam door de Amerikaanse gravendienst overgebracht naar het centrale militaire ereveld in Zuid-Limburg. De ABMC registreert zijn rang, eenheid, onderscheidingen en exact grafnummer in de Amerikaanse oorlogsdossiers."
+            },
+            {
+                tag: "Stap 4: Eeuwige Rust & Adoptiegraven (Heden)",
+                title: "Netherlands American Cemetery Margraten",
+                desc: "James rust in Plot C, Rij 8, Graf 14 op het ereveld Margraten. Zijn witmarmeren kruis is, net als alle 8.301 graven, geadopteerd door een Nederlandse familie die jaarlijks bloemen legt, waarmee een levende brug tussen lokaal erfgoed en wereldwijde bevrijding blijft bestaan."
+            }
+        ]
+    };
+
+    // 3. STATE & ZOEKFUNCTIES
+    const searchInput = document.getElementById('search-input');
+    const networkSelect = document.getElementById('network-select');
+    const categorySelect = document.getElementById('category-select');
+    const nodesContainer = document.getElementById('nodes-container');
+    const statCount = document.getElementById('stat-count');
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function highlightText(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function executeSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        const net = networkSelect.value;
+        const cat = categorySelect.value;
+
+        const filtered = atlasDatabase.filter(item => {
+            const matchNet = net === 'alle' || item.network === net;
+            const matchCat = cat === 'alle' || item.category === cat;
+            const searchString = `${item.title} ${item.location} ${item.period} ${item.desc} ${item.archival}`.toLowerCase();
+            const matchQuery = !query || searchString.includes(query);
+
+            return matchNet && matchCat && matchQuery;
+        });
+
+        statCount.textContent = filtered.length;
+        renderGrid(filtered, query);
+    }
+
+    function renderGrid(data, query = "") {
+        nodesContainer.innerHTML = '';
+
+        if (data.length === 0) {
+            nodesContainer.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--panel-bg); border-radius: 12px; border: 1px dashed var(--border-color);">
+                    <h3 style="color: #fff; margin-bottom: 0.5rem;">Geen knooppunten gevonden</h3>
+                    <p style="color: var(--text-muted);">Probeer uw zoekterm te verruimen of wis de actieve filtermatrijzen in de zijbalk.</p>
+                    <button class="btn-reset" style="max-width: 200px; margin: 1.5rem auto 0 auto;" onclick="resetFilters()">Wis Filters</button>
+                </div>
+            `;
+            return;
+        }
+
+        data.forEach(node => {
+            const card = document.createElement('article');
+            card.className = 'node-card';
+            card.innerHTML = `
+                <div>
+                    <div class="card-top">
+                        <h3 class="node-title">${highlightText(node.title, query)}</h3>
+                        <span class="badge ${node.badge}">${node.networkLabel}</span>
+                    </div>
+                    <div class="node-meta">📍 ${highlightText(node.location, query)} — <span>${highlightText(node.period, query)}</span></div>
+                    <p class="node-desc">${highlightText(node.desc, query)}</p>
+                    <div class="archival-box">
+                        <strong>Archiefreeksen & Toegangen:</strong>
+                        ${highlightText(node.archival, query)}
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-action" onclick="playMedia('${node.title}', '${node.audioTitle}', '${node.audioUrl}')">▶ Luister Archiefcast</button>
+                    <a href="${node.url}" target="_blank" rel="noopener noreferrer" class="btn-link">Raadpleeg Bron ↗</a>
+                </div>
+            `;
+            nodesContainer.appendChild(card);
+        });
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        networkSelect.value = 'alle';
+        categorySelect.value = 'alle';
+        executeSearch();
+    }
+
+    // 4. SIMULATOR LOGICA
+    function selectPersona(personaKey) {
+        document.querySelectorAll('.persona-card').forEach(card => card.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        const content = document.getElementById('journey-content');
+        content.innerHTML = '';
+
+        personasData[personaKey].forEach(step => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-item';
+            stepDiv.innerHTML = `
+                <div class="step-tag">${step.tag}</div>
+                <h3>${step.title}</h3>
+                <p>${step.desc}</p>
+            `;
+            content.appendChild(stepDiv);
+        });
+    }
+
+    // 5. WEBPLAYER LOGICA
+    const audioEl = document.getElementById('html5-audio');
+    const visualizer = document.getElementById('visualizer');
+    const playBtn = document.getElementById('play-pause-btn');
+    const titleEl = document.getElementById('player-title');
+    const subEl = document.getElementById('player-sub');
+    let isPlaying = false;
+
+    function playMedia(sourceTitle, audioTitle, url) {
+        titleEl.textContent = audioTitle;
+        subEl.textContent = `Knooppunt: ${sourceTitle}`;
+        
+        audioEl.src = url;
+        audioEl.volume = document.getElementById('volume-slider').value;
+        
+        audioEl.play().then(() => {
+            setPlayingState(true);
+        }).catch(() => {
+            console.warn("Directe audioweergave geblokkeerd. Audiosimulatie-modus geactiveerd.");
+            setPlayingState(true);
+            subEl.textContent += " [Archief-simulatie Actief]";
+        });
+    }
+
+    function togglePlay() {
+        if (titleEl.textContent === "Geen archiefcast geselecteerd") {
+            const first = atlasDatabase[0];
+            playMedia(first.title, first.audioTitle, first.audioUrl);
+            return;
+        }
+
+        if (isPlaying) {
+            audioEl.pause();
+            setPlayingState(false);
+        } else {
+            audioEl.play().catch(() => {});
+            setPlayingState(true);
+        }
+    }
+
+    function stopPlayer() {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute('src');
+        setPlayingState(false);
+        titleEl.textContent = "Geen archiefcast geselecteerd";
+        subEl.textContent = "Selecteer een knooppunt of lezing om de audioreconstructie af te spelen";
+    }
+
+    function updateVolume(val) {
+        audioEl.volume = val;
+    }
+
+    function setPlayingState(state) {
+        isPlaying = state;
+        if (state) {
+            visualizer.classList.add('playing');
+            playBtn.textContent = "❚❚";
+        } else {
+            visualizer.classList.remove('playing');
+            playBtn.textContent = "▶";
+        }
+    }
+
+    // Initialisatie bij het laden van de pagina
+    window.onload = () => {
+        executeSearch();
+        // Laad standaard het eerste persona in de simulator
+        const firstPersonaCard = document.querySelector('.persona-card');
+        if (firstPersonaCard) {
+            selectPersona('voc');
+        }
+    };
+</script>
+
+</body>
+</html>
