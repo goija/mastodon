@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krantenarchief Zoekmachine — De Gooi- en Eemlander (16 juli 2026)</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --header-bg: #1a2a3a;
+            --accent-color: #d9383a;
+            --text-color: #2c3e50;
+            --card-bg: #ffffff;
+            --border-color: #e1e8ed;
+            --meta-color: #7f8c8d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            color: #bdc3c7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .search-panel {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            align-self: start;
+            position: sticky;
+            top: 1rem;
+        }
+
+        .search-panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--header-bg);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            color: var(--meta-color);
+            text-transform: uppercase;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--header-bg);
+        }
+
+        .stats {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.85rem;
+            color: var(--meta-color);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            border-radius: 6px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--header-bg);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .article-meta {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.8rem;
+            color: var(--meta-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .category-tag {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+        }
+
+        .article-title {
+            font-size: 1.5rem;
+            color: var(--header-bg);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .article-subtitle {
+            font-size: 1rem;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .article-summary {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .article-text {
+            font-size: 1rem;
+            color: #222;
+            display: none;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            white-space: pre-line;
+        }
+
+        .read-more-btn {
+            font-family: 'Arial', sans-serif;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.9rem;
+        }
+
+        .read-more-btn:hover {
+            text-decoration: underline;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 0 2px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>De Gooi- en Eemlander</h1>
+    <p>Digitaal Krantenarchief — Editie Donderdag 16 juli 2026</p>
+</header>
+
+<div class="container">
+    <!-- Zoek- en filterpaneel -->
+    <aside class="search-panel">
+        <h2>Zoeken & Filteren</h2>
+        
+        <div class="input-group">
+            <label for="search-input">Trefwoord of titel</label>
+            <input type="text" id="search-input" placeholder="Bijv. Tata Steel, sluiswachter, ASML...">
+        </div>
+
+        <div class="input-group">
+            <label for="category-select">Rubriek</label>
+            <select id="category-select">
+                <option value="alle">Alle rubrieken</option>
+                <option value="Voorop">Voorop (Nieuws)</option>
+                <option value="Economie">Economie & Beurs</option>
+                <option value="Binnenland">Binnenland</option>
+                <option value="Justitie">Justitie & Misdaad</option>
+                <option value="Cultuur">Cultuur & Media</option>
+                <option value="Reportage">Reportage & Extra</option>
+            </select>
+        </div>
+
+        <div class="stats" id="result-stats">
+            Aantal artikelen geladen...
+        </div>
+    </aside>
+
+    <!-- Resultatenpaneel -->
+    <main class="results-panel" id="articles-container">
+        <!-- Artikelen worden hier via JavaScript ingeladen -->
+    </main>
+</div>
+
+<script>
+    // Database met transscripties en samenvattingen uit de krant
+    const articlesDatabase = [
+        {
+            id: 1,
+            title: "'Zeg nee tegen deal met Tata'",
+            subtitle: "Ambtenaren waren tegen afspraken met staalfabriek over verduurzaming",
+            category: "Voorop",
+            page: "Pagina 1",
+            date: "16 juli 2026",
+            author: "Van onze verslaggevers (Amsterdam)",
+            summary: "Ambtenaren van het ministerie van Financiën adviseerden vorig jaar resoluut tegen het ondertekenen van de voorlopige afspraken (JLoI) met Tata Steel over verduurzaming en een mogelijke miljardensubsidie.",
+            text: "Ambtenaren van het ministerie van Financiën adviseerden vorig jaar tegen het ondertekenen van voorlopige afspraken met Tata Steel over verduurzaming. In de deal staat dat de staalfabriek in IJmuiden miljoenen tonnen CO2 minder gaat uitstoten en dat de overheid daar maximaal 2 miljard euro aan meebetaalt. Dit blijkt uit een woensdag vrijgegeven adviesnota uit september 2025, vlak voor de ondertekening.\n\nDe ambtenaren wijzen op grote financiële risico's en de zogenaamde 'subsidiefuik'. Volgens hen is niet onomstotelijk zeker dat met de plannen de gezondheids- en milieudoelen in de IJmond gehaald worden. Ondanks het negatieve advies werd de intentieverklaring door het toenmalige kabinet toch getekend.",
+            keywords: ["tata steel", "ijmuiden", "subsidie", "financien", "co2", "milieu", "staalfabriek"]
+        },
+        {
+            id: 2,
+            title: "Vooral niet doen wat je ouders deden",
+            subtitle: "Expositie 'Jong!' in Museum van de 20e Eeuw in Hoorn duikt in de jeugdcultuur",
+            category: "Cultuur",
+            page: "Pagina 16-17 (Wijzer)",
+            date: "16 juli 2026",
+            author: "Inge van IJssel / foto Jaap Stemer",
+            summary: "Van nozems in de jaren 50 tot hippies, punkers, gabbers en TikTokkers nu: Museum van de 20e Eeuw in Hoorn toont met de expositie 'Jong!' hoe jeugdculturen door de decennia heen veranderden.",
+            text: "Kijk, die brommer. Wie zo'n model had, was écht stoer. En kijk, dat leren jasje. Wie daarmee naar school kwam, telde mee. Vooral als je ouders die nieuwigheid maar niks vonden. Bij het Museum van de 20e Eeuw in Hoorn is nu de tentoonstelling 'Jong!' te zien over jongerencultuur. De rode draad door de jaren heen: verlangen naar vrijheid en een eigen identiteit.\n\nDe expositie toont authentieke kleding, brommers (zoals de bekende Puch), muziek en slaapkamers van decennia geleden. Van de Beatles en Dolly Dots tot hardcore gabber en hiphop. 'Met deze laagdrempelige expositie richten we ons expliciet ook op een jonger publiek', aldus de conservator.",
+            keywords: ["hoorn", "museum 20e eeuw", "jeugdcultuur", "expositie", "nozems", "gabbers", "punk", "tiktok", "brommers"]
+        },
+        {
+            id: 3,
+            title: "'Goedemorgen, met uw favoriete zure sluiswachter'",
+            subtitle: "De populaire Facebook-posts van sluiswachter Maurice Noach (69): ter lering en vermaak",
+            category: "Reportage",
+            page: "Pagina 8-9 (Extra)",
+            date: "16 juli 2026",
+            author: "Arnold Aarts",
+            summary: "Maurice Noach (69) is gepensioneerd vrachtwagenchauffeur maar nu actief als sluiswachter op de Poelsluis in Wormer en in Monnickendam. Op Facebook deelt hij humoristische verhalen over stuntelende schippers.",
+            text: "Het hoofd wordt steeds roder, het gevloek steeds luider. Wat de man ook probeert, hij krijgt zijn sloep met geen mogelijkheid meer gestart. Maurice Noach ziet het geamuseerd aan. De sluiswachter van Wormer en Monnickendam adviseert de schipper voortaan minder hard aan het dodemanskoord te trekken. Over zijn belevenissen – 'het is vaak slapstick op het water' – post Noach drie keer per week berichten op Facebook.\n\nNoach noemt zichzelf gekscherend 'uw favoriete zure sluiswachter', al is hij in de praktijk uiterst behulpzaam en vriendelijk. Zijn trouwe Duitse herder Lukas wijkt niet van zijn zijde. Veel watersporters blijken echter de basisregels van de nautische etiquette niet te kennen, wat leidt tot hilarische en soms hectische taferelen in de sluis.",
+            keywords: ["sluiswachter", "wormer", "monnickendam", "poelsluis", "maurice noach", "facebook", "watersport", "humor"]
+        },
+        {
+            id: 4,
+            title: "Schiphol heeft algoritme in jacht op koffers sigaretten",
+            subtitle: "Douane onderschept 106 miljoen illegale sigaretten in eerste halfjaar",
+            category: "Justitie",
+            page: "Pagina 14",
+            date: "16 juli 2026",
+            author: "Van onze verslaggever (Den Haag)",
+            summary: "De douane heeft in de eerste zes maanden van 2026 al 106 miljoen illegale sigaretten onderschept. Op Schiphol wordt sinds kort een speciaal algoritme ingezet om bagage te scannen op tabak.",
+            text: "De Nederlandse douane heeft in de eerste zes maanden van dit jaar 106 miljoen illegale sigaretten onderschept, het merendeel in zeecontainers. 'De smokkel van tabaksproducten is naast cannabis een vast verdienmodel van criminelen geworden', meldt directeur-generaal Nanette van Schelven.\n\nOp Schiphol wordt sinds kort een algoritme ingezet dat bij het scannen van koffers direct kan zien of er vermoedelijk meer dan één slof sigaretten in zit (de maximale toegestane hoeveelheid voor reizigers buiten de EU). Ook de vangst van cocaïne steeg flink met 20 procent naar 19.332 kilo.",
+            keywords: ["douane", "schiphol", "sigaretten", "smokkel", "algoritme", "cocaine", "criminaliteit"]
+        },
+        {
+            id: 5,
+            title: "China exporteert meer dan 1 miljoen auto's per maand",
+            subtitle: "Aziatische reus domineert de wereldwijde automarkt door overcapaciteit en lage lonen",
+            category: "Economie",
+            page: "Pagina 15",
+            date: "16 juli 2026",
+            author: "Stijn Decock (Amsterdam)",
+            summary: "Voor het eerst heeft China meer dan één miljoen wagens in één maand tijd geëxporteerd, een stijging van 70 procent ten opzichte van een jaar geleden. Europese autoconcerns hebben het nakijken.",
+            text: "Lange tijd beheersten Japan en Europa de wereldwijde exportmarkt voor auto's. Anno 2026 is het beeld compleet gewijzigd: China domineert steeds harder. Afgelopen maand exporteerde het land meer dan 1,06 miljoen wagens naar het buitenland.\n\nDe enorme exportdrift komt voort uit een moordende binnenlandse prijzenslag en gigantische overcapaciteit in de Chinese fabrieken. Omdat Chinese merken (vooral elektrische wagens) tegen lagere productiekosten en met staatssteun worden gebouwd, overspoelen ze nu de Europese markt, onder meer via de haven van Zeebrugge in België.",
+            keywords: ["china", "auto-industrie", "export", "elektrische auto", "economie", "concurrentie"]
+        },
+        {
+            id: 6,
+            title: "Belegger neemt winst na forse groei ASML",
+            subtitle: "AEX daalt 0,7 procent na teleurstellende reactie op chipmachinemaker",
+            category: "Economie",
+            page: "Pagina 14",
+            date: "16 juli 2026",
+            author: "Beursredactie (Amsterdam)",
+            summary: "Beleggers in Amsterdam namen in de laatste handelsuren winst op chipaandelen. ASML sloot ondanks sterke kwartaalcijfers slechts 0,4 procent in de plus; de AEX zakte naar 1097,90 punten.",
+            text: "Beleggers in Amsterdam namen in de laatste handelsuren winst op chipaandelen, nadat de koersen eerder op de dag nog stevig waren opgelopen. Tijdens de ochtendhandel was ASML nog de grootste stijger met een winst van ruim 5 procent, na de presentatie van uitstekende kwartaalcijfers en vooruitzichten.\n\nUiteindelijk sloot het waardevolste bedrijf van Europa slechts 0,4 procent hoger. Branchegenoot Besi was de grootste daler in de AEX met een verlies van 3 procent. De AEX-index sloot 0,7 procent lager op 1097,90 punten, net onder de historische grens van 1100 punten.",
+            keywords: ["asmsl", "beurs", "aex", "aandelen", "chipindustrie", "amsterdam", "besi"]
+        },
+        {
+            id: 7,
+            title: "Premie zelfde autoverzekering voor buren een stuk lager",
+            subtitle: "Grootste premiekrater gevonden in Haarlem met 260 euro verschil in één straat",
+            category: "Economie",
+            page: "Pagina 15",
+            date: "16 juli 2026",
+            author: "Klaartje Bax (Amsterdam)",
+            summary: "Automobilisten die in precies dezelfde straat wonen, kunnen tot 260 euro per jaar meer betalen voor dezelfde autoverzekering, enkel afhankelijk van hun huisnummer of postcode.",
+            text: "Automobilisten die in dezelfde straat wonen, kunnen tot 260 euro per jaar meer betalen voor exact dezelfde autoverzekering, terwijl alleen het huisnummer of de postcode verschilt. Dit blijkt uit een uitgebreide analyse van vergelijkingssite Pricewise.\n\nVerzekeraars beoordelen risico's steeds nauwkeuriger op hyper-lokaal niveau. 'De premie wordt niet meer berekend voor een hele wijk, maar door het gemiddelde van de huizen in een specifiek postcodegebied te nemen', aldus een expert. Het grootste verschil werd gemeten in een lange straat in Haarlem.",
+            keywords: ["verzekeringen", "autoverzekering", "premie", "pricewise", "haarlem", "wonen"]
+        },
+        {
+            id: 8,
+            title: "Kerncentrale Borssele levert al weken geen stroom na een lek",
+            subtitle: "Eigenaar EPZ kan niet zeggen wanneer de enige kerncentrale van Nederland weer opstart",
+            category: "Binnenland",
+            page: "Pagina 14",
+            date: "16 juli 2026",
+            author: "ANP / Redactie",
+            summary: "Kerncentrale Borssele in Zeeland ligt al sinds 27 juni stil vanwege een lek dat werd ontdekt in het nucleaire gedeelte van de centrale tijdens een gepland onderhoud.",
+            text: "Kerncentrale Borssele in Zeeland ligt sinds 27 juni stil vanwege een lek dat is ontdekt in het nucleaire gedeelte van de centrale. Eigenaar EPZ kondigde aanvankelijk aan dat de centrale na enkele dagen weer zou opstarten, maar tot dusver blijft de levering van stroom uit.\n\nHet lek werd ontdekt tijdens een onderhoudsbeurt die ruim drie weken had moeten duren. Volgens de adviesraad is er geen gevaar voor de omgeving en was de lekkage beperkt binnen het luchtdichte containmentsysteem, maar nauwkeurige reparatie vergt meer tijd dan gepland.",
+            keywords: ["borssele", "kerncentrale", "zeeland", "energie", "stroom", "epz", "lekkage"]
+        },
+        {
+            id: 9,
+            title: "Grimmige sfeer voor aanmeldcentrum maakt het wachten nóg zwaarder",
+            subtitle: "Beveiligers van het COA mogen 'buiten de poort' niet ingrijpen in Ter Apel",
+            category: "Binnenland",
+            page: "Pagina 12",
+            date: "16 juli 2026",
+            author: "Merijn Keijer (Ter Apel)",
+            summary: "Het terrein voor het aanmeldcentrum in Ter Apel is onveilig voor wachtende asielzoekers. Langdurig wachten leidt tot frustraties, vechtpartijen en openlijke drugshandel voor de poort.",
+            text: "Het terrein voor het aanmeldcentrum in Ter Apel is onveilig voor wachtende asielzoekers. Langdurig wachten in de hitte leidt tot zware frustraties, intimidatie en soms geweld. Omdat beveiligers van het COA geen bevoegdheid hebben buiten de hekken van het terrein, kunnen zij vaak niet ingrijpen bij incidenten op de toevoerweg.\n\nOmwonenden en wachtende reizigers klagen over openlijke drugshandel en zakkenrollers. De politie rijdt extra surveillances, maar de druk op de opvangcapaciteit blijft leiden tot schrijnende omstandigheden en een grimmige sfeer.",
+            keywords: ["ter apel", "asielzoekers", "coa", "opvang", "veiligheid", "politie"]
+        },
+        {
+            id: 10,
+            title: "Drie leden overvalbende in cassatie bij Hoge Raad",
+            subtitle: "Verdachten willen levenslange celstraffen voor dodelijke overval Berkhout aanvechten",
+            category: "Justitie",
+            page: "Pagina 13",
+            date: "16 juli 2026",
+            author: "Martijn Mak en Virginia Groenendijk (Amsterdam)",
+            summary: "Drie van de vier leden van de zeer gewelddadige Noord-Hollandse overvalbende, van wie er twee tot levenslang zijn veroordeeld, gaan in cassatie bij de Hoge Raad.",
+            text: "Het hoger beroep tegen de Noord-Hollandse overvalbende krijgt een vervolg. Drie van de vier veroordeelde leden gaan in cassatie bij de Hoge Raad over de uitspraak die het gerechtshof vorige week deed. Het gaat onder meer om G.V. (33) uit Noord-Scharwoude en D.R. (30) uit Obdam, die beiden levenslang kregen opgeraden.\n\nDe bende wordt verantwoordelijk gehouden voor een serie brute overvallen in 2020 in de regio Alkmaar en Hoorn, waarbij slachtoffer Sjaak Groot in Berkhout het leven liet. De advocaten van de verdachten stellen dat de straffen onvoldoende gemotiveerd zijn door het hof.",
+            keywords: ["overvalbende", "berkhout", "hoge raad", "cassatie", "levenslang", "noord-holland", "justitie"]
+        },
+        {
+            id: 11,
+            title: "Bussumer (28) gepakt na aanslag met automatisch wapen",
+            subtitle: "Kogelregen op woning in Wormerveer zorgde voor paniek in speeltuin",
+            category: "Justitie",
+            page: "Pagina 1",
+            date: "16 juli 2026",
+            author: "Regioredactie",
+            summary: "Een 28-jarige man uit Bussum is aangehouden nadat dinsdagavond een woning in Wormerveer onder vuur werd genomen met een automatisch wapen.",
+            text: "Vier seconden lang blaast dinsdagavond een knallensalvo door een woonwijk in Wormerveer. Kinderen schreeuwen om hulp en vluchten zo snel mogelijk uit de nabijgelegen speeltuin. De aanslag werd gepleegd op een woning aan de straat met een automatisch vuurwapen.\n\nLater op de avond kon de politie een 28-jarige man uit Bussum in zijn woonplaats aanhouden als verdachte. De recherche doet momenteel volop onderzoek naar het motief en sluit meerdere aanhoudingen in het conflict niet uit.",
+            keywords: ["wormerveer", "bussum", "schietpartij", "aanslag", "politie", "misdaad"]
+        },
+        {
+            id: 12,
+            title: "Uitgestorven strand: Amper bezoekers op Zomerkade door blauwalg",
+            subtitle: "Waarschuwingen en hekken houden zwemmers weg uit het water",
+            category: "Voorop",
+            page: "Pagina 1",
+            date: "16 juli 2026",
+            author: "Regioredactie (Huizen)",
+            summary: "Het strand aan de Zomerkade ligt er hooghartig verlaten bij ondanks het zonnige zomerweer. Een persisterende blauwalgwaarschuwing weerhoudt bezoekers van een verkoelende duik.",
+            text: "Het strand aan de Zomerkade ligt er hooghartig verlaten bij ondanks het zonnige zomerweer. Waar het normaal gesproken zwart ziet van de badgasten, zijn het nu slechts enkele zonaanbidders die op het zand liggen.\n\nEen persisterende blauwalgwaarschuwing weerhoudt bezoekers van een verkoelende duik. Het waterschap waarschuwt dat contact met het water kan leiden tot huidirritatie, maag- en darmklachten. Horecaondernemers langs de kade spreken van een dramatische week voor de omzet.",
+            keywords: ["zomerkade", "blauwalg", "strand", "zomerweer", "zwemwater", "huizen"]
+        },
+        {
+            id: 13,
+            title: "EU-mestregels gaan toch niet op de schop",
+            subtitle: "Europese Commissie houdt vast aan strenge afbouw derogatie voor boeren",
+            category: "Binnenland",
+            page: "Pagina 13",
+            date: "16 juli 2026",
+            author: "Alexander Bakker (Brussel)",
+            summary: "De Europese mestregels waar Nederlandse boeren moeilijk aan kunnen voldoen, gaan niet op de schop. De Europese Commissie wijst versoepelingen van de hand.",
+            text: "De EU-mestregels waar Nederlandse boeren moeilijk aan kunnen voldoen, gaan definitief niet op de schop. De Europese Commissie weigert de deur op een kier te zetten voor uitzonderingsposities of verlenging van de zogeheten derogatie.\n\nDit is een zware tegenvaller voor de landbouwsector en het kabinet, dat in Brussel intensief lobbyde voor verlichting van de regeldruk. Volgens landbouworganisaties komen honderden boerenbedrijven in de problemen door de hoge afzetkosten van hun mestoverschot.",
+            keywords: ["landbouw", "mestregels", "europese commissie", "boeren", "brussel", "derogatie", "milieu"]
+        },
+        {
+            id: 14,
+            title: "'Verdriet onderdeel van het leven': In memoriam Cees Geel",
+            subtitle: "Nederland verliest met Cees Geel (61) een van zijn meest karakteristieke acteurs",
+            category: "Cultuur",
+            page: "Pagina 1 (verwijzing p. 5)",
+            date: "16 juli 2026",
+            author: "Cultuurredactie",
+            summary: "Met het overlijden van acteur Cees Geel verliest de Nederlandse film- en televisiewereld een stoere verschijning met een diepe, zachte kant.",
+            text: "Met het overlijden van Cees Geel verliest Nederland een van zijn meest karakteristieke acteurs. Geel brak bij het grote publiek door met zijn ontroerende en krachtige rollen in zowel speelfilms als dramaseries. Hij stond bekend als het archetype 'ruwe bolster, blanke pit'.\n\nCollega's en regisseurs roemen zijn oprechte spel, zijn unieke stemgeluid en zijn vermogen om zware thema's met humor en menselijkheid te benaderen. Geel werd 61 jaar.",
+            keywords: ["cees geel", "acteur", "overleden", "in memoriam", "film", "televisie", "cultuur"]
+        }
+    ];
+
+    const searchInput = document.getElementById('search-input');
+    const categorySelect = document.getElementById('category-select');
+    const articlesContainer = document.getElementById('articles-container');
+    const resultStats = document.getElementById('result-stats');
+
+    // Functie om tekst te highlighten op basis van zoekterm
+    function highlightText(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    // Functie om de artikelen te renderen
+    function renderArticles() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedCategory = categorySelect.value;
+
+        // Filter de database
+        const filteredArticles = articlesDatabase.filter(article => {
+            const matchesCategory = selectedCategory === 'alle' || article.category === selectedCategory;
+            
+            const searchText = `${article.title} ${article.subtitle} ${article.summary} ${article.text} ${article.keywords.join(' ')}`.toLowerCase();
+            const matchesQuery = searchText.includes(query);
+
+            return matchesCategory && matchesQuery;
+        });
+
+        // Update statistieken
+        resultStats.textContent = `Toont ${filteredArticles.length} van de ${articlesDatabase.length} artikelen`;
+
+        // Maak container leeg
+        articlesContainer.innerHTML = '';
+
+        if (filteredArticles.length === 0) {
+            articlesContainer.innerHTML = `
+                <div class="article-card" style="text-align: center; color: var(--meta-color);">
+                    <h3>Geen artikelen gevonden</h3>
+                    <p>Probeer een andere zoekterm of selecteer 'Alle rubrieken'.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Genereer HTML voor elk artikel
+        filteredArticles.forEach(article => {
+            const card = document.createElement('article');
+            card.className = 'article-card';
+            
+            card.innerHTML = `
+                <div class="article-meta">
+                    <div>
+                        <span class="category-tag">${article.category}</span>
+                        <span style="margin-left: 8px;">${article.page}</span>
+                    </div>
+                    <div>${article.date} • ${article.author}</div>
+                </div>
+                <h3 class="article-title">${highlightText(article.title, query)}</h3>
+                <div class="article-subtitle">${highlightText(article.subtitle, query)}</div>
+                <div class="article-summary">${highlightText(article.summary, query)}</div>
+                <div class="article-text" id="text-${article.id}">${highlightText(article.text, query)}</div>
+                <button class="read-more-btn" onclick="toggleReadMore(${article.id}, this)">Lees volledig artikel ↓</button>
+            `;
+
+            articlesContainer.appendChild(card);
+        });
+    }
+
+    // Functie om volledige artikeltekst in/uit te klappen
+    function toggleReadMore(id, btn) {
+        const textElement = document.getElementById(`text-${id}`);
+        if (textElement.style.display === 'block') {
+            textElement.style.display = 'none';
+            btn.innerHTML = 'Lees volledig artikel ↓';
+        } else {
+            textElement.style.display = 'block';
+            btn.innerHTML = 'Verberg artikel ↑';
+        }
+    }
+
+    // Event listeners voor live zoeken en filteren
+    searchInput.addEventListener('input', renderArticles);
+    categorySelect.addEventListener('change', renderArticles);
+
+    // Initiële weergave
+    renderArticles();
+</script>
+
+</body>
+</html>
