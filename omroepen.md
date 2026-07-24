@@ -1,6 +1,5 @@
 Github repro https://github.com/goija/mastodon/tree/main
 
-
 https://mastodon-rouge.vercel.app/kranten_zoekmachine.html
 
 https://cryptpad.fr/code/#/3/code/edit/09ee65b6b2dcc0cd2674f3762e2eeb4d/
@@ -17,7 +16,6 @@ https://mastodon-rouge.vercel.app/lokale_politiek_atlas.html
 Atlas Regionale & Lokale Politiek Nederland
 Geen stream geselecteerd Selecteer een raadsvergadering, debat of podcast om te luisteren ▶ ■ 🔊
 
-
 https://mastodon-rouge.vercel.app/genealogie_tholen_atlas.html
 
 https://mastodon-rouge.vercel.app/archief_atlas_tholen_zeeland.html
@@ -25,3 +23,7 @@ https://mastodon-rouge.vercel.app/archief_atlas_tholen_zeeland.html
 https://npo.nl/start/afspelen/nos-journaal_105768
 
 https://github.com/goija/mastodon/blob/main/knooppunt-data_van_prof_Treub.json
+
+https://github.com/goija/mastodon/blob/main/delpher_extractor.py
+
+https://mastodon-rouge.vercel.app/dossier_gerretson_v3.html
