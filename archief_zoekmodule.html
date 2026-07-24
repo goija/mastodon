@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archief- & Netwerkonderzoek: Alias & Pseudoniem Zoekmodule</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #c53030;
+            --border-color: #e2e8f0;
+            --hover-bg: #edf2f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            max-width: 1000px;
+            margin: 0 auto 20px auto;
+            background: var(--primary-color);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .stats-bar {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            margin-bottom: 15px;
+        }
+
+        .echte-naam {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .alias-badge {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            border: 1px solid #bee3f8;
+        }
+
+        .context-body {
+            font-size: 0.95rem;
+            color: #4a5568;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .bronnen-footer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .dork-actions {
+            border-top: 1px dashed var(--border-color);
+            padding-top: 15px;
+            background: #f8fafc;
+            margin: 0 -20px -20px -20px;
+            padding: 15px 20px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .dork-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--hover-bg);
+            border-color: #cbd5e0;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background: #2c5282;
+            color: white;
+        }
+
+        /* Toast notificatie voor kopiëren */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1000;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🕵️‍♂️ Archief- & Netwerkonderzoek Zoekmodule</h1>
+        <p>Gespecialiseerde database van historische figuren, aliassen en pseudoniemen met geïntegreerde OSINT Google Dork generatie voor (clandestien) archiefonderzoek.</p>
+    </header>
+
+    <main>
+        <section class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Zoek op naam, alias, trefwoord (bijv. 'NSB', 'Shell', 'Boon', '1572')..." autofocus>
+            </div>
+            <div class="stats-bar">
+                <span id="resultCount">Laden...</span>
+                <span>💡 Tip: Klik op de Dork-knoppen om direct archieven te doorzoeken</span>
+            </div>
+        </section>
+
+        <section class="grid-container" id="resultsGrid"></section>
+    </main>
+
+    <div id="toast">Dork gekopieerd naar klembord!</div>
+
+    <script>
+        // De ingeladen JSON dataset
+        const dataset = [
+          {
+            "echte_naam": "Willem IV",
+            "alias": "Willem II",
+            "context": "Graventelling verschilt per graafschap: Willem IV in Holland is Willem II in Henegouwen.",
+            "bronnen": ["[1]"]
+          },
+          {
+            "echte_naam": "Albrecht van Beieren",
+            "alias": "Ruwaard (gubernator)",
+            "context": "Regeerde als plaatsvervanger (ruwaard) over de graafschappen Holland, Zeeland en Henegouwen voor zijn zieke broer Willem V, totdat hij officieel zelf graaf werd.",
+            "bronnen": ["[1]", "[2]", "[3]", "[7]", "[71]"]
+          },
+          {
+            "echte_naam": "Willem van Oostervant",
+            "alias": "Willem VI",
+            "context": "Voerde voor zijn aantreden als graaf van Holland (na het overlijden van zijn vader Albrecht in 1404) de titel van het Franse graafschap Oostervant.",
+            "bronnen": ["[1]", "[3]", "[7]", "[8]", "[9]"]
+          },
+          {
+            "echte_naam": "Jan van Beieren",
+            "alias": "Jan zonder Genade",
+            "context": "Hertog van Beieren-Straubing en ruwaard van Holland; kreeg zijn bijnaam na het meedogenloos neerslaan van een opstand van de ambachtsgilden in Luik in 1408.",
+            "bronnen": ["[1]", "[2]", "[3]", "[82]"]
+          },
+          {
+            "echte_naam": "Jan van Beieren",
+            "alias": "Zoon van Holland (filius Hollandiae)",
+            "context": "Titel aangenomen na het verdrag van Woudrichem in 1419, waarin hij als ruwaard en erfgenaam van Jacoba van Beieren werd erkend.",
+            "bronnen": ["[1]", "[3]"]
+          },
+          {
+            "echte_naam": "Claes Heynenzoon",
+            "alias": "Heraut Beieren / Heraut Gelre / Beyer den heraut",
+            "context": "Heraldisch ambtenaar, kroniekschrijver en samensteller van wapenboeken. Werkte eerst in dienst van hertog Willem I van Gelre en trad later in dienst van de graaf van Holland (Willem VI).",
+            "bronnen": ["[1]", "[2]", "[3]", "[7]", "[8]", "[9]", "[82]"]
+          },
+          {
+            "echte_naam": "Willem Gerbrandszoon van den Couster",
+            "alias": "Proost van Bergen",
+            "context": "Centrale ontvanger en tresorier aan het Haagse hof van Holland; bekleedde tevens de kerkelijke ambt van proost van Bergen en aartsdiaken van Utrecht.",
+            "bronnen": ["[1]", "[2]", "[3]"]
+          },
+          {
+            "echte_naam": "Jan van Eyck",
+            "alias": "Johannes de schilder / Jan den maelre / Deycke",
+            "context": "Beroemde schilder die tussen 1422 en 1425 in Den Haag in grafelijke dienst was van Jan van Beieren.",
+            "bronnen": ["[1]", "[2]", "[3]"]
+          },
+          {
+            "echte_naam": "Gilles le Cat",
+            "alias": "Jelis de Kat",
+            "context": "Beeldhouwer uit Bergen (Henegouwen) die werkzaam was in Haarlem en optrad als getuige voor graaf Willem.",
+            "bronnen": ["[1]", "[2]"]
+          },
+          {
+            "echte_naam": "Jan van Mansdale",
+            "alias": "Jan Kelderman",
+            "context": "Brussels beeldhouwer behorend tot het gilde van steenbickeleren, onder meer betrokken bij de Haagse graftombe.",
+            "bronnen": ["[1]", "[2]"]
+          },
+          {
+            "echte_naam": "Andele Staelinne",
+            "alias": "Die Ransburgherinen",
+            "context": "Hofdame en jonkvrouw in dienst van Margaretha van Liegnitz-Brieg, mogelijk vernoemd naar haar herkomst uit het Beierse Ramsberg.",
+            "bronnen": ["[1]", "[3]"]
+          },
+          {
+            "echte_naam": "Willem van Hildegaersberch",
+            "alias": "Meester Willem van Hillegairtsberge / Michter / Grote sprookspreker",
+            "context": "Gevierd middeleeuws sprookspreker en dichter aan het Haagse hof (ca. 1383-1408), bekend om zijn maatschappijkritische en morele spotversjes. Noemde zichzelf 'michter' om zich te onderscheiden van gewone minstrelen.",
+            "bronnen": ["[2]", "[7]", "[8]", "[9]", "[38]", "[52, 53]", "[70-72]", "[79]", "[87]", "[101]"]
+          },
+          {
+            "echte_naam": "Jan van Touraine",
+            "alias": "Dauphin",
+            "context": "Eerste echtgenoot van Jacoba van Beieren en Franse troonopvolger (dauphin).",
+            "bronnen": ["[2]", "[3]"]
+          },
+          {
+            "echte_naam": "Gijs van Diepenburch",
+            "alias": "Meester kamerling",
+            "context": "Bastaardzoon van Adam van Berwaerde (kleinzoon van graaf Willem V); diende als kamerling en later als tresorier.",
+            "bronnen": ["[2]", "[3]"]
+          },
+          {
+            "echte_naam": "Jacoba van Beieren",
+            "alias": "Madame la Daulphine / Dame of Madame Jacque",
+            "context": "Gravin van Holland, Zeeland en Henegouwen; droeg de Franse titel via haar huwelijk met Jan van Touraine.",
+            "bronnen": ["[3]", "[33]"]
+          },
+          {
+            "echte_naam": "Willem Barendsz.",
+            "alias": "Warenar / Gierighe Geeraert",
+            "context": "Bekende, rijk en hoogzuinig levende Amsterdammer uit de 17e eeuw. Hij diende als historisch model voor P.C. Hoofts personage 'Warenar' en Bredero's 'Gierighe Geeraert' in de Spaanschen Brabander.",
+            "bronnen": ["[4]", "[5]", "[6]"]
+          },
+          {
+            "echte_naam": "Willem Pennincsac",
+            "alias": "Willem Geldsak",
+            "context": "Een rijke inwoner van Delft wiens achternaam werd gemoderniseerd naar 'Geldsak'. Vader van Meins Pennincsac.",
+            "bronnen": ["[4]", "[5]", "[6]"]
+          },
+          {
+            "echte_naam": "Johannes de Dooper / Martinus / Sint-Nicolaas",
+            "alias": "Sint Jan / Sint her Martijn / Bisschop van Myra / Santa Claus",
+            "context": "Religieuze heiligen die in volksgebruiken, liederen en feestdagen vaak verbasterde of gemoderniseerde namen kregen.",
+            "bronnen": ["[4]", "[5]", "[6]", "[40]", "[73]"]
+          },
+          {
+            "echte_naam": "Veit",
+            "alias": "Lange Veit / Sint Veit",
+            "context": "Een lange, magere muzikant uit Echternach aan wie de legende van de danswoede (St. Vitusdans) is verbonden.",
+            "bronnen": ["[4]", "[6]"]
+          },
+          {
+            "echte_naam": "Melchior / Kasper / Balthasar",
+            "alias": "Het moorken / Melckert / Koning van 't Moorenland",
+            "context": "De Drie Wijzen uit het Oosten in folklore en Driekoningenfeesten, waarbij Melchior vaak als zwarte koningskaars werd afgebeeld.",
+            "bronnen": ["[4]", "[5]", "[6]"]
+          },
+          {
+            "echte_naam": "Freyr",
+            "alias": "Fro",
+            "context": "De Germaanse zonnegod van vreugde en vruchtbaarheid; volgens de Saksische/Friese uitspraak in de Nederlanden 'Fro' genoemd.",
+            "bronnen": ["[4]", "[5]", "[6]"]
+          },
+          {
+            "echte_naam": "Augustinus",
+            "alias": "Augustijnken van Dordt",
+            "context": "Geestelijk geschoolde Middelnederlandse sprookspreker en retoricus aan het hof, werkzaam rond 1358-1362.",
+            "bronnen": ["[7]", "[8]", "[9]"]
+          },
+          {
+            "echte_naam": "Dirc van den Rijn",
+            "alias": "Heer Dirc die Commelduer",
+            "context": "Commandeur van de Duitse Orde te Leiden (1377-1388); door Willem van Hildegaersberch gehekeld in spotdichten als gierige wanbetaler.",
+            "bronnen": ["[7]", "[8]", "[9]"]
+          },
+          {
+            "echte_naam": "Willem V van Holland",
+            "alias": "Die dolle grave / Willem de Verbeider",
+            "context": "Graaf van Holland wiens bewind in 1357 werd onderbroken door krankzinnigheid tijdens de Hoekse en Kabeljauwse twisten.",
+            "bronnen": ["[7]", "[82]"]
+          },
+          {
+            "echte_naam": "Willem III van Holland",
+            "alias": "Die goede grave die in Henegouwen starff / Willem de Goede",
+            "context": "Graaf van Holland en Henegouwen (1304-1337), geprezen door Europese vorsten en kroniekschrijvers om zijn wijsheid en rechtvaardigheid.",
+            "bronnen": ["[7]", "[82]"]
+          },
+          {
+            "echte_naam": "Pieter Vreugdegaer / Jan Visier / Jan de Bot / Wynant / Jean de Malines",
+            "alias": "Vrudengher / Eerhalt Jan Visier / Butkijn den spreker / Wynant Tammelair / Meester Jan van Machelen",
+            "context": "Minstrelen, trommelspelers en sprooksprekers aan de Vlaamse, Brabantse en Hollandse hoven die vaak onder artiestennamen of instrumentgebonden bijnamen optraden.",
+            "bronnen": ["[5]", "[7]", "[8]", "[9]"]
+          },
+          {
+            "echte_naam": "Onbekend",
+            "alias": "Otte die sotte / Die Wilde Vos / Kyrymyry / Hopezomer / Snelryem / Vrouwentroost",
+            "context": "Diverse hofnarren, sneldichters en sprekers uit de 14e-eeuwse Hollandse grafelijkheidsrekeningen.",
+            "bronnen": ["[7]", "[8]", "[9]"]
+          },
+          {
+            "echte_naam": "Tobie Goedewaagen",
+            "alias": "Rotkar / Theodor Meursen / De Torenwachter / Ter Gouwe / Tom Kinderwagen",
+            "context": "Secretaris-generaal bij de Kultuurkamer tijdens de bezetting. 'Rotkar' was een gehate scheldnaam van het volk; 'Theodor Meursen' en 'Ter Gouwe' gebruikte hij als literaire en naoorlogse pseudoniemen.",
+            "bronnen": ["[10]", "[11]"]
+          },
+          {
+            "echte_naam": "Geertruida Hendrika Johanna Vruink",
+            "alias": "Truus / Truschka / Sibylle",
+            "context": "Tweede echtgenote van Tobie Goedewaagen, door hem in zijn poëzie en privéleven aangeduid met diverse koosnamen.",
+            "bronnen": ["[10]", "[11]"]
+          },
+          {
+            "echte_naam": "W. Kweksilber",
+            "alias": "Henri Wielek",
+            "context": "Pseudoniem van de journalist die in Vrij Nederland de ware identiteit van naoorlogs publicist 'Theodor Meursen' (Tobie Goedewaagen) onthulde.",
+            "bronnen": ["[10]", "[11]"]
+          },
+          {
+            "echte_naam": "Adriaan Roland Holst",
+            "alias": "Prins der Dichters / Jany",
+            "context": "Eretitel en vriendennaam binnen literaire kringen om zijn verheven status in de Nederlandse poëzie aan te duiden.",
+            "bronnen": ["[10]"]
+          },
+          {
+            "echte_naam": "Mohammad Hatta",
+            "alias": "Vader van de Coöperaties / Religieus Socialist",
+            "context": "Indonesisch onafhankelijkheidsleider en architect van grondwetsartikel 33, die economische volksverheffing en socialisme wilde baseren op islamitische principes.",
+            "bronnen": ["[13]"]
+          },
+          {
+            "echte_naam": "Suwardi Surjaningrat / Ernest Douwes Dekker / Hadji Agus Salim",
+            "alias": "Ki Hadjar Dewantara / Danudirdja Setiabuddhi / Indonesia's Grand Old Man",
+            "context": "Pioniers van het Indonesisch nationalisme en oprichters van vroege onafhankelijkheidsbewegingen zoals de Indische Partij en Sarekat Islam.",
+            "bronnen": ["[13]"]
+          },
+          {
+            "echte_naam": "Koning Willem I / Koning Leopold II",
+            "alias": "Koning-Koopman / Koopman-Koning (Merchant-King)",
+            "context": "Kritische betiteling voor monarchen die staatsmacht gebruikten voor commerciële koloniale uitbuiting (zoals het Cultuurstelsel in Indonesië en de Congo-Vrijstaat).",
+            "bronnen": ["[13]", "[20]"]
+          },
+          {
+            "echte_naam": "Willem III van Oranje-Nassau",
+            "alias": "Koning van Engeland / Stadhouder / Redder van het veege Nederland / Held van Séneffe / De gezalfde des Heeren",
+            "context": "Stadhouder van de Republiek en later koning van Engeland; geprezen als militaire verdediger van het protestantse Europa en Nederland tegen Lodewijk XIV (o.a. in het Rampjaar 1672).",
+            "bronnen": ["[14]", "[15]", "[16]"]
+          },
+          {
+            "echte_naam": "Lodewijk XIV",
+            "alias": "Le Grand Roi / De Fransche Sultan",
+            "context": "Koning van Frankrijk, wiens absolute en agressieve machtsontplooiing door Nederlandse schrijvers werd vergeleken met oosters despotisme.",
+            "bronnen": ["[14]", "[15]", "[16]"]
+          },
+          {
+            "echte_naam": "Constantijn Huygens",
+            "alias": "Constanter / Vlitiades",
+            "context": "Dichter, diplomaat en secretaris van de Prinsen van Oranje; gebruikte de Latijnse schuilnaam 'Constanter' bij publicaties zoals zijn 'Ledige Uren'.",
+            "bronnen": ["[14]", "[15]", "[16]"]
+          },
+          {
+            "echte_naam": "Johan van Vliet",
+            "alias": "Janus Vlitius / Fobbe Korst / Bliteus",
+            "context": "Zeventiende-eeuws rechtsgeleerde en latinist uit Breda. Publiceerde onder gelatiniseerde namen, gebruikte 'Fobbe Korst' in volksalmanakken en kreeg van tegenstanders de smadelijke spotnaam 'Bliteus' (onbenullig).",
+            "bronnen": ["[14]", "[15]", "[16]"]
+          },
+          {
+            "echte_naam": "Winfried",
+            "alias": "Bonifacius / Bisschop van York / Apostel der Nederlanden",
+            "context": "Bisschop en missionaris die de kerstening in de noordelijke gewesten leidde en duizenden mensen doopte tussen Rijn en IJssel.",
+            "bronnen": ["[17]", "[18]", "[19]"]
+          },
+          {
+            "echte_naam": "Willebrord",
+            "alias": "Grote Apostel der Nederlanden",
+            "context": "Stichter van de vroege christelijke kerkzending en vele heiligdommen in Zeeland, Holland, Utrecht en Brabant.",
+            "bronnen": ["[17]", "[19]"]
+          },
+          {
+            "echte_naam": "Gerrit Gerritsen / Schwartserd / Caspar Coolhaas / Christiaan Mosterd",
+            "alias": "Desiderius Erasmus / Melanchton / Coolhaas Destilateur / Christianus Sinapius",
+            "context": "Humanisten en theologen uit de Renaissance en Reformatie die conform toenmalige mode hun oorspronkelijke volkstalige namen vertaalden naar Latijn of Grieks.",
+            "bronnen": ["[17]", "[18]", "[19]", "[20]"]
+          },
+          {
+            "echte_naam": "Jan Pieterszoon Sweelinck",
+            "alias": "Prince der Musiciens",
+            "context": "Beroemd organist en componist te Amsterdam, door Joost van den Vondel geëerd in zijn grafdicht.",
+            "bronnen": ["[17]", "[18]", "[19]"]
+          },
+          {
+            "echte_naam": "Willem Teelinck / Gijsbertus Voetius",
+            "alias": "Gereformeerde Thomas a Kempis / Nederlandsche Thomas a Kempis",
+            "context": "Invloedrijke predikanten en theologen van de Nadere Reformatie, geprezen om hun diepe vroomheid en ascetische geschriften.",
+            "bronnen": ["[17]", "[18]", "[19]"]
+          },
+          {
+            "echte_naam": "Petrus Dathenus / Jacobus Borstius",
+            "alias": "Vurige hervormer / Boetbazuin / Dathenus van zijn tijd",
+            "context": "Gereformeerde prekers bekend om hun felle, boetevaardige preken en hun strijd tegen wereldse ijdelheden en haardracht.",
+            "bronnen": ["[17]", "[18]"]
+          },
+          {
+            "echte_naam": "Willem (van Boudelo)",
+            "alias": "Willem die Madoc maakte / Willem Corthals",
+            "context": "De middeleeuwse auteur van het epos 'Van den vos Reynaerde', verwijzend naar zijn eerdere verlorengane werk 'Madoc'. Veelal geïdentificeerd als cisterciënzer lekenbroeder van de abdij van Boudelo.",
+            "bronnen": ["[20]", "[25]", "[26]", "[27]"]
+          },
+          {
+            "echte_naam": "Reynaert de Vos",
+            "alias": "Den fellen metten roden baerde / De Uilenspiegel onder de dieren",
+            "context": "De hoofdpersoon uit de middeleeuwse dierenepiek; aangeduid met negatieve connotaties van bedrog en sluwheid, maar later door filologen ook bezien als sympathieke schelm.",
+            "bronnen": ["[25]", "[27]"]
+          },
+          {
+            "echte_naam": "Jan Boon",
+            "alias": "Tjalie Robinson / Vincent Mahieu",
+            "context": "Schrijver en journalist die een cruciale rol speelde in het behoud en de promotie van de Indische cultuur en de Petjok-taal in Nederland.",
+            "bronnen": ["[20]"]
+          },
+          {
+            "echte_naam": "Nicolaas Beets / Johannes Kneppelhout",
+            "alias": "Hildebrand / Klikspaan",
+            "context": "Negentiende-eeuwse Nederlandse auteurs die onder bekende pseudoniemen schetsen schreven over het burger- en studentenleven (zoals de 'Camera Obscura').",
+            "bronnen": ["[20]"]
+          },
+          {
+            "echte_naam": "Pier Gerlofs Donia",
+            "alias": "Grutte Pier / Grote Pier",
+            "context": "Friese vrijheidsstrijder en volksheld met enorme fysieke kracht, aan wie het sjibbolet 'Bûter, brea en griene tsiis' wordt toegeschreven.",
+            "bronnen": ["[20]"]
+          },
+          {
+            "echte_naam": "Berta Jacobsdochter",
+            "alias": "Suster Bertken",
+            "context": "Utrechtse kluizenares en dichteres die 57 jaar lang ingekluisd leefde in een cel aan de Buurkerk en daar in 1514 overleed.",
+            "bronnen": ["[21]", "[22]", "[23]"]
+          },
+          {
+            "echte_naam": "Gerard de Turri / Dirck van Abcoude / Arnoldus Buchelius",
+            "alias": "Gerard van der Toren / Theodoricus Gaudanus / Arend van Buchel",
+            "context": "Utrechtse kanunniken, historici, humanisten en rectoren van de Hiëronymusschool wier namen vaak wisselden tussen gelatiniseerde en volkstalige vormen.",
+            "bronnen": ["[21]", "[22]", "[23]"]
+          },
+          {
+            "echte_naam": "Frederik Carel Gerretson",
+            "alias": "Geerten Gossaert / Geheimrat / Dictatuuraanbidder / De ruwaard van het staatsrecht",
+            "context": "Politicus (CHU), historicus en olie-executief bij BPM/Shell die als dichter publiceerde onder het pseudoniem 'Geerten Gossaert'. Bekend om zijn scherpe rechtse en autoritaire opvattingen.",
+            "bronnen": ["[24]", "[28]", "[44]", "[48]", "[55]", "[62, 63]", "[75, 76]", "[81]", "[86]", "[94]"]
+          },
+          {
+            "echte_naam": "H.W. Tilanus / A.D.W. Tilanus",
+            "alias": "De oude Tilanus / De jonge Tilanus",
+            "context": "Politieke aanduidingen binnen de Christelijk-Historische Unie (CHU) om vader en zoon van elkaar te onderscheiden in het politieke bedrijf.",
+            "bronnen": ["[24]"]
+          },
+          {
+            "echte_naam": "A.A.M. van Agt / Willem Drees / Ruud Lubbers / Piet Bukman / L.C. Brinkman",
+            "alias": "Dries van Agt (Taai reptiel) / Ome Joop / Koene keeper (Zondagskind) / De drilboor (Lenin van Voorschoten) / Yup",
+            "context": "Informele roepnamen, spotnamen en politieke typeringen voor prominente Nederlandse premiers en ministers in het naoorlogse tijdperk.",
+            "bronnen": ["[24]", "[28]"]
+          },
+          {
+            "echte_naam": "Louis Paul Boon",
+            "alias": "Boontje / Willem-tot-Dingen / Willem de St. Cloud / Willem l’Arpenteur / Willem Kolmatchevski",
+            "context": "Vlaams schrijver die in zijn kronieken (o.a. 'De Kapellekensbaan' en 'Front') zichzelf verteller noemde onder diverse aliassen en variaties op de naam Willem.",
+            "bronnen": ["[25]", "[26]", "[27]"]
+          },
+          {
+            "echte_naam": "Raymond Jean Marie de Kremer",
+            "alias": "Jean Ray / John Flanders",
+            "context": "Gentse auteur van fantastische literatuur. Publiceerde zijn Franstalige verhalen (zoals 'Malpertuis') als Jean Ray, en schreef Nederlandstalige jeugdboeken onder de naam John Flanders.",
+            "bronnen": ["[25]", "[26]", "[27]", "[35]"]
+          },
+          {
+            "echte_naam": "Leopold III van België",
+            "alias": "Koning der Zwarten",
+            "context": "Satirische en politieke bijnaam in de Vlaamse literatuur (o.a. bij Louis Paul Boon) rondom de Koningskwestie en naoorlogse repressie.",
+            "bronnen": ["[25]", "[26]"]
+          },
+          {
+            "echte_naam": "George van Lalaing / Willem IV van den Bergh / Hendrik van Brederode",
+            "alias": "Graaf van Rennenberg / Graaf Willem van den Bergh / De Grote Geus",
+            "context": "Adellijke legerleiders en stadhouders tijdens de Tachtigjarige Oorlog. Rennenberg werd berucht wegens zijn overstap naar Spaanse zijde ('Verraad van Rennenberg').",
+            "bronnen": ["[30]", "[31]", "[32]"]
+          },
+          {
+            "echte_naam": "Thijs van Loeywagen",
+            "alias": "Kapitein van de Geuzen",
+            "context": "Gildemeester van de schippers in Kampen die in 1572 de burgeroppositie en geuzenopstand tegen de Spanjaarden leidde.",
+            "bronnen": ["[30]", "[31]", "[32]"]
+          },
+          {
+            "echte_naam": "Ferdinand Àlvarez de Toledo / Alexander Farnese",
+            "alias": "De IJzeren Hertog (Alva) / Hertog van Parma",
+            "context": "Spaanse landvoogden en militair bevelhebbers in de Nederlanden, bekend om hun harde repressie en strijd tegen de opstandelingen.",
+            "bronnen": ["[30]", "[32]"]
+          },
+          {
+            "echte_naam": "Hendrik Niclaes",
+            "alias": "H.N.",
+            "context": "Stichter van de religieuze doopsgezinde sekte het 'Huis der Liefde' (Hus der Lieften), die in zestiende-eeuwse geschriften standaard zijn initialen gebruikte.",
+            "bronnen": ["[31]", "[32]"]
+          },
+          {
+            "echte_naam": "Jacques de Lalaing / James Douglas",
+            "alias": "Jacquet / The Black Douglas",
+            "context": "Bourgondische en Schotse adellijke ridders uit de 15e eeuw, bekend uit toernooiboeken en ridderkronieken zoals de strijd in Stirling.",
+            "bronnen": ["[33]"]
+          },
+          {
+            "echte_naam": "Wouter Basson / Philip Mijburgh / Abram van Zyl",
+            "alias": "Dr. Basson / Dr. Philip Mijburgh / Slang van Zyl",
+            "context": "Sleutelfiguren en operators in het Zuid-Afrikaanse chemische en biologische moordprogramma van het apartheidregime ('Project Coast' / CCB).",
+            "bronnen": ["[34]"]
+          },
+          {
+            "echte_naam": "Filip Cauwelier / Serge Buyse / Kristof Michiels",
+            "alias": "Flip Kowlier / BZA (Buzze) / DJ 4T4",
+            "context": "Artiestennamen van de leden van de pionierende West-Vlaamse hiphopformatie 't Hof van Commerce.",
+            "bronnen": ["[35]"]
+          },
+          {
+            "echte_naam": "Inwoners van Mechelen",
+            "alias": "Maneblussers",
+            "context": "Volksbijnaam die ontstond na een historisch incident in 1687 toen burgers de brandweer opschrikten omdat zij de gloed van de maan achter de Sint-Romboutstoren aanzagen voor brand.",
+            "bronnen": ["[35]"]
+          },
+          {
+            "echte_naam": "Floris V",
+            "alias": "Der keerlen God",
+            "context": "Graaf van Holland; kreeg deze bijnaam vanwege zijn goede relatie met en sympathie voor de lagere boerenstanden (de 'keerlen').",
+            "bronnen": ["[35]", "[20]"]
+          },
+          {
+            "echte_naam": "Hernando Pacheco",
+            "alias": "Don Pedro Pacieco / Paciotto / Duc d'Albas soon / Den goedhartigen Don Pacheco",
+            "context": "Spaanse kapitein die in 1572 in Vlissingen werd terechtgesteld. Door zestiende- en negentiende-eeuwse bronnen vaak verward met bouwmeester Paciotto of ten onrechte aangezien voor de zoon van Alva.",
+            "bronnen": ["[37]"]
+          },
+          {
+            "echte_naam": "Cristóbal de Mondragón",
+            "alias": "De enige goede Spanjaard",
+            "context": "Spaanse legeraanvoerder tijdens de Opstand die in het Nederlandse historisch bewustzijn en literatuur als uitzondering werd beschreven om zijn eerbaarheid en ridderlijkheid.",
+            "bronnen": ["[37]"]
+          },
+          {
+            "echte_naam": "Indologische faculteit (Utrecht)",
+            "alias": "Olie-faculteit / Suiker-faculteit / Petroleum-faculteit",
+            "context": "Spotnamen voor de in 1925 aan de Universiteit Utrecht opgerichte opleiding, die financieel werd gesteund door grote ondernemingen (Shell/BPM, plantage-eigenaren) als conservatief tegenwicht tegen het progressieve Leidse adatrecht van Van Vollenhoven.",
+            "bronnen": ["[39]", "[55, 57]"]
+          },
+          {
+            "echte_naam": "Cornelis van Vollenhoven / Christiaan Snouck Hurgronje",
+            "alias": "Kampioen van het Adatrecht (Vader van de adat) / Haji Abdul Ghaffar",
+            "context": "Leidse hoogleraren en oriëntalisten. Van Vollenhoven verdedigde het inheemse Indonesische recht; Snouck Hurgronje reisde onder islamitische schuilnaam naar Mekka voor spionagewerk inzake koloniale bestuurszaken.",
+            "bronnen": ["[39]", "[54]", "[77]"]
+          },
+          {
+            "echte_naam": "Piet Oudolf",
+            "alias": "The Dutch Wave",
+            "context": "Vooraanstaand Nederlands tuinarchitect wiens stijl en stroming ('The Dutch Wave') wereldwijd bekend staat om het ecologische gebruik van vaste plantengemeenschappen en grassen.",
+            "bronnen": ["[43]"]
+          },
+          {
+            "echte_naam": "Hendrik van Mecklenburg-Schwerin",
+            "alias": "Zwijnen Heintje",
+            "context": "Smadelijke bijnaam in de volksmond voor de echtgenoot van koningin Wilhelmina (prins Hendrik), verwijzend naar zijn talrijke buitenechtelijke escapades en affaires.",
+            "bronnen": ["[45]"]
+          },
+          {
+            "echte_naam": "Lanseloet / Sanderijn",
+            "alias": "Herlanseloet / Scone maghet / Hofdame",
+            "context": "Hoofdpersonages uit het middeleeuwse abele toneelspel 'Lanseloet van Denemerken', waarin adellijke titels en maagdelijkheid centraal staan in de aanspreekvormen.",
+            "bronnen": ["[47]", "[68]"]
+          },
+          {
+            "echte_naam": "Robert Frédéric Groeninx van Zoelen / Fedde Weidema / Geert Lubberhuizen / Jan Jacob ten Hove",
+            "alias": "Breyster / Radboud de Cadt / Bas Busy (Bas Ruys) / Derk Hoek (Frank Gericke)",
+            "context": "Clandestiene netwerkaliassen, verzetsnamen en literaire pseudoniemen gebruikt rondom inlichtingenwerk, uitgeverij De Bezige Bij en de 'Groep-Gerretson' tijdens en na de Tweede Wereldoorlog.",
+            "bronnen": ["[48]", "[94]"]
+          },
+          {
+            "echte_naam": "Johann David Zocher sr.",
+            "alias": "Zogher / De fameuse aanlegger / Hofarchitect",
+            "context": "Gevierd landschaps- en tuinarchitect uit de negentiende eeuw die door koning Lodewijk Napoleon tot hofarchitect werd benoemd en talloze landgoederen en stadsparken ontwierp.",
+            "bronnen": ["[69]"]
+          },
+          {
+            "echte_naam": "Herman Boerhaave",
+            "alias": "Leermeester van gans Europa",
+            "context": "Achttiende-eeuws Leids hoogleraar geneeskunde wiens Europese roem en pedagogische invloed hem deze internationale eretitel bezorgden.",
+            "bronnen": ["[78]"]
+          },
+          {
+            "echte_naam": "Eelco Alta / Pieter, Albert en Arjen Roelofs",
+            "alias": "Liefhebber der waarheid / De drie boerenprofessors van Hijum",
+            "context": "Friese dominees, astronomen en boeren die aan zelfstudie deden; Alta publiceerde onder pseudoniem over de planetaire conjunctie die leidde tot de bouw van het Eise Eisinga Planetarium.",
+            "bronnen": ["[78]"]
+          },
+          {
+            "echte_naam": "Adriaantje Peeterse Luijckx / Adriaan van Campen / Catharina Mulder / Klaas Annink / Jacob Muller",
+            "alias": "Maay Lievens Jenne (Jaan) / De Schrik van de Baronie / Kaat Mossel / Huttenkloas / Sjako",
+            "context": "Beruchte misdadigers, bendeleiders en volksfiguren uit de zeventiende- tot negentiende-eeuwse Nederlandse strafrechts- en volksgeschiedenis.",
+            "bronnen": ["[96]"]
+          },
+          {
+            "echte_naam": "Philip Alexius de László",
+            "alias": "Laub / Laub Fülöp / László de Lombos",
+            "context": "Hongaars-Brits portretschilder die zijn geboortenaam Laub veranderde en kortstondig een adellijke toevoeging ('de Lombos') gebruikte na te zijn geënobeld door Frans Jozef I.",
+            "bronnen": ["[97, 98]"]
+          },
+          {
+            "echte_naam": "Fernão de Magalhães",
+            "alias": "Ferdinand Magellaan / Hernando de Magallanes",
+            "context": "Portugese ontdekkingsreiziger wiens naam in Spaanse dienst ('de Magallanes') en in de Nederlandse geschiedschrijving ('Magellaan') werd aangepast.",
+            "bronnen": ["[99]"]
+          },
+          {
+            "echte_naam": "Jan van Boendale",
+            "alias": "Jan de Clerck / Jan den Clerc / Jan Deckers",
+            "context": "Middeleeuws historicus, klerk en secretaris van de stad Antwerpen. Auteur van 'Der leeken spieghel' en 'Dietsche doctrinale', in oudere literatuur vaak vernoemd naar zijn beroep als klerk.",
+            "bronnen": ["[90]", "[100]"]
+          },
+          {
+            "echte_naam": "Genesius / Adam de le Hale / Francesco d'Angelo",
+            "alias": "Patroon der toneelspelers / Adam de la Halle (le Bossu) / il Cecca",
+            "context": "Beschermheiligen, troubadours en vernuftige theateringenieurs die verbonden zijn aan het middeleeuwse en renaissance-toneelwezen in Europa.",
+            "bronnen": ["[102]"]
+          }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultCount = document.getElementById('resultCount');
+        const toast = document.getElementById('toast');
+
+        // Helper: Formatteer namen in een scherpe Booleaanse Dork query
+        function createDorkQuery(echteNaam, alias) {
+            // Splits eventuele meerdere namen (gescheiden door '/') op en zet ze in quotes
+            const formatPart = (str) => {
+                return str.split('/')
+                          .map(s => `"${s.trim()}"`)
+                          .join(' OR ');
+            };
+
+            const naamPart = formatPart(echteNaam);
+            const aliasPart = formatPart(alias);
+
+            return `(${naamPart}) AND (${aliasPart})`;
+        }
+
+        // Functie om de kaarten te renderen
+        function renderCards(data) {
+            resultsGrid.innerHTML = '';
+            
+            if (data.length === 0) {
+                resultsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Geen historische figuren of aliassen gevonden die voldoen aan de zoekterm.</p>`;
+                resultCount.textContent = `0 resultaten`;
+                return;
+            }
+
+            resultCount.textContent = `${data.length} van ${dataset.length} resultaten`;
+
+            data.forEach((item, index) => {
+                const card = document.createElement('article');
+                card.className = 'card';
+
+                const dorkQuery = createDorkQuery(item.echte_naam, item.alias);
+                const delpherUrl = `https://www.delpher.nl/nl/kranten/resultaten?query=${encodeURIComponent(dorkQuery)}&coll=ddd`;
+                const niodUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkQuery + ' (site:niod.nl OR site:nationaalarchief.nl)')}`;
+                const generalDorkUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkQuery + ' filetype:pdf')}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            <div class="echte-naam">${item.echte_naam}</div>
+                            <div class="alias-badge">🏷️ ${item.alias}</div>
+                        </div>
+                        <p class="context-body">${item.context}</p>
+                        <div class="bronnen-footer">📚 Bronnen: ${item.bronnen.join(' ')}</div>
+                    </div>
+                    <div class="dork-actions">
+                        <div class="dork-title">⚡ OSINT & Archief Dork Acties</div>
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="copyToClipboard('${dorkQuery.replace(/'/g, "\\'")}')">
+                                📋 Kopieer Dork
+                            </button>
+                            <a href="${delpherUrl}" target="_blank" class="btn" title="Zoek in historische kranten op Delpher">
+                                📰 Delpher
+                            </a>
+                            <a href="${niodUrl}" target="_blank" class="btn" title="Zoek in de archieven van het NIOD en Nationaal Archief">
+                                🏛️ NIOD / NA
+                            </a>
+                            <a href="${generalDorkUrl}" target="_blank" class="btn" title="Zoek via Google specifiek naar PDF archiefstukken">
+                                📄 Google PDF
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                resultsGrid.appendChild(card);
+            });
+        }
+
+        // Kopiëren naar klembord inclusief notificatie
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.textContent = `Gekopieerd: ${text}`;
+                toast.className = "show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            }).catch(err => {
+                console.error('Kopiëren mislukt: ', err);
+            });
+        };
+
+        // Live zoekfilter (luistert naar invoer)
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+
+            const filteredData = dataset.filter(item => {
+                return item.echte_naam.toLowerCase().includes(query) ||
+                       item.alias.toLowerCase().includes(query) ||
+                       item.context.toLowerCase().includes(query);
+            });
+
+            renderCards(filteredData);
+        });
+
+        // Initiële weergave inladen
+        renderCards(dataset);
+    </script>
+</body>
+</html>
