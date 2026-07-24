@@ -51,6 +51,8 @@ https://www.google.com/advanced_search
 
 https://mastodon-rouge.vercel.app/bladwijzer/bladwijzers.html
 
+https://github.com/goija/mastodon/blob/main/dossier/Olie-industrie.html
+
 
 https://github.com/goija/mastodon/blob/main/knooppunt-data_van_prof_Treub.json
 
