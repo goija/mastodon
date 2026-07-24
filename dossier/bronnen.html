@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Archief & Bronnen Zoekmodel (11e–20e eeuw)</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #1e293b;
+            --secondary: #0284c7;
+            --accent-gold: #d97706;
+            --border: #e2e8f0;
+            --tag-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+            border-bottom: 4px solid var(--accent-gold);
+        }
+
+        header h1 { font-size: 2rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        header p { color: #cbd5e1; font-size: 0.95rem; max-width: 1000px; }
+
+        main { max-width: 1400px; margin: 0 auto; }
+
+        /* OSINT Dork Panel (Bovenaan) */
+        .osint-panel {
+            background: #1e293b;
+            color: white;
+            padding: 18px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .osint-panel h3 { font-size: 1rem; color: #38bdf8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .osint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+        .osint-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+        }
+        .osint-btn:hover { background: var(--secondary); border-color: #0284c7; color: white; transform: translateY(-1px); }
+
+        /* Filter & Search Bar */
+        .controls {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        #searchInput {
+            flex-grow: 1;
+            padding: 14px 18px;
+            font-size: 1.05rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+        #searchInput:focus { outline: none; border-color: var(--secondary); background: white; box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+
+        .filter-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-filter {
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-filter:hover { background: #e2e8f0; }
+        .btn-filter.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .stats-bar {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Results Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 20px; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+        /* Card Style */
+        .card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+        .card-header { padding: 18px 20px 15px 20px; border-bottom: 1px solid #f1f5f9; position: relative; }
+        .cat-tag {
+            position: absolute;
+            top: 18px; right: 18px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em;
+        }
+
+        /* Domein Kleuren */
+        .cat-dynastie { background: #fef3c7; color: #92400e; }
+        .cat-faculteit { background: #e0e7ff; color: #3730a3; }
+        .cat-netwerk { background: #fee2e2; color: #991b1b; }
+        .cat-literatuur { background: #f3e8ff; color: #6b21a8; }
+        .cat-oorlog16 { background: #d1fae5; color: #065f46; }
+        .cat-middeleeuw { background: #f1f5f9; color: #334155; }
+        .cat-religie { background: #cffafe; color: #155e75; }
+        .cat-kunst { background: #fce7f3; color: #9d174d; }
+        .cat-bestuur { background: #ccfbf1; color: #115e59; }
+        .cat-folklore { background: #ffedd5; color: #9a3412; }
+        .cat-geopolitiek { background: #e2e8f0; color: #1e293b; }
+
+        .echte-naam { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-right: 130px; line-height: 1.25; }
+        .alias-list { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+        .alias-badge { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+
+        .card-body { padding: 18px 20px; flex-grow: 1; font-size: 0.92rem; color: #334155; }
+        .card-body p { margin-bottom: 12px; }
+        
+        .bron-box { background: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px 12px; border-radius: 6px; font-size: 0.82rem; color: #475569; font-family: monospace; }
+        .bron-box strong { color: var(--primary); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        .card-actions { background: #f8fafc; padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-act {
+            background: white; border: 1px solid var(--border); padding: 5px 10px; border-radius: 5px;
+            font-size: 0.78rem; font-weight: 600; color: var(--text-main); cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 4px; transition: background 0.1s;
+        }
+        .btn-act:hover { background: #e2e8f0; }
+        .btn-copy { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-copy:hover { background: #334155; }
+
+        /* Toast */
+        #toast {
+            visibility: hidden; min-width: 250px; background: #0f172a; color: white; text-align: center;
+            border-radius: 8px; padding: 12px 18px; position: fixed; z-index: 1000; bottom: 30px; left: 50%;
+            transform: translateX(-50%); font-size: 0.88rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #toast.show { visibility: visible; animation: fadein 0.3s, fadeout 0.3s 2.5s; }
+        @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+        @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏛️ Master Archief & Bronnen Zoekmodel</h1>
+        <p>Volledige databank voor genealogisch, institutioneel en clandestien netwerkonderzoek (11e–20e eeuw). Bevat 11 historische domeinen inclusief het Gerretson-archief, de Loudon-dynastie, de Olie-faculteit, middeleeuwse vorsten en historische pseudoniemen.</p>
+    </header>
+
+    <main>
+        <section class="osint-panel">
+            <h3>⚡ Geavanceerde OSINT Netwerk Dorks (Direct Uitvoeren op Google)</h3>
+            <div class="osint-grid">
+                <a href="https://www.google.com/search?q=%28%22LSV+Minerva%22+OR+%22Gelouterd+herrijst%22%29+AND+%28%22Groep-Gerretson%22+OR+%22Nationale+Unie%22%29+AND+%28%22Dani%C3%ABl+Tulleken%22+OR+%22Toparcha%22%29" target="_blank" class="osint-btn">
+                    <span>1. Clandestien Conservatief Netwerk (Schaduwstaat)</span> <span>🔍 Zoek</span>
+                </a>
+                <a href="https://www.google.com/search?q=%28%22Indologische+faculteit%22+OR+%22Olie-faculteit%22+OR+%22Suiker-faculteit%22%29+AND+%28%22F.C.+Gerretson%22+OR+%22Treub%22+OR+%22BPM%22%29+AND+%28%22Van+Vollenhoven%22+OR+%22Adatrecht%22%29" target="_blank" class="osint-btn">
+                    <span>2. De Utrechtse Olie-faculteit vs. Leiden</span> <span>🔍 Zoek</span>
+                </a>
+                <a href="https://www.google.com/search?q=%28%22Geerten+Gossaert%22+OR+%22Frederik+Carel+Gerretson%22%29+AND+%28%22Experimenten%22+OR+%22Dictatuuraanbidder%22%29" target="_blank" class="osint-btn">
+                    <span>3. Gerretson: Literaire Dubbelrol & Censuur</span> <span>🔍 Zoek</span>
+                </a>
+                <a href="https://www.google.com/search?q=%28%22Henri+Deterding%22+OR+%22Napoleon+of+Oil%22%29+AND+%28%22Hugo+Loudon%22+OR+%22Voorlinden%22%29+AND+%28%22Hendrik+Colijn%22+OR+%22Roerganger%22%29+AND+%28%22BPM%22+OR+%22Royal+Dutch%22%29" target="_blank" class="osint-btn">
+                    <span>4. Shell/BPM Geopolitiek & Olie-Oligarchie</span> <span>🔍 Zoek</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Zoek op naam, alias, trefwoord of archief (bijv. 'Minerva', '2.21.246', 'Shell', '1572', 'Boon', 'Delft')..." autocomplete="off">
+            </div>
+            <div class="filter-buttons">
+                <button class="btn-filter active" data-filter="all">ALLES (100+)</button>
+                <button class="btn-filter" data-filter="dynastie">👑 1. Dynastie & Olie</button>
+                <button class="btn-filter" data-filter="faculteit">🎓 2. Koloniaal & Adatrecht</button>
+                <button class="btn-filter" data-filter="netwerk">🕸️ 3. Schaduwnetwerken</button>
+                <button class="btn-filter" data-filter="literatuur">✒️ 4. Literatuur</button>
+                <button class="btn-filter" data-filter="oorlog16">⚔️ 5. 80-Jarige Oorlog</button>
+                <button class="btn-filter" data-filter="middeleeuw">🏰 6. Middeleeuwen</button>
+                <button class="btn-filter" data-filter="religie">✝️ 7. Geestelijken</button>
+                <button class="btn-filter" data-filter="kunst">🎨 8. Kunst & Tuin</button>
+                <button class="btn-filter" data-filter="bestuur">🏛️ 9. Bestuur & Schouten</button>
+                <button class="btn-filter" data-filter="folklore">⚖️ 10. Recht & Folklore</button>
+                <button class="btn-filter" data-filter="geopolitiek">🌍 11. Geopolitiek</button>
+            </div>
+            <div class="stats-bar">
+                <span id="resultCount">Laden...</span>
+                <span>💡 Tip: Klik op 'Kopieer Dork' om aangepaste Booleaanse syntax direct in Delpher of het Nationaal Archief te plakken.</span>
+            </div>
+        </section>
+
+        <section class="grid" id="resultsGrid"></section>
+    </main>
+
+    <div id="toast">✅ Dork gekopieerd naar klembord!</div>
+
+    <script>
+        // MASTER DATABANK - Volledig georganiseerd naar de 11 historische domeinen
+        const dataset = [
+            // 1. DYNASTIEËN, KOLONIALE MACHT & OLIE-OLIGARCHIE
+            { naam: "Frederik Carel Gerretson", alias: "Geerten Gossaert / Geheimrat / Dictatuuraanbidder / Ruwaard van het staatsrecht", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Directiesecretaris BPM/Shell (1917–1925), hoogleraar Utrecht en CHU-senator. Als dichter bekend onder pseudoniem Geerten Gossaert. Spil van de conservatieve Groep-Gerretson en vooroorlogs voorzitter van de Nationale Unie.", bron: "NA Toegang 2.21.246 / BWN III / Parlement.com" },
+            { naam: "Loudon-familie", alias: "Schots-Nederlandse Dynastie / Clan Campbell / James, John, Hugo & John Hugo Loudon", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Regenten- en industriëlen-geslacht. Leverde ministers van Koloniën, Gouverneurs-Generaal van Nederlands-Indië en decennialang de leiding over Royal Dutch Shell en het WWF. Koper van Landgoed Voorlinden (1912).", bron: "Archief Voorlinden / NA / Adel in Nederland" },
+            { naam: "Henri Wilhelm August Deterding", alias: "The Napoleon of Oil / KBE", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Algemeen directeur Royal Dutch / Koninklijke Olie (1900–1936). Onderhield in de jaren '30 omstreden contacten met het nazi-regime. Overleden in St. Moritz (1939), begraven op Landgoed Dobbin, in 1968 herbegraven in Liechtenstein.", bron: "BWN I / Jonker & Van Zanden (2007)" },
+            { naam: "Hendrikus (Hendrik) Colijn", alias: "De roerganger / De schildwacht / H. Colijn", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Vijfmaal premier van Nederland, KNIL-officier en tussen zijn ambtstermijnen door directielid van de BPM. Stond voor de harde ARP-staatskoers en de Gouden Standaard. Herbegraven in Schelluinen; grafzerk in HDC Amsterdam.", bron: "HDC VU / BWN II / DNPP / NA" },
+            { naam: "M.W.F. Treub", alias: "Voorzitter van de Ondernemersraad", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Sleutelfiguur bij de oprichting van het 'Fonds ten behoeve van Indologische Studiën' en de Utrechtse Olie-faculteit in 1925.", bron: "De Koloniale Opleidings-Strijd / UU Archief" },
+            { naam: "Aeilko Jans Zijlker", alias: "Zijlker", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Oprichter en geldschieter van de directe voorlopers van de Bataafse Petroleum Maatschappij (BPM) in Nederlands-Indië.", bron: "BWN / Shell Bedrijfsgeschiedenis" },
+            { naam: "August Kessler", alias: "Jean B.A. Kessler", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Een van de pionierende oprichters en directieleden van de Bataafse Petroleum Maatschappij.", bron: "De Kesslers (Koch) / BWN" },
+            { naam: "Cornelis Theodorus Elout", alias: "Mr. C.Th. Elout", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Minister van Staat, koloniaal bestuurskundige en voormalig eigenaar van Landgoed Voorlinden te Wassenaar.", bron: "Archief Voorlinden / NA" },
+            { naam: "Fritz Mannheimer", alias: "Geniaal bankier en mecenas", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Gezichts- en invloedbepalende status in de Nederlandse en internationale financiële wereld tijdens het interbellum (Mendelssohn & Co.).", bron: "NA / Financiële Archieven" },
+            { naam: "Marie Annette Reiss", alias: "Jeanne / Jane", cat: "dynastie", catLabel: "1. Dynastie & Olie", context: "Roepnaam van de echtgenote van Fritz Mannheimer; in New York noemde zij zich Jane.", bron: "Catalogus De Laszlo Archive" },
+
+            // 2. KOLONIAAL BESTUUR, ADATRECHT & DE UTRECHTSE OPLEIDING
+            { naam: "Utrechtse Indologische Faculteit", alias: "Olie-faculteit / Suiker-faculteit / Petroleum-faculteit", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Opgericht in 1925 door de Ondernemersraad en BPM/Shell als conservatief-zakelijk bolwerk tegen de progressieve Leidse school. Leidde administratieve bestuursambtenaren op voor rust, orde en gezag in Nederlands-Indië.", bron: "Universiteit Utrecht & Koloniale Kennis (Van Rinsum)" },
+            { naam: "Cornelis van Vollenhoven", alias: "Kampioen van het Adatrecht / Vader van de adat", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Leidse hoogleraar die het inheemse Indonesische volksrecht (adat) definieerde en verdedigde tegen eenvormige westerse codificatie en plantagebelangen.", bron: "Universiteit Leiden / De Gids (1925)" },
+            { naam: "Christiaan Snouck Hurgronje", alias: "Haji Abdul Ghaffar", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Beroemd islamoloog en oriëntalist die zich onder islamitische schuilnaam in Mekka vestigde en de koloniale overheid diende als strategisch adviseur.", bron: "Universiteit Leiden / NA" },
+            { naam: "Masdoelhak Nasoetion", alias: "De Ironische Promovendus", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Indonesisch intellectueel die in 1943 aan de Utrechtse 'Olie-faculteit' promoveerde bij prof. Fischer. Koos voor de Indonesische onafhankelijkheidsstrijd en werd in december 1948 tijdens de Tweede Politionele Actie geëxecuteerd.", bron: "Promotie-archief UU / NA Kabinetsarchieven" },
+            { naam: "J.Ph. Suijling", alias: "Hoogleraar Indisch Recht", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Hoogleraar Indisch Privaat- en Strafrecht aan de Olie-faculteit (gefinancierd door BPM/Shell). Moest in 1946 onder druk met pensioen na de naoorlogse zuivering.", bron: "CABR / Zuiveringscommissie UU" },
+            { naam: "H.Th. Fischer", alias: "Cultureel Antropoloog", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Hoogleraar Volkenkunde te Utrecht, gefinancierd door de Ondernemersraad. Promotor van Nasoetion. Vrijgesproken bij de zuivering en bleef hoogleraar tot 1975.", bron: "UU Archief" },
+            { naam: "J. Gonda", alias: "Sanskriet-deskundige", cat: "faculteit", catLabel: "2. Koloniaal & Adatrecht", context: "Hoogleraar Sanskriet en Indische taalkunde te Utrecht, eveneens gefinancierd door het bedrijfsleven. Vrijgesproken na 1945.", bron: "UU Archief" },
+
+            // 3. CLANDESTIENE NETWERKEN, SYMBOLIEK & BEZETTINGSJAREN
+            { naam: "LSV Minerva", alias: "Totem van de Schaduwstaat / Gelouterd herrijst / Kraakman-incident (1838)", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Leidsch Studenten Corps (opgericht 1839 na het Kraakman-incident). Institutioneel bolwerk voor sociale reproductie van de regenten- en bedrijfselite. Het motto 'Gelouterd herrijst' fungeerde binnen de Groep-Gerretson als reactionaire code voor ambtelijke zuiveringen.", bron: "Erfgoed Leiden / Dossier 'The Minerva Contingency'" },
+            { naam: "Daniël Tulleken", alias: "Toparcha Meliskerke & Mariekerke / Ex-Libris Minerva", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "18e-eeuwse burgemeester van Middelburg en VOC-bewindhebber. Voerde een ex-libris met de godin Minerva en de titel 'Toparcha' (Heer van). Diende voor het netwerk van Gerretson als historisch baken van hoe macht en kapitaal in dezelfde families bleven.", bron: "Zeeuws Archief / Zelandia Illustrata" },
+            { naam: "Tobie Goedewaagen", alias: "Rotkar / Theodor Meursen / De Torenwachter / Ter Gouwe / Tom Kinderwagen", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Secretaris-generaal bij de Kultuurkamer tijdens de bezetting. 'Rotkar' was een gehate scheldnaam van de bevolking; 'Theodor Meursen' gebruikte hij als naoorlogs pseudoniem om in Duitsland te kunnen publiceren. Ontmaskerd door journalist Henri Wielek.", bron: "CABR / NIOD Toegang 858 / Vrij Nederland" },
+            { naam: "Geertruida H.J. Vruink", alias: "Truus / Truschka / Sibylle", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Tweede echtgenote van Tobie Goedewaagen, door hem in zijn poëzie en privéleven aangeduid met diverse mythologische koosnamen.", bron: "CABR / NIOD" },
+            { naam: "W. Kweksilber", alias: "Henri Wielek", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Journalist die in Vrij Nederland de ware identiteit van de naoorlogse publicist 'Theodor Meursen' (Tobie Goedewaagen) onthulde.", bron: "Vrij Nederland (1981) / NIOD" },
+            { naam: "Robert F. Groeninx van Zoelen", alias: "Breyster", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Alias gebruikt in inlichtingen- en diplomatieke kringen; nauw betrokken bij de oprichting en koers van de vooroorlogse Nationale Unie.", bron: "NA / Oorlogsbronnen" },
+            { naam: "Geert Lubberhuizen", alias: "Bas Busy / Bas Ruys", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Schuil- en verzetsnamen gebruikt door de oprichter van uitgeverij De Bezige Bij tijdens de bezettingsperiode.", bron: "Literatuurmuseum / NIOD" },
+            { naam: "Fedde Weidema", alias: "Radboud de Cadt / Antipholus van Siracuse / Fred Ingram", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Diverse aliassen gebruikt door Weidema binnen literaire en clandestiene inlichtingennetwerken.", bron: "Archief Weidema / Oorlogsbronnen" },
+            { naam: "Jan Jacob ten Hove", alias: "Derk Hoek / Frank Gericke", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Pseudoniemen gebruikt binnen de clandestiene kringen en correspondentie van de Groep-Gerretson.", bron: "NA Toegang 2.21.246" },
+            { naam: "Wouter Basson", alias: "Dr. Basson / Project Coast / Slang van Zyl / Dr. Philip Mijburgh", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Cardioloog en hoofduitvoerder van 'Project Coast', het chemisch en biologisch moordprogramma van het Zuid-Afrikaanse apartheidsregime. Opereerde internationaal onder valse paspoorten om sancties te ontduiken.", bron: "UNIDIR / TRC Archives South Africa" },
+            { naam: "Anton Mussert", alias: "Ad", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Roepnaam binnen de partij- en familiekring voor de leider van de Nationaal-Socialistische Beweging (NSB).", bron: "NIOD / CABR" },
+            { naam: "Max Blokzijl", alias: "Een lezer", cat: "netwerk", catLabel: "3. Schaduwnetwerken", context: "Pseudoniem gebruikt voor een strategisch propagandistisch artikel over de pers in het nationaalsocialistische blad De Waag in 1938.", bron: "NIOD / KB Krantenbank" },
+
+            // 4. LITERATUUR, REDERIJKERS & SCHRIJVERS
+            { naam: "Willem (van Boudelo)", alias: "Willem die Madoc maakte / Willem Corthals", cat: "literatuur", catLabel: "4. Literatuur", context: "De middeleeuwse auteur van het epos Van den vos Reynaerde, verwijzend naar zijn eerdere verlorengane werk Madoc. Geïdentificeerd als cisterciënzer lekenbroeder van de abdij van Boudelo.", bron: "Tiecelijn / Reynaertgenootschap" },
+            { naam: "Reynaert de Vos", alias: "Den fellen metten roden baerde / De Uilenspiegel onder de dieren / Haersint (Hersent)", cat: "literatuur", catLabel: "4. Literatuur", context: "Hoofdpersoon uit de middeleeuwse dierenepiek; aangeduid met negatieve connotaties van bedrog en sluwheid, maar in de negentiende-eeuwse filologie ook bezien als sympathieke schelm.", bron: "Literatuurgeschiedenis.org / DBNL" },
+            { naam: "Louis Paul Boon", alias: "Boontje / Willem de Verraderlijke / Magister Nivardus Wilhelmus / Willem l’Arpenteur / Willem-tot-Dingen", cat: "literatuur", catLabel: "4. Literatuur", context: "Vlaams schrijver die in zijn kronieken (De Kapellekensbaan) en als redactiesecretaris bij Front zichzelf als verteller opvoerde onder een woud aan Reinaert de Vos-achtige aliassen om censuur te omzeilen.", bron: "AMVC-Letterenhuis / Tiecelijn" },
+            { naam: "Raymond J.M. de Kremer", alias: "Jean Ray / John Flanders", cat: "literatuur", catLabel: "4. Literatuur", context: "Gentse meester van de fantastische literatuur (Malpertuis). Publiceerde zijn duistere Franstalige werk als Jean Ray, maar schreef honderden Nederlandstalige jeugdboeken en pulpreeksen als John Flanders (o.a. Averbode).", bron: "UGent Archief / AMVC-Letterenhuis" },
+            { naam: "Willem van Hildegaersberch", alias: "Meester Willem van Hillegairtsberge / Michter / Grote sprookspreker", cat: "literatuur", catLabel: "4. Literatuur", context: "Gevierd 14e-eeuws sprookspreker aan het Haagse hof (ca. 1383–1408). Bekend om zijn vermanende, maatschappijkritische en morele spotversjes. Noemde zichzelf nadrukkelijk 'michter' om zich te onderscheiden van gewone minstrelen.", bron: "UvA DARE / Theo Meder" },
+            { naam: "Jan van Boendale", alias: "Jan de Clerck / Jan den Clerc / Jan Deckers", cat: "literatuur", catLabel: "4. Literatuur", context: "14e-eeuws historicus, klerk en secretaris van de stad Antwerpen. Auteur van Der leeken spieghel en Dietsche doctrinale; in oudere literatuur vaak vernoemd naar zijn ambt als klerk.", bron: "DBNL / AUP-Online" },
+            { naam: "Jacob van Maerlant", alias: "Vader der Dietse dichteren algader", cat: "literatuur", catLabel: "4. Literatuur", context: "Eretitel voor de 13e-eeuwse Vlaamse dichter die een enorme hoeveelheid didactische en encyclopedische werken in de volkstaal schreef.", bron: "Literatuurgeschiedenis.org" },
+            { naam: "Jan Boon", alias: "Tjalie Robinson / Vincent Mahieu", cat: "literatuur", catLabel: "4. Literatuur", context: "Schrijver en journalist die na de dekolonisatie een cruciale rol speelde in het behoud en de promotie van de Indische cultuur en de Petjok-taal in Nederland.", bron: "DBNL / Indisch Archief" },
+            { naam: "Eduard Douwes Dekker", alias: "Multatuli", cat: "literatuur", catLabel: "4. Literatuur", context: "Beroemd Nederlands schrijver (Max Havelaar), pleitbezorger van rechtvaardigheid in Nederlands-Indië en zwager van Cornelis Abrahamsz jr.", bron: "Multatuli Museum / DBNL" },
+            { naam: "Nicolaas Beets", alias: "Hildebrand", cat: "literatuur", catLabel: "4. Literatuur", context: "19e-eeuws schrijver en predikant die onder dit pseudoniem zijn beroemde verhalenbundel Camera Obscura publiceerde.", bron: "DBNL" },
+            { naam: "Johannes Kneppelhout", alias: "Klikspaan", cat: "literatuur", catLabel: "4. Literatuur", context: "Schrijver die onder pseudoniem scherpe en humoristische schetsen schreef over het 19e-eeuwse Leidse studentenleven.", bron: "DBNL / Erfgoed Leiden" },
+            { naam: "Adriaan Roland Holst", alias: "Prins der Dichters / Jany", cat: "literatuur", catLabel: "4. Literatuur", context: "Eretitel om zijn status in de Nederlandse poëzie aan te duiden; 'Jany' was zijn roepnaam binnen literaire en vriendenkringen.", bron: "DBNL / Literatuurmuseum" },
+            { naam: "Constantijn Huygens", alias: "Constanter / Vlitiades", cat: "literatuur", catLabel: "4. Literatuur", context: "Beroemd dichter, diplomaat en secretaris van de Prinsen van Oranje; gebruikte de Latijnse schuilnaam Constanter bij publicaties zoals Ledige Uren (1625).", bron: "DBNL / KB Den Haag" },
+            { naam: "Johan van Vliet", alias: "Janus Vlitius / Fobbe Korst / Bliteus", cat: "literatuur", catLabel: "4. Literatuur", context: "17e-eeuws rechtsgeleerde en latinist uit Breda. Publiceerde onder gelatiniseerde namen, gebruikte Fobbe Korst in volksalmanakken en kreeg van tegenstanders de smadelijke spotnaam Bliteus (onbenullig).", bron: "KNAW Archief / DBNL" },
+            { naam: "Lanseloet & Sanderijn", alias: "Herlanseloet / Scone maghet / Hofdame", cat: "literatuur", catLabel: "4. Literatuur", context: "Hoofdpersonages uit het middeleeuwse abele toneelspel Lanseloet van Denemerken, waarin adellijke titels en maagdelijkheid centraal staan in de aanspreekvormen.", bron: "Literatuurgeschiedenis.org" },
+            { naam: "Adam de le Hale", alias: "Adam de la Halle / le Bossu (de Bultenaar)", cat: "literatuur", catLabel: "4. Literatuur", context: "Franse dichter en troubadour uit Atrecht. Hoewel hij 'le Bossu' werd genoemd naar zijn vader, ontkende hij zelf een bultenaar te zijn.", bron: "Parnaseo / Theaterarchieven" },
+            { naam: "Genesius", alias: "Patroon der toneelspelers", cat: "literatuur", catLabel: "4. Literatuur", context: "Na zijn marteldood in het jaar 303 werd de Romeinse acteur Genesius opgenomen onder de heiligen als beschermpatroon voor toneelspelers.", bron: "Theaterarchieven" },
+            { naam: "Filip Cauwelier, Serge Buyse & Kristof Michiels", alias: "Flip Kowlier / BZA (Buzze) / DJ 4T4", cat: "literatuur", catLabel: "4. Literatuur", context: "Artiestennamen van de leden van de pionierende West-Vlaamse hiphopformatie 't Hof van Commerce.", bron: "Muziekarchief Vlaanderen" },
+
+            // 5. TACHTIGJARIGE OORLOG, GEUZEN, LANDVOOGDEN & ZEEHELDEN
+            { naam: "Willem van Oranje", alias: "Vader des Vaderlands / Willem de Zwijger", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Leider van de Nederlandse Opstand tegen Spanje en stadhouder van Holland, Zeeland en Utrecht.", bron: "NA / Koninklijk Huisarchief" },
+            { naam: "George van Lalaing", alias: "Graaf van Rennenberg", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Stadhouder van Friesland, Groningen, Drenthe en Overijssel. Werd berucht door zijn overstap naar Spaanse zijde in 1580 (Verraad van Rennenberg).", bron: "NA / Reformatie in Kampen (Van der Pol)" },
+            { naam: "Willem IV van den Bergh", alias: "Graaf Willem van den Bergh / Willem IV", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Graaf en zwager van Willem van Oranje; leidde legers tijdens de Tachtigjarige Oorlog en veroverde Kampen in 1572.", bron: "NA / Reformatie in Kampen" },
+            { naam: "Hendrik van Brederode", alias: "De Grote Geus", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Mede-oprichter van het Verbond der Edelen en vroege militair leader van de geuzenopstand.", bron: "NA / DBNL" },
+            { naam: "Thijs van Loeywagen", alias: "Kapitein van de Geuzen", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Gildemeester van het schippersgilde te Kampen; leidde de staatsgezinde burgeroppositie en rebellie tegen de Spanjaarden in 1572.", bron: "Stadsarchief Kampen / Van der Pol" },
+            { naam: "Ferdinand Àlvarez de Toledo", alias: "De IJzeren Hertog / Alva", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Spaanse landvoogd en legeraanvoerder in de Nederlanden, berucht om zijn harde repressie, de Raad van Beroerten en de Tiende Penning.", bron: "Spaanse Staatsarchieven (Simancas) / NA" },
+            { naam: "Alexander Farnese", alias: "Hertog van Parma", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Spaanse landvoogd en militair strateeg die een groot deel van de Zuidelijke Nederlanden heroverde voor de Spaanse kroon.", bron: "Simancas / NA" },
+            { naam: "Hernando Pacheco", alias: "Don Pedro Pacieco / Paciotto / Duc d'Albas soon", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Spaanse kapitein in 1572 te Vlissingen terechtgesteld. Door historici vaak verward met bouwmeester Paciotto of door de Vlissingse bevolking ten onrechte aangezien voor de zoon van Alva.", bron: "Zeeuws Archief / Bor Kroniek" },
+            { naam: "Cristóbal de Mondragón", alias: "De enige goede Spanjaard", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Spaanse legeraanvoerder die in het Nederlandse historisch bewustzijn als uitzondering werd geprezen om zijn ridderlijkheid, trouw en eerbaarheid.", bron: "Zeeuws Archief / NA" },
+            { naam: "Willem III van Oranje-Nassau", alias: "Koning van Engeland / Stadhouder / Redder van het veege Nederland / Held van Séneffe", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Stadhouder van de Republiek en later koning van Engeland. Geprezen als militaire verdediger van het protestantse Europa en Nederland tegen Lodewijk XIV in het Rampjaar 1672.", bron: "NA / KNAW Archief" },
+            { naam: "Lodewijk XIV", alias: "Le Grand Roi / De Fransche Sultan", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Koning van Frankrijk, wiens absolute en agressieve machtsontplooiing door Nederlandse schrijvers werd vergeleken met oosters despotisme.", bron: "KNAW Archief / DBNL" },
+            { naam: "Cornelis Janszoon", alias: "De Haen / Hollandsche Decius", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Hollandsche zeeheld, wiens opoffering en militaire daden door tijdgenoot Laurens Reael werden bezongen.", bron: "Maritiem Archief / NA" },
+            { naam: "Piet Hein", alias: "Veroveraar van de Zilvervloot", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Nederlandse zeeheld en luitenant-admiraal van de WIC, wereldberoemd door de verovering van de Spaanse zilvervloot in 1628.", bron: "NA / WIC Archief" },
+            { naam: "Pier Gerlofs Donia", alias: "Grutte Pier / Grote Pier", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Friese vrijheidsstrijder en volksheld met enorme fysieke kracht, aan wie het sjibbolet 'Bûter, brea en griene tsiis' wordt toegeschreven.", bron: "Fries Archief / DBNL" },
+            { naam: "Jan Baert", alias: "Jean Bart", cat: "oorlog16", catLabel: "5. 80-Jarige Oorlog", context: "Vlaamse piraat en kaperkapitein uit Duinkerke, wiens naam verfranst werd na de annexatie van de stad door Frankrijk.", bron: "Maritiem Archief" },
+
+            // 6. MIDDELEEUWSE VORSTEN, HERTOGEN, GRAVEN & HERALDISCHE AMBTENAREN
+            { naam: "Willem IV / Willem II", alias: "Willem IV (Holland) / Willem II (Henegouwen)", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Graaf van Holland en Henegouwen; gesneuveld in de Slag bij Warnsverlaten (1345). De graventelling verschilt per graafschap.", bron: "NA Toegang 3.01.01 / UvA DARE" },
+            { naam: "Albrecht van Beieren", alias: "Ruwaard (gubernator) / Hertog Albrecht", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Regeerde als plaatsvervanger (ruwaard) over Holland, Zeeland en Henegouwen voor zijn zieke broer Willem V, totdat hij officieel graaf werd. Maecenas van sprooksprekers.", bron: "NA Toegang 3.01.01 / UvA DARE" },
+            { naam: "Willem van Oostervant", alias: "Willem VI", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Zoon van Albrecht van Beieren. Voerde voor zijn aantreden als graaf van Holland in 1404 de titel van het Franse graafschap Oostervant.", bron: "NA / UvA DARE" },
+            { naam: "Jan van Beieren", alias: "Jan zonder Genade / Zoon van Holland (filius Hollandiae)", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Hertog van Beieren-Straubing en ruwaard van Holland. Kreeg zijn bijnaam na het meedogenloos neerslaan van de Luikse gildenopstand in 1408. Verkreeg na het Verdrag van Woudrichem (1419) de titel Zoon van Holland.", bron: "NA Toegang 3.01.01 / Rodenberg" },
+            { naam: "Jacoba van Beieren", alias: "Madame la Daulphine / Dame of Madame Jacque", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Gravin van Holland, Zeeland en Henegouwen; droeg de Franse titel via haar huwelijk met haar eerste echtgenoot Jan van Touraine (de dauphin).", bron: "NA / Chivalric Life (Lalaing)" },
+            { naam: "Willem III van Holland", alias: "Die goede grave die in Henegouwen starff / Willem de Goede", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Graaf van Holland en Henegouwen (1304–1337), door Europese vorsten en kroniekschrijvers alom geprezen om zijn wijsheid en rechtvaardigheid.", bron: "NA / Rodenberg" },
+            { naam: "Willem V van Holland", alias: "Die dolle grave / Willem de Verbeider", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Graaf van Holland wiens bewind in 1357 werd onderbroken door krankzinnigheid tijdens het begin van de Hoekse en Kabeljauwse twisten.", bron: "NA / DBNL" },
+            { naam: "Claes Heynenzoon", alias: "Heraut Beieren / Heraut Gelre / Beyer den heraut", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Belangrijkste heraldisch ambtenaar, kroniekschrijver en samensteller van wapenboeken in de 14e eeuw. Diende eerst hertog Willem I van Gelre en trad later in dienst van graaf Willem VI van Holland.", bron: "KB Den Haag (Wapenboek Beyeren) / UvA DARE" },
+            { naam: "Willem Gerbrandszoon van den Couster", alias: "Proost van Bergen", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Centrale ontvanger en tresorier aan het Haagse hof van Holland; bekleedde tevens het hoge kerkelijke ambt van proost van Bergen en aartsdiaken van Utrecht.", bron: "NA / UvA DARE" },
+            { naam: "Gijs van Diepenburch", alias: "Meester kamerling", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Bastaardzoon van Adam van Berwaerde (en kleinzoon van graaf Willem V); diende als kamerling en later als tresorier aan het Haagse hof.", bron: "NA / UvA DARE" },
+            { naam: "Filips de Goede", alias: "Filips III van Bourgondië / Philippe of Burgundy", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Bourgondische hertog en graaf van Holland en Zeeland die de bestuurlijke eenheid van de Nederlanden sterk bevorderde.", bron: "NA / Bourgondische Archieven" },
+            { naam: "Karel van Bourgondië", alias: "Karel de Stoute", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Officiële bijnaam van de Bourgondische hertog die regeerde van 1467 tot aan zijn sneuvelen bij Nancy in 1477.", bron: "Bourgondische Archieven" },
+            { naam: "Antoon van Bourgondië", alias: "De Grote Bastaard van Bourgondië", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Natuurlijke zoon van Filips de Goede en ridder in de Orde van het Gulden Vlies; zijn nakomelingen namen de titels van de Van Borseles over.", bron: "Zeeuws Archief / Toegang 2750" },
+            { naam: "Wolfert VI van Borselen", alias: "Wolfheart / Wolfhard / Heer van Veere", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "15e-eeuwse edelman, admiraal en ambachtsheer uit het machtige Zeeuwse geslacht Van Borsele (Heren van Zandenburg).", bron: "Zeeuws Archief / Toegang 2750" },
+            { naam: "Adriaen van Borssele", alias: "Heer van Brigdamme en Duveland", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Ambachtsheer van Melis- en Mariekerke en ridder in de Orde van het Gulden Vlies in de 15e eeuw.", bron: "Zeeuws Archief" },
+            { naam: "Jacques de Lalaing", alias: "Jacquet / Le Bon Chevalier", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "15e-eeuwse Bourgondische ridder, bekend uit toernooiboeken en ridderkronieken (o.a. het toernooi van Stirling tegen James Douglas).", bron: "Chivalric Life / DOKUMEN.PUB" },
+            { naam: "James Douglas", alias: "The Black Douglas", cat: "middeleeuw", catLabel: "6. Middeleeuwen", context: "Negende graaf van Douglas en Schots ridder, geducht tegenstander van Jacques de Lalaing.", bron: "Schotse Archieven / Chivalric Life" },
+
+            // 7. GEESTELIJKEN, THEOLOGEN, HUMANISTEN & KERKELIJKE HERVORMERS
+            { naam: "Winfried", alias: "Bonifacius / Bisschop van York / Apostel der Nederlanden", cat: "religie", catLabel: "7. Geestelijken", context: "Angelsaksische missionaris en bisschop die de kerstening in de noordelijke gewesten leidde en duizenden doopte tussen Rijn en IJssel.", bron: "Kerkelijke Archieven / DBNL" },
+            { naam: "Willebrord", alias: "Groote Apostel der Nederlanden", cat: "religie", catLabel: "7. Geestelijken", context: "Stichter van de vroege christelijke kerkzending en vele heiligdommen in Zeeland, Holland, Utrecht en Brabant.", bron: "Kerkelijke Archieven" },
+            { naam: "Gerrit Gerritsen", alias: "Desiderius Erasmus", cat: "religie", catLabel: "7. Geestelijken", context: "Beroemd humanist en theoloog uit Rotterdam die conform toenmalige geleerde mode zijn Nederlandse naam vertaalde naar het Latijn en Grieks.", bron: "Erasmus Center / DBNL" },
+            { naam: "Schwartserd", alias: "Melanchton", cat: "religie", catLabel: "7. Geestelijken", context: "Duitse hervormer en rechterhand van Luther die zijn achternaam (Zwart-aarde) vertaalde naar het Griekse Melanchton.", bron: "Reformatie Archieven" },
+            { naam: "Hendrik Niclaes", alias: "H.N.", cat: "religie", catLabel: "7. Geestelijken", context: "Stichter van de zestiende-eeuwse doopsgezinde en mystieke sekte het 'Huis der Liefde' (Hus der Lieften), die standaard met initialen ondertekende.", bron: "Reformatie in Kampen / Van der Pol" },
+            { naam: "Willem Teelinck", alias: "Gereformeerde Thomas a Kempis", cat: "religie", catLabel: "7. Geestelijken", context: "Middelburgse predikant en grondlegger van de Nadere Reformatie, geprezen om zijn vroomheid en ascetische geschriften.", bron: "Archief Nederlandse Hervormde Kerk" },
+            { naam: "Gijsbertus Voetius", alias: "Nederlandsche Thomas a Kempis", cat: "religie", catLabel: "7. Geestelijken", context: "Invloedrijk Utrechtse hoogleraar theologie en gereformeerd predikant, boegbeeld van de calvinistische orthodoxie in de 17e eeuw.", bron: "UU Archief / HDC" },
+            { naam: "Petrus Dathenus", alias: "Vurige hervormer / Boetbazuin", cat: "religie", catLabel: "7. Geestelijken", context: "Vertaler van de Geneefse Psalmen in het Nederlands en hageprediker, bekend om zijn krachtige, boetevaardige en felle prediking.", bron: "Reformatie Archieven" },
+            { naam: "Jacobus Borstius", alias: "Dathenus van zijn tijd / Boetbazuin", cat: "religie", catLabel: "7. Geestelijken", context: "17e-eeuwse predikant te Dordrecht, invloedrijk door zijn donderpreken tegen wereldse ijdelheid, weelderige kleding en lange haren.", bron: "Dordrechts Archief" },
+            { naam: "Caspar Coolhaas", alias: "Coolhaas Destilateur", cat: "religie", catLabel: "7. Geestelijken", context: "Leids predikant die na religieuze conflicten wegens armoede kostelijke wateren en balsemoliën ging distilleren en verkopen.", bron: "Erfgoed Leiden" },
+            { naam: "Berta Jacobsdochter", alias: "Suster Bertken", cat: "religie", catLabel: "7. Geestelijken", context: "Utrechtse kluizenares en dichteres die 57 jaar lang ingekluisd leefde in een cel aan de Buurkerk en daar in 1514 overleed.", bron: "Het Utrechts Archief / DBNL" },
+            { naam: "Gerard de Turri", alias: "Gerard van der Toren", cat: "religie", catLabel: "7. Geestelijken", context: "Doctor in de ambe rechten, kanunnik en deken van St. Pieter, tevens vicaris-generaal van het bisdom Utrecht in de 15e eeuw.", bron: "Het Utrechts Archief" },
+            { naam: "Dirck van Abcoude", alias: "Theodoricus Gaudanus", cat: "religie", catLabel: "7. Geestelijken", context: "Humanistisch geleerde, latinist en rector van de beroemde Hiëronymusschool te Utrecht.", bron: "Het Utrechts Archief" },
+            { naam: "Johannes van Alkmaar", alias: "Johannes Altmaria / Nederlandsch geestelijke", cat: "religie", catLabel: "7. Geestelijken", context: "Nederlands geestelijke en baccalaureus die tijdens het Concilie van Constanz werd veroordeeld wegens ketterij (secularisatie van kerkgoederen).", bron: "KNAW Archief" },
+            { naam: "Nicolaas de Castro", alias: "Inquisiteur / Inquisitor Fidei", cat: "religie", catLabel: "7. Geestelijken", context: "Kanunnik en geloofsrechter belast met de ketterjacht in Kampen en Utrecht; later benoemd tot de eerste bisschop van Middelburg.", bron: "Reformatie in Kampen / Van der Pol" },
+
+            // 8. BEELDENDE KUNSTENAARS, ARCHITECTEN & TUINARCHITECTEN
+            { naam: "Jan van Eyck", alias: "Johannes de schilder / Jan den maelre / Deycke", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Wereldberoemd Vlaams primitief die tussen 1422 en 1425 in Den Haag in grafelijke dienst was als hofschilder van Jan van Beieren.", bron: "UvA DARE / NA Toegang 3.01.01" },
+            { naam: "Jan van Mansdale", alias: "Jan Kelderman", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Brussels beeldhouwer uit het gilde van steenbickeleren, onder meer betrokken bij de Haagse graftombe en hofopdrachten.", bron: "UvA DARE" },
+            { naam: "Gilles le Cat", alias: "Jelis de Kat", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Beeldhouwer uit Bergen (Henegouwen) die werkzaam was in Haarlem en optrad als getuige voor graaf Willem.", bron: "UvA DARE" },
+            { naam: "Marthijn Jacobsz.", alias: "Maarten van Heemskerk", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Beroemd 16e-eeuwse Noord-Nederlandse schilder die een legaat naliet voor bruidsparen die op zijn graf in Haarlem trouwden.", bron: "Noord-Hollands Archief" },
+            { naam: "Johann David Zocher sr.", alias: "Zogher / De fameuse aanlegger / Hofarchitect", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Gevierd landschaps- en tuinarchitect die door Lodewijk Napoleon tot hofarchitect werd benoemd. Grondlegger van de Nederlandse Zocher-stijl.", bron: "Kwaliteitsimpuls Zocherparken / URL 6010" },
+            { naam: "Piet Oudolf", alias: "The Dutch Wave", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Vooraanstaand hedendaags Nederlands tuinarchitect wiens ecologische stroming ('The Dutch Wave') wereldwijd de norm werd voor vaste plantengemeenschappen (o.a. Museum Voorlinden).", bron: "Archief Voorlinden / Kunstarchieven" },
+            { naam: "Philip Alexius de László", alias: "Laub / Laub Fülöp / László de Lombos", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Hongaars-Brits society-portrettist die in 1891 zijn naam van Laub veranderde en kort de adellijke titel 'de Lombos' voerde. Schilderde het portret van Lydia Eustis Loudon (1920).", bron: "De Laszlo Archive Trust / Museum Voorlinden" },
+            { naam: "Samuel Luke Fildes", alias: "Sir Samuel Luke Fildes", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Britse schilder en illustrator van koninklijke en sociale taferelen, verheven tot ridder (Sir).", bron: "Britse Kunstarchieven" },
+            { naam: "Jacob Bendien", alias: "Toppie", cat: "kunst", catLabel: "8. Kunst & Tuin", context: "Kunstschilder en kunstcriticus uit het interbellum, bevriend met Tobie Goedewaagen en Annie de Roos.", bron: "RKD / NIOD" },
+
+            // 9. BURGEMEESTERS, REGENTEN, SCHOUTEN & GELEERDEN
+            { naam: "Willem Barendsz.", alias: "Warenar / Gierighe Geeraert", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "16e/17e-eeuwse Amsterdammer die bekend stond als deftig, rijk en hoogzuinig. Diende als historisch model voor P.C. Hoofts toneelpersonage Warenar en Bredero's Gierighe Geeraert.", bron: "De Volksvermaken / DBNL" },
+            { naam: "Willem Pennincsac", alias: "Willem Geldsak", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Rijke en invloedrijke inwoner van Delft in de vroege geschiedenis; de achternaam Pennincsac werd in negentiende-eeuwse bronnen vertaald naar 'Geldsak'.", bron: "Delftse Archieven / De Volksvermaken" },
+            { naam: "Hendrik Dirkszoon", alias: "Het Aasje / De Tien van der troeve", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "16e-eeuwse burgemeester van Amsterdam die deze bijnamen kreeg vanwege zijn dominante, doortastende en autoritaire bestuurlijke optreden.", bron: "Stadsarchief Amsterdam" },
+            { naam: "Hartwich Goedekint", alias: "Bonus puer", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Latijnse toenaam en vertaling gebruikt in de 13e-eeuwse koopmansgilderol en oorkonden (1249–1268) voor deze Deventer stadsschout.", bron: "DBOVERIJSSEL / Deventer Cameraarsrekeningen" },
+            { naam: "Hendrik I Rufus", alias: "de Rode", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Toenaam gebruikt voor de stadsschout Hendrik Rufus sr. in de 13e-eeuwse ambtelijke administratie van Deventer.", bron: "DBOVERIJSSEL" },
+            { naam: "Gerebold", alias: "ter Wilgen / de Salice", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Lid van het regentengeslacht Ter Wilgen, in officiële Latijnse oorkonden aangeduid met de variant 'de Salice'.", bron: "DBOVERIJSSEL" },
+            { naam: "Herman Boerhaave", alias: "Leermeester van gans Europa", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "18e-eeuws Leids hoogleraar geneeskunde, plantkunde en scheikunde wiens Europese roem hem deze internationale eretitel bezorgde.", bron: "Universiteit Leiden / KNMI Historie" },
+            { naam: "Eelco Alta", alias: "Liefhebber der waarheid", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Friese dominee en astronoom die in 1774 onder pseudoniem een boekje publiceerde over een planetaire conjunctie, wat Eise Eisinga aanzette tot de bouw van zijn Planetarium.", bron: "KNMI Historie / Fries Archief" },
+            { naam: "Gebr. Roelofs (Pieter, Albert, Arjen)", alias: "De drie boerenprofessors van Hijum", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Volksnaam voor drie Friese broers die naast hun boerenbedrijf intensief en op hoog niveau aan zelfstudie in astronomie en wiskunde deden.", bron: "KNMI Historie / Fries Archief" },
+            { naam: "Karel Jozef Emmanuel van Hulthem", alias: "Charles Joseph Emanuel van Hulthem", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "Gentse bestuurder, politicus en enorme bibliofiel, wiens naam tijdens de Franse overheersing verfranst werd. Zijn collectie vormde de basis voor de KB.", bron: "UGent Archief / KB" },
+            { naam: "Willem Beukelszoon", alias: "Willem Beukels", cat: "bestuur", catLabel: "9. Bestuur & Schouten", context: "14e-eeuwse Biervlietenaar die in de geschiedschrijving bekend staat als de uitvinder van het haring kaken; de Beukelspolder is naar hem vernoemd.", bron: "Zeeuws Archief / Historie Biervliet" },
+
+            // 10. RECHTSPRAAK, CRIMINALITEIT, VOLKSFIGUREN & FOLKLORE
+            { naam: "Joseph Mesure (Joos Mesuere)", alias: "Falsaris ende mineedighen", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Landbouwer uit Brugge die in 1767 ter dood werd gebracht door ophanging wegens fraude en meineed. Droeg deze tekst op een schandbord rond zijn nek.", bron: "Rechtsgeschiedenis verbeeld (AUP)" },
+            { naam: "Joannes de Leu", alias: "Vermaerden valschaert", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Boer uit Merkem in 1778 door de schepenen van het Brugse Vrije ter dood veroordeeld wegens financiële fraude; droeg eveneens een schandbord tijdens executie.", bron: "AUP-Online" },
+            { naam: "Adriaantje Peeterse Luijckx", alias: "Maay Lievens Jenne / Jaan", cat: "folklore", catLabel: "10. Recht & Folklore", context: "18e-eeuwse vrouw in Oud Gastel die wegens herhaaldelijke diefstal werd verbannen en uiteindelijk werd opgehangen.", bron: "West-Brabants Archief / Oud Gastel 750 jaar" },
+            { naam: "Adriaan van Campen", alias: "De Schrik van de Baronie", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Beruchte Noord-Brabantse crimineel en bendeleider die afgelegen boeren afperste door middel van brandstichting en terreur.", bron: "West-Brabants Archief" },
+            { naam: "Catharina Mulder", alias: "Kaat Mossel", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Beroemde en beruchte Oranjegezinde mosselknoopster en volksvrouw uit Rotterdam die in de 18e eeuw rellen leidde tegen de Patriotten.", bron: "Stadsarchief Rotterdam" },
+            { naam: "Klaas Annink", alias: "Huttenkloas", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Beruchte misdadiger en seriemoordenaar uit Twente die boeren en reizigers overviel vanuit zijn afgelegen hut (geëxecuteerd in 1775).", bron: "Archief Twente / Historische strafdossiers" },
+            { naam: "Jacob Muller", alias: "Sjako", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Beruchte Amsterdamse bendeleider en inbreker uit de vroege 18e eeuw, wiens fortje in de Jordaan legendarisch werd in de volkscultuur.", bron: "Stadsarchief Amsterdam" },
+            { naam: "Inwoners van Mechelen", alias: "Maneblussers", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Volksbijnaam ontstaan na een incident in 1687, toen burgers de brandweer opschrikten omdat zij de rode gloed van de maan achter de Sint-Romboutstoren aanzagen voor brand.", bron: "Vlaamse Volkskunde" },
+            { naam: "Johannes de Dooper / Martinus / Sint-Nicolaas", alias: "Sint Jan / Sint her Martijn / Bisschop van Myra / Santa Claus", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Christelijke heiligen die in volksgebruiken, midzomerfeesten, bedelliederen en winterrituelen verbasterde of gemoderniseerde namen kregen.", bron: "De Volksvermaken / Golfgeschiedenis.nl" },
+            { naam: "Melchior / Kasper / Balthasar", alias: "Het moorken / Melckert / Koning van 't Moorenland", cat: "folklore", catLabel: "10. Recht & Folklore", context: "De Drie Wijzen uit het Oosten in de folklore en Driekoningenfeesten, waarbij Melchior traditioneel als de zwarte koningskaars werd afgebeeld.", bron: "De Volksvermaken" },
+            { naam: "Freyr", alias: "Fro", cat: "folklore", catLabel: "10. Recht & Folklore", context: "De Germaanse zonnegod van vreugde en vruchtbaarheid, wiens naam door de Saksische en Friese voorouders in Nederland als 'Fro' werd uitgesproken.", bron: "De Volksvermaken / Mythologie" },
+            { naam: "Veit", alias: "Lange Veit / Sint Veit", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Een lange, magere muzikant uit de legende van Echternach aan wie de oorsprong van de danswoede (de St. Vitusdans) werd toegeschreven.", bron: "De Volksvermaken" },
+            { naam: "Episcopus puerorum & fatuorum", alias: "Kinderbisschop / Narrenbisschop", cat: "folklore", catLabel: "10. Recht & Folklore", context: "Middeleeuwse omkeerfeesten in december waarbij een jongen of nar tijdelijk het bisschoppelijke gezag overnam om de gevestigde kerkelijke orde te parodiëren.", bron: "Liturgische & Volkskundige Archieven" },
+
+            // 11. GEOPOLITIEK, AZIATISCH NATIONALISME & INTERNATIONALE HELDEN
+            { naam: "Mohammad Hatta", alias: "Vader van de Coöperaties / Religieus Socialist", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Indonesisch onafhankelijkheidsleider en vice-president. Kreeg deze eretitel als architect van grondwetsartikel 33; wilde economische emancipatie baseren op islamitische principes en traditioneel collectivisme.", bron: "Portrait of a Patriot / DOKUMEN.PUB" },
+            { naam: "Suwardi Surjaningrat", alias: "Ki Hadjar Dewantara", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Pleitbezorger voor Indonesische onafhankelijkheid en mede-oprichter van de Indische Partij; grondlegger van het Taman Siswa-onderwijssysteem.", bron: "Indonesische Archieven / DOKUMEN.PUB" },
+            { naam: "Ernest F.E. Douwes Dekker", alias: "Danudirdja Setiabuddhi", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Leider van de Indische Partij en vroege pionier van het Indonesisch nationalisme; achter-achterneef van Multatuli.", bron: "NA / DOKUMEN.PUB" },
+            { naam: "Hadji Agus Salim", alias: "Indonesia's Grand Old Man", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Vooraanstaand leider van de Sarekat Islam en diplomaat, alom gerespecteerd om zijn talenkennis, wijsheid en debatteerkracht.", bron: "Indonesische Archieven" },
+            { naam: "Sjech Hamka (Haji Abdul Malik Karim Amrullah)", alias: "Hamka", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Beroemde ulama, filosoof en redacteur van het invloedrijke tijdschrift Pedoman Masjarakat in Medan.", bron: "Indonesische Archieven" },
+            { naam: "Mustafa Kemal Pasha", alias: "Atatürk", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Turkse veldheer en staatsman die het moderne Turkije stichtte en als groot voorbeeld diende voor Aziatische onafhankelijkheidsbewegingen.", bron: "Internationale Archieven" },
+            { naam: "Georges Clemenceau", alias: "De Tijger (The Tiger)", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Franse premier en staatsman, berucht om zijn meedogenloze en harde opstelling jegens Duitsland tijdens de Vredesconferentie van Versailles (1919).", bron: "Franse Diplomatieke Archieven" },
+            { naam: "Fernão de Magalhães", alias: "Ferdinand Magellaan / Hernando de Magallanes", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Portugese ontdekkingsreiziger wiens naam in Spaanse dienst (de Magallanes) en in de Nederlandse geschiedschrijving (Magellaan) werd aangepast.", bron: "Maritieme Archieven / Simancas" },
+            { naam: "William Wayne McMillian Rogers III", alias: "Wayne Rogers", cat: "geopolitiek", catLabel: "11. Geopolitiek", context: "Amerikaanse acteur en succesvol investeringsbankier, wereldberoemd als Dr. John 'Trapper' McIntyre in de serie M*A*S*H; achterneef van Lydia Eustis Loudon.", bron: "Amerikaanse Film- en Historische Archieven" }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultCount = document.getElementById('resultCount');
+        const filterBtns = document.querySelectorAll('.btn-filter');
+        const toast = document.getElementById('toast');
+        let currentFilter = 'all';
+
+        // Booleaanse Dork Generator
+        function createDorkQuery(naam, alias) {
+            const cleanPart = (str) => {
+                return str.split('/')
+                          .map(s => `"${s.trim().replace(/\s+\(.*?\)/g, '')}"`)
+                          .slice(0, 2)
+                          .join(' OR ');
+            };
+            return `(${cleanPart(naam)}) AND (${cleanPart(alias)})`;
+        }
+
+        // Card Renderer
+        function renderCards() {
+            resultsGrid.innerHTML = '';
+            const query = searchInput.value.toLowerCase().trim();
+
+            const filteredData = dataset.filter(item => {
+                const matchesSearch = item.naam.toLowerCase().includes(query) ||
+                                      item.alias.toLowerCase().includes(query) ||
+                                      item.context.toLowerCase().includes(query) ||
+                                      item.bron.toLowerCase().includes(query);
+                const matchesCat = (currentFilter === 'all') || (item.cat === currentFilter);
+                return matchesSearch && matchesCat;
+            });
+
+            if (filteredData.length === 0) {
+                resultsGrid.innerHTML = `<div style="grid-column: 1/-1; background: white; padding: 50px; text-align: center; border-radius: 10px; border: 1px dashed #cbd5e1; color: #64748b;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Geen archiefdossiers gevonden</h3>
+                    <p>Er zijn geen figuren of schaduwnetwerken die voldoen aan uw huidige zoekterm of categoriefilter.</p>
+                </div>`;
+                resultCount.textContent = `0 van ${dataset.length} dossiers getoond`;
+                return;
+            }
+
+            resultCount.textContent = `Toont ${filteredData.length} van ${dataset.length} archiefdossiers`;
+
+            filteredData.forEach(item => {
+                const card = document.createElement('article');
+                card.className = 'card';
+
+                const aliases = item.alias.split('/').map(a => `<span class="alias-badge">🏷️ ${a.trim()}</span>`).join('');
+                const dorkQuery = createDorkQuery(item.naam, item.alias);
+                const delpherUrl = `https://www.delpher.nl/nl/kranten/resultaten?query=${encodeURIComponent(dorkQuery)}&coll=ddd`;
+                const niodUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkQuery + ' (site:niod.nl OR site:nationaalarchief.nl OR site:oorlogvoorderechter.nl OR site:archieven.nl)')}`;
+                const pdfUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkQuery + ' filetype:pdf')}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            <span class="cat-tag cat-${item.cat}">${item.catLabel}</span>
+                            <div class="echte-naam">${item.naam}</div>
+                            <div class="alias-list">${aliases}</div>
+                        </div>
+                        <div class="card-body">
+                            <p>${item.context}</p>
+                            <div class="bron-box"><strong>📂 Archiefverwijzing / Vindplaats:</strong> ${item.bron}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-act btn-copy" onclick="copyToClipboard('${dorkQuery.replace(/'/g, "\\'")}')">📋 Kopieer Dork</button>
+                        <a href="${delpherUrl}" target="_blank" class="btn-act" title="Zoek direct in historische kranten">📰 Delpher</a>
+                        <a href="${niodUrl}" target="_blank" class="btn-act" title="Zoek in het Nationaal Archief, NIOD en Archieven.nl">🏛️ NA / NIOD / CABR</a>
+                        <a href="${pdfUrl}" target="_blank" class="btn-act" title="Zoek wetenschappelijke en archivalische PDF-stukken">📄 PDF Stukken</a>
+                    </div>
+                `;
+                resultsGrid.appendChild(card);
+            });
+        }
+
+        // Klembord Toast functie
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.textContent = `📋 Gekopieerd: ${text}`;
+                toast.className = "show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            }).catch(err => console.error('Kopiëren mislukt:', err));
+        };
+
+        // Event Listeners
+        searchInput.addEventListener('input', renderCards);
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.getAttribute('data-filter');
+                renderCards();
+            });
+        });
+
+        // Initiële render
+        renderCards();
+    </script>
+</body>
+</html>
