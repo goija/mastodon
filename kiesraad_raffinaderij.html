@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiesraad Data-Raffinaderij & Zetel API Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .glow-orange { box-shadow: 0 0 12px rgba(249, 115, 22, 0.4); }
+        .glow-blue { box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); }
+        .glow-emerald { box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 selection:bg-orange-500 selection:text-black">
+
+    <header class="mb-6 border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-orange-500 animate-ping"></div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white uppercase font-mono">
+                    Kiesraad Raffinaderij <span class="text-orange-500">//</span> EML Data-Pipeline
+                </h1>
+            </div>
+            <p class="text-xs md:text-sm text-slate-400 mt-1 font-mono">
+                GESLOTEN STEMBUS-RETROFIT & RESTZETEL ROUTING — STATUS: <span id="status-indicator" class="text-emerald-400 font-bold">ONLINE (KIESWET-COMPLIANT)</span>
+            </p>
+        </div>
+        <div class="flex items-center gap-4 bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg font-mono text-xs">
+            <div>
+                <span class="text-slate-400 block">DOORVOER (EML)</span>
+                <span id="metric-throughput" class="text-orange-400 font-bold text-sm">0.0 STEMMEN/S</span>
+            </div>
+            <div class="border-l border-slate-800 pl-4">
+                <span class="text-slate-400 block">GEVERIFIEERD</span>
+                <span id="metric-processed" class="text-emerald-400 font-bold text-sm">0 TOKENS</span>
+            </div>
+            <div class="border-l border-slate-800 pl-4">
+                <span class="text-slate-400 block">D'HONDT CYCLI</span>
+                <span id="metric-recycled" class="text-blue-400 font-bold text-sm">0 RECIRCULATIES</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- KANTOOR 1: DE POMP & VOEDING (CONTROLS) -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-xl pointer-events-none"></div>
+                <h2 class="text-sm font-mono font-semibold uppercase text-orange-500 tracking-wider mb-4 flex items-center gap-2">
+                    <span>[01]</span> EML-Ingestie & Stembuspomp
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <label class="text-slate-300">Pompdruk (Stembureaus per seconde)</label>
+                            <span id="pump-val" class="text-orange-400 font-bold">3.5 Hz</span>
+                        </div>
+                        <input type="range" id="pump-speed" min="0" max="10" step="0.5" value="3.5" 
+                            class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>0 Hz (Standby)</span>
+                            <span>10 Hz (Max Landelijke Piek)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-semibold block text-slate-200">Hoofd-Ingestiepomp</span>
+                            <span class="text-[11px] text-slate-400">Zuigt EML 510/520 tellingen aan</span>
+                        </div>
+                        <button id="toggle-pump" class="px-4 py-2 rounded font-mono text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white glow-emerald">
+                            POMP ACTIEF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KANTOOR 2: KLEPPEN & RETOURCIRCUIT (FILTERS) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+                <h2 class="text-sm font-mono font-semibold uppercase text-blue-400 tracking-wider mb-4 flex items-center gap-2">
+                    <span>[02]</span> Scheidings- & Restzetelkleppen
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- Filter 1: D'Hondt Restzetel Retourlus -->
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-blue-300 block">D'Hondt Restzetel-Retourlus</span>
+                            <span class="text-[11px] text-slate-400">Recirculeer reststemmen voor wiskundige zetelverdeling</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="valve-dhondt" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Filter 2: Voorkeurstemmen Separator -->
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-orange-300 block">Voorkeurstemmen-Separator</span>
+                            <span class="text-[11px] text-slate-400">Filter en isoleer kandidaten die 25%-drempel overschrijden</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="valve-pref" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Filter 3: Checksum Vlotter drempel -->
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="font-bold text-purple-300">Model N 10-1 Checksum-Vlotter</span>
+                            <span id="checksum-val" class="text-purple-400 font-bold">99.5%</span>
+                        </div>
+                        <input type="range" id="checksum-threshold" min="95.0" max="100.0" step="0.1" value="99.5" 
+                            class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                            <span>95.0% (Tolerant / Foutmarges)</span>
+                            <span>100.0% (Strict / Zero-Tolerance)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEEM LOGS -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 font-mono text-xs">
+                <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">// Kiesraad Audit Log</h3>
+                <div id="terminal-log" class="space-y-1 h-36 overflow-y-auto text-[11px] bg-slate-950 p-2 rounded border border-slate-800 text-slate-300 flex flex-col-reverse">
+                    <div class="text-slate-500">[SYSTEEM] Kiesraad EML-Raffinaderij opgestart. Kiesdeler: 70.000 stemmen.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISUELE PIPELINE & ERFGOEDKASTEN -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            
+            <!-- LIVE LEIDINGWERK / PROCESSOR BOARD -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex-1 flex flex-col justify-between relative overflow-hidden">
+                <h2 class="text-sm font-mono font-semibold uppercase text-slate-300 tracking-wider mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">[03] Transmissie & Restzetel Destillatie</span>
+                    <span class="text-xs text-slate-500 font-normal">EML-REST ROUTER v4.0</span>
+                </h2>
+
+                <!-- De Visuele Pipeline (Pipes) -->
+                <div class="my-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative">
+                    
+                    <!-- Stap 1: Extractie -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-lg text-center relative group">
+                        <div class="text-[10px] font-mono text-slate-500 uppercase mb-1">Stembus Manifold</div>
+                        <div class="font-mono font-bold text-orange-500 text-sm">EML INGESTIE</div>
+                        <div class="text-xs text-slate-400 mt-2 font-mono">Kieskringen / Stembureaus</div>
+                        <div id="indicator-input" class="w-2 h-2 rounded-full bg-orange-500 mx-auto mt-3"></div>
+                    </div>
+
+                    <!-- Stap 2: Raffinaderij -->
+                    <div class="bg-slate-950 border-2 border-dashed border-slate-700 p-4 rounded-lg text-center relative">
+                        <div class="text-[10px] font-mono text-blue-400 uppercase mb-1">Zetel-Destillatieketel</div>
+                        <div class="font-mono font-bold text-white text-sm">KIESRAAD CORE</div>
+                        <div class="text-xs text-slate-400 mt-2 font-mono flex justify-center gap-2">
+                            <span id="badge-dhondt" class="px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 text-[10px]">D'HONDT LUS</span>
+                            <span id="badge-pref" class="px-1.5 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-800 text-[10px]">VOORKEUR</span>
+                        </div>
+                        <!-- Actieve verwerking display -->
+                        <div id="current-token" class="mt-3 h-6 bg-slate-900 rounded border border-slate-800 flex items-center justify-center text-[11px] font-mono text-slate-400 overflow-hidden px-2 whitespace-nowrap">
+                            Wachten op stembusdata...
+                        </div>
+                    </div>
+
+                    <!-- Stap 3: Router -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-lg text-center">
+                        <div class="text-[10px] font-mono text-purple-400 uppercase mb-1">Zetel- & Archief Router</div>
+                        <div class="font-mono font-bold text-purple-400 text-sm">REST ENDPOINTS</div>
+                        <div class="text-xs text-slate-400 mt-2 font-mono">Officiële Zetelverdeling</div>
+                        <div class="flex justify-center gap-1 mt-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Live EML Payload Afvangst -->
+                <div class="border-t border-slate-800 pt-4">
+                    <div class="text-[11px] font-mono text-slate-400 mb-2 flex justify-between">
+                        <span>LAATSTE EML-REST PAYLOAD (GEREGISTREERD IN DE DATABANK)</span>
+                        <span id="payload-target" class="text-emerald-400 font-bold">TARGET: GEEN</span>
+                    </div>
+                    <pre id="payload-display" class="bg-slate-950 p-3 rounded border border-slate-800 font-mono text-[11px] text-cyan-300 overflow-x-auto h-28">{
+  "emlVersion": "520 - Kieskring Telling",
+  "status": "idle",
+  "message": "Start de EML-ingestiepomp om stembusdata te verwerken..."
+}</pre>
+                </div>
+            </div>
+
+            <!-- ERFGOEDKASTEN (DE ZETEL- EN ARCHIEFKASTEN) -->
+            <div>
+                <h2 class="text-sm font-mono font-semibold uppercase text-slate-300 tracking-wider mb-3 flex items-center gap-2">
+                    <span>[04]</span> De Zetel- & Erfgoedkasten (Geaccrediteerde Kiesdatabanken)
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    <!-- Kast 1: Zetelverdeling (Tweede Kamer) -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-mono font-bold text-orange-400 bg-orange-950/50 px-2 py-0.5 rounded border border-orange-800/50">/api/v1/zetels</span>
+                                <span id="count-zetels" class="text-lg font-mono font-bold text-white">0</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-200">Zetelverdelingskast</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Definitieve zetels, voorkeurstemmen & D'Hondt restzeteltoewijzingen voor het parlement.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px] font-mono text-slate-500">
+                            <span>KIESDELER: 70K</span>
+                            <span id="size-zetels" class="text-orange-400/80">0.0 MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Kast 2: Publiek EML Dataportaal -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-mono font-bold text-blue-400 bg-blue-950/50 px-2 py-0.5 rounded border border-blue-800/50">/api/v1/eml/public</span>
+                                <span id="count-eml" class="text-lg font-mono font-bold text-white">0</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-200">Publiek EML-Archief</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Open-data stembustellingen (EML 510/520), proces-verbaal scans en verkiezingsruis-filters.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px] font-mono text-slate-500">
+                            <span>OPEN DATA: YES</span>
+                            <span id="size-eml" class="text-blue-400/80">0.0 MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Kast 3: Juridisch Waarborg- & Hertellingsarchief -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-800/50">/api/v1/audit/legal</span>
+                                <span id="count-audit" class="text-lg font-mono font-bold text-white">0</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-200">Juridisch Waarborgarchief</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Geverifieerde Model N 10-1 akten, cryptografische SHA-256 hashes en ge-audit proces-verbaal.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px] font-mono text-slate-500">
+                            <span>INTEGRITEIT: 100%</span>
+                            <span id="size-audit" class="text-emerald-400/80">0.0 MB</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // --- SIMULATIE ENGINE ---
+        let pumpActive = true;
+        let pumpFrequency = 3.5; // Hz
+        let checksumThreshold = 99.5; // %
+        let isDhondtOpen = true;
+        let isPrefOpen = true;
+
+        // Metrische tellers
+        let totalProcessed = 0;
+        let totalRecycled = 0;
+        let totalThroughput = 0;
+        let counts = { zetels: 0, eml: 0, audit: 0 };
+        let sizes = { zetels: 0, eml: 0, audit: 0 };
+
+        // Authentieke Kiesraad & EML datasets
+        const rawBallotBank = [
+            { 
+                type: 'ZETEL', 
+                name: 'Kieskring 9 (Amsterdam) - EML 520 Totaaltelling', 
+                votes: 420500, 
+                party: 'Lijst 1 / Lijst 3 / Lijst 4 combinaties',
+                kiesdelerMulti: 6.0,
+                baseConf: 99.9,
+                size: 12.4
+            },
+            { 
+                type: 'ZETEL', 
+                name: 'Kieskring 4 (Zwolle) - Volle Zetel-toewijzing', 
+                votes: 142000, 
+                party: 'Lijst 2',
+                kiesdelerMulti: 2.0,
+                baseConf: 99.8,
+                size: 5.8
+            },
+            { 
+                type: 'DHONDT', 
+                name: 'Restzetel Fractie-telling (Systeem-D\'Hondt)', 
+                votes: 34500, 
+                remainderType: 'Grootste overschot - 0.49 kiesdeler',
+                targetZetel: 'Zetel #149 (Restzetel Pool)',
+                baseConf: 99.7,
+                size: 3.2
+            },
+            { 
+                type: 'PREFERENCE', 
+                name: 'Voorkeurstemmen Lijstduwer [Kandidaat #44]', 
+                votes: 19800, 
+                thresholdStatus: '> 25% van de kiesdeler (17.500 stemmen gepasseerd)',
+                action: 'Directe Zetel-penetratie ondanks lijstpositie',
+                baseConf: 99.9,
+                size: 2.1
+            },
+            { 
+                type: 'EML', 
+                name: 'Stembureau 204 (Rotterdam) - EML 510b Telling', 
+                votes: 1450, 
+                format: 'Ondersteunende Software Verkiezingen (OSV XML)',
+                baseConf: 99.9,
+                size: 1.1
+            },
+            { 
+                type: 'EML', 
+                name: 'Stembureau 12 (Utrecht) - Model N 10-1 Digitaal', 
+                votes: 980, 
+                format: 'EML 510b + SHA-256 Handtekening',
+                baseConf: 99.6,
+                size: 0.9
+            },
+            { 
+                type: 'AUDIT', 
+                name: 'Proces-Verbaal Model O 3 (Gemeentelijk Stembureau)', 
+                votes: 45000, 
+                auditType: 'Cryptografische Hash-verificatie sluitend',
+                baseConf: 100.0,
+                size: 8.5
+            },
+            { 
+                type: 'ERROR', 
+                name: 'Stembureau 88 - Telsom Afwijking (Model N 10-1)', 
+                votes: 1200, 
+                errorType: 'Verschil tussen getelde stembiljetten en kiezerspas-lijst',
+                baseConf: 94.2,
+                size: 1.5
+            }
+        ];
+
+        // DOM Elementen
+        const elPumpBtn = document.getElementById('toggle-pump');
+        const elPumpSpeed = document.getElementById('pump-speed');
+        const elPumpVal = document.getElementById('pump-val');
+        const elChecksumThreshold = document.getElementById('checksum-threshold');
+        const elChecksumVal = document.getElementById('checksum-val');
+        const elValveDhondt = document.getElementById('valve-dhondt');
+        const elValvePref = document.getElementById('valve-pref');
+        const elTerminal = document.getElementById('terminal-log');
+        const elCurrentToken = document.getElementById('current-token');
+        const elPayloadDisplay = document.getElementById('payload-display');
+        const elPayloadTarget = document.getElementById('payload-target');
+
+        // Event Listeners
+        elPumpBtn.addEventListener('click', () => {
+            pumpActive = !pumpActive;
+            if (pumpActive) {
+                elPumpBtn.textContent = 'POMP ACTIEF';
+                elPumpBtn.className = 'px-4 py-2 rounded font-mono text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white glow-emerald';
+                logTerminal('EML-ingestiepomp herstart. Data van kieskringen stroomt binnen.', 'text-emerald-400');
+            } else {
+                elPumpBtn.textContent = 'POMP GESTOPT';
+                elPumpBtn.className = 'px-4 py-2 rounded font-mono text-xs font-bold transition-all bg-rose-600 hover:bg-rose-500 text-white';
+                logTerminal('Stembuspomp gestopt. Leidingwerk in rustmodus.', 'text-rose-400');
+                elCurrentToken.textContent = 'Ingestie gepauzeerd...';
+            }
+        });
+
+        elPumpSpeed.addEventListener('input', (e) => {
+            pumpFrequency = parseFloat(e.target.value);
+            elPumpVal.textContent = `${pumpFrequency.toFixed(1)} Hz`;
+            if (pumpFrequency === 0 && pumpActive) elPumpBtn.click();
+            else if (pumpFrequency > 0 && !pumpActive) elPumpBtn.click();
+        });
+
+        elChecksumThreshold.addEventListener('input', (e) => {
+            checksumThreshold = parseFloat(e.target.value);
+            elChecksumVal.textContent = `${checksumThreshold.toFixed(1)}%`;
+        });
+
+        elValveDhondt.addEventListener('change', (e) => isDhondtOpen = e.target.checked);
+        elValvePref.addEventListener('change', (e) => isPrefOpen = e.target.checked);
+
+        // Logging
+        function logTerminal(msg, colorClass = 'text-slate-300') {
+            const time = new Date().toLocaleTimeString('nl-NL', { hour12: false });
+            const div = document.createElement('div');
+            div.className = `${colorClass} font-mono`;
+            div.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+            elTerminal.prepend(div);
+            if (elTerminal.children.length > 30) elTerminal.removeChild(elTerminal.lastChild);
+        }
+
+        // Verwerkingsloop
+        let lastTick = performance.now();
+        let timeAccumulator = 0;
+
+        function simulateLoop(now) {
+            const delta = (now - lastTick) / 1000;
+            lastTick = now;
+
+            if (pumpActive && pumpFrequency > 0) {
+                timeAccumulator += delta;
+                const interval = 1.0 / pumpFrequency;
+
+                while (timeAccumulator >= interval) {
+                    timeAccumulator -= interval;
+                    processNextToken();
+                }
+            }
+
+            requestAnimationFrame(simulateLoop);
+        }
+
+        function processNextToken() {
+            const item = rawBallotBank[Math.floor(Math.random() * rawBallotBank.length)];
+            
+            totalThroughput += item.votes;
+            document.getElementById('metric-throughput').textContent = `${(pumpFrequency * 14200).toFixed(0)} STEMMEN/S`;
+
+            // Visuele update
+            elCurrentToken.textContent = `[INGESTIE] ${item.name}`;
+            elCurrentToken.className = "mt-3 h-6 bg-slate-950 rounded border border-orange-500/50 flex items-center justify-center text-[11px] font-mono text-orange-300 overflow-hidden px-2 animate-pulse whitespace-nowrap";
+
+            // --- STAP 1: CHECKSUM VLOTTERKLEP (FRAUDE & HERTELLING) ---
+            if (item.type === 'ERROR' || item.baseConf < checksumThreshold) {
+                logTerminal(`Checksum Vlotter BLOKKADE: '${item.name}' (Betrouwbaarheid: ${item.baseConf}%) onder drempel (${checksumThreshold}%). Afgekoerst naar Hertellings-lus!`, 'text-rose-400');
+                totalRecycled++;
+                document.getElementById('metric-recycled').textContent = `${totalRecycled} RECIRCULATIES`;
+                return;
+            }
+
+            // --- STAP 2: D'HONDT RESTZETEL RETOURLUS ---
+            if (item.type === 'DHONDT') {
+                if (!isDhondtOpen) {
+                    logTerminal(`Restzetel-waarschuwing: D'Hondt retourlus gesloten. Reststemmen '${item.name}' kunnen niet wiskundig geaggregeerd worden -> Recirculatie.`, 'text-amber-400');
+                    totalRecycled++;
+                    document.getElementById('metric-recycled').textContent = `${totalRecycled} RECIRCULATIES`;
+                    return;
+                }
+                
+                logTerminal(`D'Hondt Recirculatie geslaagd: Reststemmen (${item.votes}) gezuiverd en geconverteerd naar Zetel #149. Routeer naar Zetelverdelingskast.`, 'text-blue-400');
+                routeToCabinet('zetels', {
+                    endpoint: "/api/v1/zetels/dhondt/allocation",
+                    payload: {
+                        timestamp: new Date().toISOString(),
+                        calculation_method: "Systeem-D'Hondt (Grootste gemiddelde)",
+                        residual_votes: item.votes,
+                        assigned_seat: item.targetZetel,
+                        validation: "MATHEMATICALLY_LOCKED",
+                        size_mb: item.size
+                    }
+                }, item.name, item.size);
+                return;
+            }
+
+            // --- STAP 3: VOORKEURSTEMMEN SEPARATOR ---
+            if (item.type === 'PREFERENCE') {
+                if (!isPrefOpen) {
+                    logTerminal(`Voorkeur-separator gesloten: Kandidaatstemmen verwerkt als reguliere lijststemmen. Geen drempel-doorbraak geactiveerd.`, 'text-slate-400');
+                } else {
+                    logTerminal(`Voorkeursdrempel-doorbraak (>25%): Kandidaat overstijgt lijstvolgorde ('${item.name}'). Directe injectie in Zetelverdeling.`, 'text-orange-400');
+                    routeToCabinet('zetels', {
+                        endpoint: "/api/v1/zetels/preference/override",
+                        payload: {
+                            candidate_id: "KAND-44",
+                            preference_votes: item.votes,
+                            quota_percentage: "28.2%",
+                            legal_consequence: "ELECTED_BY_PREFERENCE_VOTE",
+                            size_mb: item.size
+                        }
+                    }, item.name, item.size);
+                    return;
+                }
+            }
+
+            // --- STAP 4: JURIDISCH WAARBORGARCHIEF ---
+            if (item.type === 'AUDIT') {
+                logTerminal(`Cryptografische Audit: Model O 3 digitaal ondertekend. 100% sluitend -> Juridisch Waarborgarchief.`, 'text-emerald-400');
+                routeToCabinet('audit', {
+                    endpoint: "/api/v1/audit/legal/store",
+                    payload: {
+                        document_type: "Proces-Verbaal Model O 3",
+                        hash_sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                        verification_status: "PASSED_CRYPTOGRAPHIC_SEAL",
+                        total_ballots_audited: item.votes,
+                        size_mb: item.size
+                    }
+                }, item.name, item.size);
+                return;
+            }
+
+            // --- STAP 5: REGULIERE ZETELVERDELING & PUBLIEK EML ARCHIEF ---
+            if (item.type === 'ZETEL') {
+                logTerminal(`Volle zetel-accumulatie: '${item.name}' genereert ${item.kiesdelerMulti} directe zetels -> Zetelverdelingskast.`, 'text-orange-300');
+                routeToCabinet('zetels', {
+                    endpoint: "/api/v1/zetels/primary/assign",
+                    payload: {
+                        electoral_district: item.name,
+                        total_valid_votes: item.votes,
+                        electoral_quota: 70000,
+                        seats_awarded: Math.floor(item.kiesdelerMulti),
+                        size_mb: item.size
+                    }
+                }, item.name, item.size);
+            } else {
+                logTerminal(`Open EML-registratie: '${item.name}' beschikbaar gesteld in Publiek Dataportaal.`, 'text-blue-300');
+                routeToCabinet('eml', {
+                    endpoint: "/api/v1/eml/public/feed",
+                    payload: {
+                        polling_station: item.name,
+                        schema: "EML 510b Dutch Standard",
+                        parsed_votes: item.votes,
+                        open_data_license: "CC0 1.0 Universal",
+                        size_mb: item.size
+                    }
+                }, item.name, item.size);
+            }
+        }
+
+        function routeToCabinet(type, apiData, name, size) {
+            totalProcessed++;
+            counts[type]++;
+            sizes[type] += size;
+
+            // Update UI Tellers
+            document.getElementById('metric-processed').textContent = `${totalProcessed} PAKKETTEN`;
+            document.getElementById(`count-${type}`).textContent = counts[type];
+            document.getElementById(`size-${type}`).textContent = `${sizes[type].toFixed(1)} MB`;
+
+            // Visuele API Router Output
+            elPayloadTarget.textContent = `TARGET: ${apiData.endpoint}`;
+            elPayloadDisplay.textContent = JSON.stringify(apiData, null, 2);
+            
+            let color = type === 'zetels' ? 'orange' : (type === 'eml' ? 'blue' : 'emerald');
+            elCurrentToken.textContent = `[REST-ARCHIVERING] ${name}`;
+            elCurrentToken.className = `mt-3 h-6 bg-slate-950 rounded border border-${color}-500 text-[11px] font-mono text-${color}-400 overflow-hidden px-2 font-bold whitespace-nowrap`;
+        }
+
+        // Start simulatie
+        requestAnimationFrame(simulateLoop);
+    </script>
+</body>
+</html>
