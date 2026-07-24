@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygoon-Transformatie Matrix: 11 → 66 → 121</title>
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --panel-bg: #14161f;
+            --text-color: #e0e6ed;
+            --accent-blue: #00f0ff; // Driehoek Tn (66)
+            --accent-pink: #ff007f; // Driehoek Tn-1 (55)
+            --accent-gold: #ffd700; // Vierkant / Hexagoon
+            --grid-line: #2a2e3d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 380px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--grid-line);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow-y: auto;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #8892b0;
+            margin-bottom: 5px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-gold);
+            border-bottom: 1px solid var(--grid-line);
+            padding-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #202433;
+            border: 1px solid var(--grid-line);
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button:hover {
+            border-color: #8892b0;
+        }
+
+        button.active {
+            background-color: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+        }
+
+        button#btn-hex.active {
+            background-color: var(--accent-gold);
+            color: #000;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+        }
+
+        #data-panel {
+            background-color: #1a1e29;
+            padding: 14px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-blue);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: var(--bg-color);
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(20, 22, 31, 0.92);
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid var(--grid-line);
+            font-size: 0.8rem;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div>
+            <h1>Polygoon Matrix</h1>
+            <div class="subtitle">Topologische transformatie van figuurgetallen</div>
+        </div>
+
+        <div class="control-group">
+            <div class="section-title">Iteratie Parameter</div>
+            <label>
+                <span>Index ($n$):</span>
+                <span id="val-n" style="color: var(--accent-blue); font-size: 1rem;">11</span>
+            </label>
+            <input type="range" id="slider-n" min="1" max="17" step="1" value="11" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+            <div class="section-title">Projectie Modus</div>
+            <div class="btn-group">
+                <button id="btn-theon" class="active" onclick="setMode('theon')">
+<span>1. Theon van Smyrna ($T_n + T_{n-1} = S_n$)</span>
+                    <span style="font-size:1.1em;">■</span>
+                </button>
+                <button id="btn-triangle" onclick="setMode('triangle')">
+                    <span>2. Driehoeksgetal ($T_n$)</span>
+                    <span style="font-size:1.1em;">▲</span>
+                </button>
+                <button id="btn-hex" onclick="setMode('hex')">
+                    <span>3. Hexagonale Matrix ($H_m$)</span>
+                    <span style="font-size:1.1em;">⬢</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section-title">Wiskundig Dashboard</div>
+        <div id="data-panel">
+            Laden...
+        </div>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="poly-canvas"></canvas>
+        <div class="legend" id="legend-box">
+            <!-- Dynamisch gevuld -->
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('poly-canvas');
+        const ctx = canvas.getContext('2d');
+        const dataPanel = document.getElementById('data-panel');
+        const legendBox = document.getElementById('legend-box');
+
+        let mode = 'theon';
+        let n = 11;
+        let width, height, centerX, centerY;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth - 380;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+            draw();
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            document.getElementById('btn-theon').classList.toggle('active', mode === 'theon');
+            document.getElementById('btn-triangle').classList.toggle('active', mode === 'triangle');
+            document.getElementById('btn-hex').classList.toggle('active', mode === 'hex');
+            
+            const borderColors = {
+                'theon': 'var(--accent-blue)',
+                'triangle': 'var(--accent-blue)',
+                'hex': 'var(--accent-gold)'
+            };
+            dataPanel.style.borderLeftColor = borderColors[mode];
+            
+            updateDashboard();
+            draw();
+        }
+
+        function updateParams() {
+            n = parseInt(document.getElementById('slider-n').value);
+            document.getElementById('val-n').innerText = n;
+            
+            // Hexagonaal is alleen exact gelijk aan Tn als n oneven is (n = 2m - 1)
+            const hexBtn = document.getElementById('btn-hex');
+            if (n % 2 !== 0) {
+                hexBtn.style.opacity = '1';
+                hexBtn.style.pointerEvents = 'auto';
+                hexBtn.innerHTML = `<span>3. Hexagonale Matrix ($H_{${(n+1)/2}}$ = $T_{${n}}$)</span><span style="font-size:1.1em;">⬢</span>`;
+            } else {
+                hexBtn.style.opacity = '0.4';
+                hexBtn.innerHTML = `<span>3. Hexagonale Matrix (Alleen oneven $n$)</span><span style="font-size:1.1em;">⬢</span>`;
+                if (mode === 'hex') setMode('theon');
+            }
+
+            updateDashboard();
+            draw();
+        }
+
+        function updateDashboard() {
+            const T_n = (n * (n + 1)) / 2;
+            const T_n_min_1 = ((n - 1) * n) / 2;
+            const S_n = n * n;
+            const m = (n + 1) / 2;
+            const H_m = m * (2 * m - 1);
+            const isOdd = n % 2 !== 0;
+
+            let html = `<strong style="color: var(--accent-blue);">[GEOMETRISCHE SPECIFICATIES]</strong><br>`;
+            html += `• Index ($n$): <strong>${n}</strong><br>`;
+            html += `• Driehoeksgetal ($T_{${n}}$): <strong style="color: var(--accent-blue);">${T_n}</strong><br>`;
+            html += `• Voorgaande ($T_{${n-1}}$): <strong style="color: var(--accent-pink);">${T_n_min_1}</strong><br>`;
+            html += `• Vierkantsgetal ($S_{${n}}$): <strong style="color: #fff;">${S_n}</strong> (${n}×${n})<br>`;
+            
+            if (isOdd) {
+                html += `• Hexagonaal ($H_{${m}}$): <strong style="color: var(--accent-gold);">${H_m}</strong> (m=${m})<br>`;
+            } else {
+                html += `• Hexagonaal: <span style="color: #8892b0;">N.v.t. bij even index</span><br>`;
+            }
+
+            html += `<hr style="border-color: var(--grid-line); margin: 8px 0;">`;
+
+            if (mode === 'theon') {
+                html += `<span style="color: #8892b0;"><strong>Theon van Smyrna:</strong> Twee opeenvolgende driehoeken vormen een perfect vierkant:<br>`;
+                html += `<span style="color:var(--accent-blue);">$T_{${n}}$ (${T_n})</span> + <span style="color:var(--accent-pink);">$T_{${n-1}}$ (${T_n_min_1})</span> = <strong style="color:#fff;">${S_n}</strong>.</span>`;
+                
+                legendBox.innerHTML = `
+                    <div class="legend-item"><div class="color-box" style="background: var(--accent-blue);"></div> Driehoeksgetal T<sub>${n}</sub> (${T_n} stippen)</div>
+                    <div class="legend-item"><div class="color-box" style="background: var(--accent-pink);"></div> Driehoeksgetal T<sub>${n-1}</sub> (${T_n_min_1} stippen)</div>
+                    <div class="legend-item"><div class="color-box" style="border: 1px solid #fff;"></div> Totaal Vierkant S<sub>${n}</sub> (${S_n} stippen)</div>
+                `;
+            } else if (mode === 'triangle') {
+                html += `<span style="color: #8892b0;"><strong>Equilaterale Opbouw:</strong> Het ${n}e driehoeksgetal is de som van de gehele getallen 1 t/m ${n} via $\\frac{n(n+1)}{2}$.</span>`;
+                legendBox.innerHTML = `
+                    <div class="legend-item"><div class="color-box" style="background: var(--accent-blue);"></div> Driehoeksgetal T<sub>${n}</sub> (${T_n} stippen)</div>
+                `;
+            } else if (mode === 'hex') {
+                html += `<span style="color: #ffd700;"><strong>Hexagonale Dubbelrol:</strong> Omdat ${n} oneven is ($2×${m}-1$), is het driehoeksgetal ${T_n} tevens exact het ${m}e zeshoeksgetal!</span>`;
+                legendBox.innerHTML = `
+                    <div class="legend-item"><div class="color-box" style="background: var(--accent-gold);"></div> Hexagonaal Getal H<sub>${m}</sub> (${H_m} stippen)</div>
+                    <div class="legend-item"><div class="color-box" style="background: #ff007f;"></div> Gedeeld Hoekpunt (Oorsprong)</div>
+                `;
+            }
+
+            dataPanel.innerHTML = html;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Bereken schaal en spatiëring op basis van index n en schermgrootte
+            const maxDim = Math.min(width, height) * 0.75;
+            const spacing = Math.max(16, Math.min(40, maxDim / (n + 2)));
+            const dotRadius = Math.max(3, Math.min(7, spacing * 0.22));
+
+            if (mode === 'theon') {
+                drawTheonSquare(spacing, dotRadius);
+            } else if (mode === 'triangle') {
+                drawEquilateralTriangle(spacing, dotRadius);
+            } else if (mode === 'hex' && n % 2 !== 0) {
+                drawHexagonalNumber(spacing, dotRadius);
+            }
+        }
+
+        // Modus 1: Theon van Smyrna (Vierkant = Driehoek n + Driehoek n-1)
+        function drawTheonSquare(spacing, dotRadius) {
+            const gridWidth = (n - 1) * spacing;
+            const startX = centerX - gridWidth / 2;
+            const startY = centerY - gridWidth / 2;
+
+            // Teken achtergrondraster voor de helderheid
+            ctx.strokeStyle = 'rgba(42, 46, 61, 0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < n; i++) {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY + i * spacing);
+                ctx.lineTo(startX + gridWidth, startY + i * spacing);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(startX + i * spacing, startY);
+                ctx.lineTo(startX + i * spacing, startY + gridWidth);
+                ctx.stroke();
+            }
+
+            // Teken de stippen
+            for (let r = 0; r < n; r++) {
+                for (let c = 0; c < n; c++) {
+                    const x = startX + c * spacing;
+                    const y = startY + r * spacing;
+                    
+                    const isMainTriangle = (r >= c); // Tn (blauw)
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                    
+                    if (isMainTriangle) {
+                        ctx.fillStyle = '#00f0ff';
+                        ctx.shadowColor = '#00f0ff';
+                    } else {
+                        ctx.fillStyle = '#ff007f';
+                        ctx.shadowColor = '#ff007f';
+                    }
+                    
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // Reset
+                }
+            }
+        }
+
+        // Modus 2: Klassiek Gelijkzijdig Driehoeksgetal Tn
+        function drawEquilateralTriangle(spacing, dotRadius) {
+            const totalHeight = (n - 1) * spacing * Math.sqrt(3) / 2;
+            const startY = centerY - totalHeight / 2;
+
+            for (let r = 0; r < n; r++) {
+                const rowWidth = r * spacing;
+                const startX = centerX - rowWidth / 2;
+                const y = startY + r * spacing * Math.sqrt(3) / 2;
+
+                // Teken verbindingslijnen per rij
+                if (r > 0) {
+                    ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, y);
+                    ctx.lineTo(startX + rowWidth, y);
+                    ctx.stroke();
+                }
+
+                for (let c = 0; c <= r; c++) {
+                    const x = startX + c * spacing;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#00f0ff';
+                    ctx.shadowColor = '#00f0ff';
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        // Modus 3: Hexagonaal Getal Hm (Gedeeld hoekpunt opgebouwd in m ringen)
+        function drawHexagonalNumber(spacing, dotRadius) {
+            const m = (n + 1) / 2;
+            const hexSpacing = spacing * 0.9;
+            
+            // Zet hoekpunt links-onder of centraal zodat het mooi in beeld past
+            const startX = centerX;
+            const startY = centerY;
+
+            // Richtingsvectoren voor 4 zijden van een zeshoek vanuit het gedeelde hoekpunt
+            // Een klassiek zeshoeksgetal Hm bestaat uit geneste zeshoeken die 1 hoekpunt delen.
+            // Vanuit dat hoekpunt lopen 2 assen, en daartussen 2 extra zijden per ring.
+            const angles = [0, 60, 120, 180, 240, 300].map(deg => deg * Math.PI / 180);
+            
+            // We tekenen door de posities van geneste zeshoeken met gedeeld hoekpunt (0,0) te bepalen
+            const dots = new Map();
+
+            function addDot(qx, qy, isOrigin = false) {
+                const key = `${Math.round(qx*1000)}_${Math.round(qy*1000)}`;
+                if (!dots.has(key)) {
+                    dots.set(key, { x: startX + qx, y: startY + qy, isOrigin });
+                }
+            }
+
+            // Oorsprong (hoekpunt)
+            addDot(0, 0, true);
+
+            // Voor elke zeshoekige ring k = 1 t/m m - 1
+            for (let k = 1; k < m; k++) {
+                // In de klassieke geometrische weergave van Hm delen alle zeshoeken 1 hoekpunt.
+                // We construeren de 4 nieuwe zijden die niet overlappen met de assen van ring k-1.
+                // Hoekpunt ligt op (0,0). De zeshoek van grootte k heeft hoekpunten op:
+                // V0=(0,0), V1=k*dir(0), V2=V1+k*dir(60), V3=V2+k*dir(120), V4=V3+k*dir(180), V5=k*dir(240)...
+                
+                let curX = 0;
+                let curY = 0;
+                
+                // Doorloop 6 zijden van de zeshoek van zijde-lengte k
+                const sideVectors = [
+                    { dx: Math.cos(angles[0]), dy: Math.sin(angles[0]) },
+                    { dx: Math.cos(angles[1]), dy: Math.sin(angles[1]) },
+                    { dx: Math.cos(angles[2]), dy: Math.sin(angles[2]) },
+                    { dx: Math.cos(angles[3]), dy: Math.sin(angles[3]) },
+                    { dx: Math.cos(angles[4]), dy: Math.sin(angles[4]) },
+                    { dx: Math.cos(angles[5]), dy: Math.sin(angles[5]) }
+                ];
+
+                for (let s = 0; s < 6; s++) {
+                    for (let step = 0; step < k; step++) {
+                        curX += sideVectors[s].dx * hexSpacing;
+                        curY += sideVectors[s].dy * hexSpacing;
+                        addDot(curX, curY);
+                    }
+                }
+            }
+
+            // Centreer de gegenereerde stippenwolk op het canvas
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            dots.forEach(d => {
+                if (d.x < minX) minX = d.x;
+                if (d.x > maxX) maxX = d.x;
+                if (d.y < minY) minY = d.y;
+                if (d.y > maxY) maxY = d.y;
+            });
+
+            const offsetX = centerX - (minX + maxX) / 2;
+            const offsetY = centerY - (minY + maxY) / 2;
+
+            // Teken verbindingslijnen van de hexagoon
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.15)';
+            ctx.lineWidth = 1;
+
+            dots.forEach(dot => {
+                const x = dot.x + offsetX;
+                const y = dot.y + offsetY;
+
+                ctx.beginPath();
+                ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                
+                if (dot.isOrigin) {
+                    ctx.fillStyle = '#ff007f'; // Accent voor het gedeelde hoekpunt
+                    ctx.shadowColor = '#ff007f';
+                } else {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.shadowColor = '#ffd700';
+                }
+                
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initialisatie
+        updateParams();
+        resizeCanvas();
+    </script>
+</body>
+</html>
