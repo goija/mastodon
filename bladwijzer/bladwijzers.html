@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Bladwijzers & OSINT Dashboard</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-gold: #f59e0b;
+            --accent-emerald: #10b981;
+            --accent-purple: #a855f7;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            max-width: 1400px;
+            margin: 0 auto 30px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            border-left: 6px solid var(--accent-gold);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 900px;
+        }
+
+        .search-container {
+            max-width: 1400px;
+            margin: 0 auto 30px auto;
+            position: sticky;
+            top: 15px;
+            z-index: 100;
+        }
+
+        #filterInput {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        #filterInput:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        #filterInput::placeholder {
+            color: #64748b;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .category-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+
+        .category-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cat-archief { color: var(--accent-gold); }
+        .cat-zeeland { color: var(--accent-emerald); }
+        .cat-media { color: var(--accent-cyan); }
+        .cat-code { color: var(--accent-purple); }
+
+        .bookmark-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bookmark-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .bookmark-item:hover {
+            transform: translateY(-2px);
+            border-color: #475569;
+            background: var(--bg-hover);
+        }
+
+        .bookmark-link {
+            display: block;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .bookmark-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #f8fafc;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bookmark-title::after {
+            content: "↗";
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        .bookmark-item:hover .bookmark-title {
+            color: var(--accent-cyan);
+        }
+
+        .bookmark-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .tag-wrapper {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+        }
+
+        .note-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--accent-emerald);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #d1fae5;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 20px; }
+            header h1 { font-size: 1.6rem; }
+            main { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧭 Master Bladwijzers & Dashboard</h1>
+        <p>Centraal navigatieportaal voor academisch archiefonderzoek, de Groep-Gerretson, erfgoed Tholen & Zeeland, media-atlassen en GitHub-ontwikkeling.</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="filterInput" placeholder="🔍 Filter bladwijzers op trefwoord (bijv. 'Tholen', 'Gerretson', 'Atlas', 'Treub', 'Python')...">
+    </div>
+
+    <main id="bookmarksGrid">
+        <section class="category-section">
+            <h2 class="category-header cat-archief">🗄️ Archief & Historische Dossiers</h2>
+            <ul class="bookmark-list">
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/dossier_gerretson_v3.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Dossier Gerretson v3</div>
+                        <div class="bookmark-desc">Uitgebreide synthese over F.C. Gerretson, de schaduwstaat, BPM/Shell en de Minerva Contingency.</div>
+                        <div class="tag-wrapper"><span class="tag">OSINT</span><span class="tag">Historie</span><span class="tag">NA 2.21.246</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/archief_zoekmodule.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Archief- & Netwerk Zoekmodule</div>
+                        <div class="bookmark-desc">Geavanceerde interactieve database van historische figuren met Google Dork OSINT-generator.</div>
+                        <div class="tag-wrapper"><span class="tag">Tool</span><span class="tag">Dorks</span><span class="tag">Delpher</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/dossier/bronnen.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Dossier Bronnenoverzicht</div>
+                        <div class="bookmark-desc">Centraal register en bibliografie van alle geraadpleegde archieven, kranten en literatuur.</div>
+                        <div class="tag-wrapper"><span class="tag">Register</span><span class="tag">Bibliografie</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://github.com/goija/mastodon/blob/main/knooppunt-data_van_prof_Treub.json" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Knooppunt-data Prof. Treub</div>
+                        <div class="bookmark-desc">Gestructureerde JSON-dataset van prof. M.W.F. Treub, de Ondernemersraad en de Olie-faculteit.</div>
+                        <div class="tag-wrapper"><span class="tag">JSON</span><span class="tag">Data</span><span class="tag">Koloniaal</span></div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="category-section">
+            <h2 class="category-header cat-zeeland">🌊 Erfgoed Tholen & Zeeland</h2>
+            <ul class="bookmark-list">
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/archief_atlas_tholen_zeeland.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Archief Atlas Tholen & Zeeland</div>
+                        <div class="bookmark-desc">Regionaal historisch portaal gericht op bronnen, heerlijkheden en archieven in Zeeland.</div>
+                        <div class="tag-wrapper"><span class="tag">Zeeland</span><span class="tag">Tholen</span><span class="tag">Archief</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/genealogie_tholen_atlas.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Genealogie Tholen Atlas</div>
+                        <div class="bookmark-desc">Gespecialiseerde tool voor stamboomonderzoek, familielijnen en demografie op Tholen.</div>
+                        <div class="tag-wrapper"><span class="tag">Genealogie</span><span class="tag">Tholen</span><span class="tag">Stamboom</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/kranten_zoekmachine.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Historische Kranten Zoekmachine</div>
+                        <div class="bookmark-desc">Doorzoek regionale en landelijke krantenarchieven gericht op specifieke historische trefwoorden.</div>
+                        <div class="tag-wrapper"><span class="tag">Kranten</span><span class="tag">Delpher</span><span class="tag">Zoektool</span></div>
+                    </a>
+                </li>
+            </ul>
+            <div class="note-box">
+                <strong>📍 Lokale Samenwerking & Facilitering:</strong><br>
+                Ondersteuning van Heemkundekring Tholen, Omroep Tholen, Omroep Zeeland en de Eendrachtbode (in samenwerking met lokale journalisten zoals Dolores Bijl van Splunter).
+            </div>
+        </section>
+
+        <section class="category-section">
+            <h2 class="category-header cat-media">📻 Media & Politieke Atlassen</h2>
+            <ul class="bookmark-list">
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/omroepen_webplayer.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Omroepen Webplayer</div>
+                        <div class="bookmark-desc">Live audio- en radioplayer voor lokale omroepen en sub-omroepen, waaronder Omroep Zeeland en Omroep Tholen.</div>
+                        <div class="tag-wrapper"><span class="tag">Audio</span><span class="tag">Live Stream</span><span class="tag">Radio</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/lokale_politiek_atlas.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Atlas Regionale & Lokale Politiek</div>
+                        <div class="bookmark-desc">Interactief dashboard voor raadsvergaderingen, politieke debatten en regionale podcasts met mediaspeler.</div>
+                        <div class="tag-wrapper"><span class="tag">Politiek</span><span class="tag">Gemeenteraad</span><span class="tag">Audio</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://mastodon-rouge.vercel.app/wetenschap_politiek_atlas.html" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Academische & Politieke Media-Atlas</div>
+                        <div class="bookmark-desc">Luisterportaal voor wetenschappelijke colleges, lezingen en landelijke politieke debatten.</div>
+                        <div class="tag-wrapper"><span class="tag">Wetenschap</span><span class="tag">Colleges</span><span class="tag">Atlas</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://npo.nl/start/afspelen/nos-journaal_105768" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">NPO Start: NOS Journaal</div>
+                        <div class="bookmark-desc">Directe weblink naar uitzendingen en livestreams van het landelijke NOS Journaal.</div>
+                        <div class="tag-wrapper"><span class="tag">NPO</span><span class="tag">Nieuws</span><span class="tag">TV</span></div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="category-section">
+            <h2 class="category-header cat-code">💻 Ontwikkeling & Code</h2>
+            <ul class="bookmark-list">
+                <li class="bookmark-item">
+                    <a href="https://github.com/goija/mastodon/tree/main" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">GitHub Hoofdrepository</div>
+                        <div class="bookmark-desc">De centrale broncode-repository met alle HTML-tools, Python-scrapers en JSON-datasets.</div>
+                        <div class="tag-wrapper"><span class="tag">GitHub</span><span class="tag">Repository</span><span class="tag">Main</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://github.com/goija/mastodon/tree/main/dossier" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">GitHub Dossier Map</div>
+                        <div class="bookmark-desc">Directe link naar de submap '/dossier' met alle onderzoeksbestanden en brondocumenten.</div>
+                        <div class="tag-wrapper"><span class="tag">GitHub</span><span class="tag">Dossier</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://github.com/goija/mastodon/blob/main/delpher_extractor.py" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">Delpher Extractor (Python)</div>
+                        <div class="bookmark-desc">Python-script voor het geautomatiseerd scrapen, extraheren en verwerken van historische Delpher krantenartikelen.</div>
+                        <div class="tag-wrapper"><span class="tag">Python</span><span class="tag">Scraper</span><span class="tag">Delpher</span></div>
+                    </a>
+                </li>
+                <li class="bookmark-item">
+                    <a href="https://cryptpad.fr/code/#/3/code/edit/09ee65b6b2dcc0cd2674f3762e2eeb4d/" target="_blank" class="bookmark-link">
+                        <div class="bookmark-title">CryptPad Live Code Editor</div>
+                        <div class="bookmark-desc">Versleutelde real-time samenwerkingsomgeving voor het live bewerken en delen van codefragmenten.</div>
+                        <div class="tag-wrapper"><span class="tag">CryptPad</span><span class="tag">Live Edit</span><span class="tag">Encryptie</span></div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        // Eenvoudige, razendsnelle zoekfilter voor het hele dashboard
+        const filterInput = document.getElementById('filterInput');
+        const bookmarkItems = document.querySelectorAll('.bookmark-item');
+        const sections = document.querySelectorAll('.category-section');
+
+        filterInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+
+            sections.forEach(section => {
+                let hasVisibleItems = false;
+                const items = section.querySelectorAll('.bookmark-item');
+
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        item.style.display = 'block';
+                        hasVisibleItems = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Verberg hele sectie als geen enkel item daarin voldoet aan de zoekterm
+                section.style.display = hasVisibleItems ? 'flex' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
