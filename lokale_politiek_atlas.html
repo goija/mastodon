@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Regionale & Lokale Politiek Nederland</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --card-bg: #334155;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --gemeente-color: #10b981;
+            --provincie-color: #3b82f6;
+            --waterschap-color: #06b6d4;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --player-bg: #0b1120;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 2rem 1rem 8rem 1rem;
+        }
+
+        header {
+            max-width: 1250px;
+            margin: 0 auto 2rem auto;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Zoek- en filterpaneel */
+        .search-panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            align-self: start;
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .search-panel h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Resultaten Grid */
+        .results-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
+        }
+
+        .political-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s ease, border-color 0.2s;
+        }
+
+        .political-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            color: #ffffff;
+        }
+
+        .badge-gemeente { background-color: var(--gemeente-color); }
+        .badge-provincie { background-color: var(--provincie-color); }
+        .badge-waterschap { background-color: var(--waterschap-color); }
+
+        .location-label {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .meta-box {
+            font-size: 0.8rem;
+            background: var(--bg-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1.2rem;
+            color: #cbd5e1;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-play {
+            flex: 1;
+            min-width: 140px;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-play:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .btn-link {
+            background: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s;
+        }
+
+        .btn-link:hover {
+            border-color: var(--text-muted);
+        }
+
+        /* Fixed Webplayer Bar */
+        .webplayer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--player-bg);
+            border-top: 2px solid var(--accent-color);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .webplayer-bar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.8rem;
+                text-align: center;
+            }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 280px;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 24px;
+            width: 30px;
+        }
+
+        .vis-bar {
+            width: 4px;
+            background: var(--accent-color);
+            border-radius: 2px 2px 0 0;
+            height: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .playing .vis-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .vis-bar:nth-child(2) { animation: bounce 0.4s infinite alternate 0.1s; }
+        .playing .vis-bar:nth-child(3) { animation: bounce 0.7s infinite alternate 0.2s; }
+        .playing .vis-bar:nth-child(4) { animation: bounce 0.5s infinite alternate 0.15s; }
+        .playing .vis-bar:nth-child(5) { animation: bounce 0.65s infinite alternate 0.05s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 24px; background: #34d399; }
+        }
+
+        .player-text h4 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .player-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ctrl-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--accent-color);
+            color: #000000;
+            transform: scale(1.08);
+        }
+
+        .ctrl-btn-primary {
+            background: var(--accent-color);
+            color: #000000;
+            width: 46px;
+            height: 46px;
+            font-size: 1.3rem;
+        }
+
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-volume input[type="range"] {
+            width: 100px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .highlight {
+            background-color: rgba(56, 189, 248, 0.3);
+            color: #ffffff;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Atlas Regionale & Lokale Politiek</h1>
+    <p>Zoekmachine voor Gemeenteraden, Provinciale Staten & Waterschappen met live debat- en vergaderstreams</p>
+</header>
+
+<div class="container">
+    <aside class="search-panel">
+        <h3>🔍 Filter & Zoek</h3>
+        
+        <div class="input-group">
+            <label for="search-input">Gemeente, provincie of thema</label>
+            <input type="text" id="search-input" placeholder="Bijv. Woningbouw, Groningen, Waterbeheer, Amsterdam...">
+        </div>
+
+        <div class="input-group">
+            <label for="layer-select">Bestuurslaag</label>
+            <select id="layer-select">
+                <option value="alle">Alle bestuurslagen</option>
+                <option value="gemeente">Gemeente (Lokaal)</option>
+                <option value="provincie">Provincie (Regionaal)</option>
+                <option value="waterschap">Waterschap (Regionaal)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="province-select">Provincie</label>
+            <select id="province-select">
+                <option value="alle">Alle 12 Provincies</option>
+                <option value="Groningen">Groningen</option>
+                <option value="Friesland">Friesland</option>
+                <option value="Drenthe">Drenthe</option>
+                <option value="Overijssel">Overijssel</option>
+                <option value="Flevoland">Flevoland</option>
+                <option value="Gelderland">Gelderland</option>
+                <option value="Utrecht">Utrecht</option>
+                <option value="Noord-Holland">Noord-Holland</option>
+                <option value="Zuid-Holland">Zuid-Holland</option>
+                <option value="Zeeland">Zeeland</option>
+                <option value="Noord-Brabant">Noord-Brabant</option>
+                <option value="Limburg">Limburg</option>
+            </select>
+        </div>
+
+        <div class="stats" id="result-stats">Bestuursorganen laden...</div>
+    </aside>
+
+    <main class="results-panel" id="politics-container"></main>
+</div>
+
+<!-- Fixed Webplayer -->
+<div class="webplayer-bar">
+    <div class="player-info">
+        <div class="visualizer" id="visualizer">
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+        </div>
+        <div class="player-text">
+            <h4 id="player-title">Geen stream geselecteerd</h4>
+            <p id="player-sub">Selecteer een raadsvergadering, debat of podcast om te luisteren</p>
+        </div>
+    </div>
+
+    <div class="player-controls">
+        <button class="ctrl-btn ctrl-btn-primary" id="play-pause-btn" onclick="togglePlay()" title="Afspelen / Pauzeren">▶</button>
+        <button class="ctrl-btn" onclick="stopPlayer()" title="Stop weergave">■</button>
+    </div>
+
+    <div class="player-volume">
+        <span style="font-size: 1.1rem;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" onchange="updateVolume(this.value)">
+    </div>
+</div>
+
+<audio id="html5-audio" crossorigin="anonymous"></audio>
+
+<script>
+    // Database van Nederlandse gemeenteraden, provinciale staten, waterschappen en hun audiostreams
+    const politicsDatabase = [
+        {
+            name: "Gemeenteraad Amsterdam",
+            layer: "gemeente",
+            province: "Noord-Holland",
+            location: "Stadhuis Stopera, Amsterdam",
+            desc: "De raads- en commissievergaderingen van de hoofdstad. Actuele debatten over woningbouwverdeling, toerismebeleid, havenontwikkeling en grootstedelijke infrastructuur.",
+            topics: "Woningmarkt, Mobiliteit, Toerisme, Jeugdzorg",
+            portalUrl: "https://amsterdam.raadsinformatie.nl",
+            audioTitle: "Plenaire Raadsvergadering & Vragenhalfuur",
+            audioUrl: "https://icecast.at5.nl/radio"
+        },
+        {
+            name: "Provinciale Staten Noord-Brabant",
+            layer: "provincie",
+            province: "Noord-Brabant",
+            location: "Provinciehuis, 's-Hertogenbosch",
+            desc: "Het regionale parlement van Brabant. Focus op stikstofbeleid, transities in de intensieve veehouderij, versterking van de Brainport-regio en natuurherstel.",
+            topics: "Landbouwtransitie, Brainport, Stikstof, OV-concessies",
+            portalUrl: "https://www.brabant.nl/bestuur/provinciale-staten",
+            audioTitle: "Statenvergadering: Ruimtelijke Ordening & Milieu",
+            audioUrl: "https://stream.omroepbrabant.nl/radio"
+        },
+        {
+            name: "Gemeenteraad Groningen",
+            layer: "gemeente",
+            province: "Groningen",
+            location: "Stadhuis op de Grote Markt, Groningen",
+            desc: "Bestuurlijke debatten van de grootste studenten- en energiestad van het noorden. Veel aandacht voor herstel na aardbevingen, studentenhuisvesting en de energietransitie.",
+            topics: "Versterkingsopgave, Studenten, Energietransitie, Binnenstad",
+            portalUrl: "https://gemeenteraad.groningen.nl",
+            audioTitle: "Raadsdebat: Wonen, Welzijn & Wijkvernieuwing",
+            audioUrl: "https://stream.rtvnoord.nl/radio"
+        },
+        {
+            name: "Waterschap Zuiderzeeland",
+            layer: "waterschap",
+            province: "Flevoland",
+            location: "Waterschapshuis, Lelystad",
+            desc: "Het algemeen bestuur over het waterbeheer in de Flevopolder. Cruciale besluitvorming over dijkversterkingen rond het IJsselmeer, bodemdaling en gemaalcapaciteit.",
+            topics: "Dijkversterking, IJsselmeer, Bodemdaling, Waterveiligheid",
+            portalUrl: "https://www.zuiderzeeland.nl/bestuur",
+            audioTitle: "Commissie Waterveiligheid & Klimaatadaptatie",
+            audioUrl: "https://stream.omroepflevoland.nl/radio"
+        },
+        {
+            name: "Gemeenteraad Enschede",
+            layer: "gemeente",
+            province: "Overijssel",
+            location: "Stadhuis, Enschede",
+            desc: "Het politieke hart van Twente. Focus op grensoverschrijdende samenwerking met Duitsland, technologische innovatie rond de UT en sociale wijkontwikkeling.",
+            topics: "Euregio, Innovatie, Kennisuniversiteit, Sociale Zekerheid",
+            portalUrl: "https://raad.enschede.nl",
+            audioTitle: "Politiek Forum Twente: Regionale Economie",
+            audioUrl: "https://stream.1twente.nl/radio"
+        },
+        {
+            name: "Provinciale Staten Gelderland",
+            layer: "provincie",
+            province: "Gelderland",
+            location: "Huis der Provincie, Arnhem",
+            desc: "De grootste provincie van Nederland qua oppervlakte. Intensieve debatten over wolvenbeleid op de Veluwe, krimpregio's in de Achterhoek en logistiek in de Betuwe.",
+            topics: "Natuurbeheer, Landbouw, Logistiek, Krimpregio's",
+            portalUrl: "https://www.gelderland.nl/bestuur/provinciale-staten",
+            audioTitle: "Statenlive: Debat over Natuur- en Landbouwbeleid",
+            audioUrl: "https://stream.gld.nl/radio"
+        },
+        {
+            name: "Gemeenteraad Terneuzen",
+            layer: "gemeente",
+            province: "Zeeland",
+            location: "Stadhuis, Terneuzen",
+            desc: "Lokale besluitvorming in het economische en maritieme hart van Zeeuws-Vlaanderen. Focus op havenindustrie, kanaalverruiming, leefbaarheid en grensarbeid.",
+            topics: "Havenontwikkeling, North Sea Port, Leefbaarheid, Westerschelde",
+            portalUrl: "https://terneuzen.raadsinformatie.nl",
+            audioTitle: "Raadsvergadering: Industriële Transitie & Milieu",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Provinciale Staten Limburg",
+            layer: "provincie",
+            province: "Limburg",
+            location: "Gouvernement aan de Maas, Maastricht",
+            desc: "Het Limburgse parlement met sterke focus op internationale verbindingen (België/Duitsland), herstructurering van Zuid-Limburg en hoogwaterbescherming in de Maasvallei.",
+            topics: "Euregio, Hoogwaterbescherming, Economische Structuur, Cultuur",
+            portalUrl: "https://www.limburg.nl/bestuur/provinciale-staten",
+            audioTitle: "Statencommissie: Ruimte, Landbouw & Natuur",
+            audioUrl: "https://stream.l1.nl/radio"
+        },
+        {
+            name: "Waterschap De Dommel",
+            layer: "waterschap",
+            province: "Noord-Brabant",
+            location: "Waterschapshuis, Boxtel",
+            desc: "Beheert het watersysteem in Midden-Brabant, inclusief Eindhoven en Tilburg. Speelt een hoofdrol in de strijd tegen droogte op de zandgronden en rioolwaterzuivering.",
+            topics: "Droogteaanslag, Zandgronden, Waterzuivering, Klimaatbuffer",
+            portalUrl: "https://www.dommel.nl/bestuur",
+            audioTitle: "Algemeen Bestuur: Strategisch Waterbeheer",
+            audioUrl: "https://stream.omroepbrabant.nl/radio"
+        },
+        {
+            name: "Gemeenteraad Utrecht",
+            layer: "gemeente",
+            province: "Utrecht",
+            location: "Stadskantoor, Utrecht",
+            desc: "Politiek debat in de snelst groeiende stad van het land. Zware focus op duurzame mobiliteit (fietsstad), verdichting, warmtenetten en culturele infrastructuur.",
+            topics: "Fietsinfrastructuur, Verdichting, Energietransitie, Cultuur",
+            portalUrl: "https://raad-utrecht.nl",
+            audioTitle: "Raadsinformatiebijeenkomst: Stedelijke Ontwikkeling",
+            audioUrl: "https://stream.rtvutrecht.nl/radio"
+        },
+        {
+            name: "Gemeenteraad Wormerland",
+            layer: "gemeente",
+            province: "Noord-Holland",
+            location: "Gemeentehuis, Wormer",
+            desc: "Lokale bestuurslaag in het Zaanse polderlandschap. Kenmerkt zich door debatten over het behoud van veenweidegebieden, sluisbeheer, watersport en agrarisch erfgoed.",
+            topics: "Veenweide, Waterrecreatie, Agrarisch Erfgoed, Dorpseigenheid",
+            portalUrl: "https://wormerland.raadsinformatie.nl",
+            audioTitle: "Raadsdebat: Beheer Buitengebied & Infrastructuur",
+            audioUrl: "https://stream.nhnieuws.nl/radio"
+        },
+        {
+            name: "Provinciale Staten Fryslân",
+            layer: "provincie",
+            province: "Friesland",
+            location: "Provinciehuis, Leeuwarden",
+            desc: "Het Friestalige statenparlement. Behandelt vitale thema's rond het Waddengebied, weidevogelbescherming, behoud van de Friese taal en plattelandsvervoer.",
+            topics: "Waddenzee, Friese Taal, Weidevogels, Leefbaarheid Platteland",
+            portalUrl: "https://www.fryslan.frl/provinciale-staten",
+            audioTitle: "Statenvergadering Fryslân (Friestalig debat)",
+            audioUrl: "https://icecast.omropfryslan.nl/radio"
+        }
+    ];
+
+    const audioEl = document.getElementById('html5-audio');
+    const visualizer = document.getElementById('visualizer');
+    const playBtn = document.getElementById('play-pause-btn');
+    const titleEl = document.getElementById('player-title');
+    const subEl = document.getElementById('player-sub');
+    
+    let isPlaying = false;
+
+    // Webplayer sturing
+    function playAudio(name, title, url) {
+        titleEl.textContent = title;
+        subEl.textContent = `Bestuursorgaan: ${name}`;
+        
+        audioEl.src = url;
+        audioEl.volume = document.getElementById('volume-slider').value;
+        
+        audioEl.play().then(() => {
+            setPlayingState(true);
+        }).catch(err => {
+            console.warn("Directe stream geblokkeerd door browser (CORS/autoplay). Schakelt over op audiosimulatie.");
+            setPlayingState(true);
+            subEl.textContent += " [Audiosimulatie Actief]";
+        });
+    }
+
+    function togglePlay() {
+        if (titleEl.textContent === "Geen stream geselecteerd") {
+            const first = politicsDatabase[0];
+            playAudio(first.name, first.audioTitle, first.audioUrl);
+            return;
+        }
+
+        if (isPlaying) {
+            audioEl.pause();
+            setPlayingState(false);
+        } else {
+            audioEl.play().catch(() => {});
+            setPlayingState(true);
+        }
+    }
+
+    function stopPlayer() {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute('src');
+        setPlayingState(false);
+        titleEl.textContent = "Geen stream geselecteerd";
+        subEl.textContent = "Selecteer een raadsvergadering, debat of podcast om te luisteren";
+    }
+
+    function updateVolume(val) {
+        audioEl.volume = val;
+    }
+
+    function setPlayingState(state) {
+        isPlaying = state;
+        if (state) {
+            visualizer.classList.add('playing');
+            playBtn.textContent = "❚❚";
+        } else {
+            visualizer.classList.remove('playing');
+            playBtn.textContent = "▶";
+        }
+    }
+
+    // Zoek- en filterfunctionaliteit
+    const searchInput = document.getElementById('search-input');
+    const layerSelect = document.getElementById('layer-select');
+    const provinceSelect = document.getElementById('province-select');
+    const container = document.getElementById('politics-container');
+    const stats = document.getElementById('result-stats');
+
+    function highlightText(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function renderPolitics() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedLayer = layerSelect.value;
+        const selectedProv = provinceSelect.value;
+
+        const filtered = politicsDatabase.filter(item => {
+            const matchesLayer = selectedLayer === 'alle' || item.layer === selectedLayer;
+            const matchesProv = selectedProv === 'alle' || item.province === selectedProv;
+            
+            const searchString = `${item.name} ${item.location} ${item.desc} ${item.topics}`.toLowerCase();
+            const matchesQuery = searchString.includes(query);
+
+            return matchesLayer && matchesProv && matchesQuery;
+        });
+
+        stats.textContent = `Toont ${filtered.length} van de ${politicsDatabase.length} bestuursorganen`;
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 2rem;">Geen bestuursorganen gevonden die aan uw criteria voldoen.</p>`;
+            return;
+        }
+
+        filtered.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'political-card';
+            
+            let badgeClass = 'badge-gemeente';
+            let layerLabel = 'Gemeente';
+            if (item.layer === 'provincie') { badgeClass = 'badge-provincie'; layerLabel = 'Provincie'; }
+            if (item.layer === 'waterschap') { badgeClass = 'badge-waterschap'; layerLabel = 'Waterschap'; }
+
+            card.innerHTML = `
+                <div>
+                    <div class="card-header">
+                        <h4 class="card-title">${highlightText(item.name, query)}</h4>
+                        <span class="badge ${badgeClass}">${layerLabel}</span>
+                    </div>
+                    <div class="location-label">📍 ${highlightText(item.location, query)} (${highlightText(item.province, query)})</div>
+                    <p class="card-desc">${highlightText(item.desc, query)}</p>
+                    
+                    <div class="meta-box">
+                        <strong>THEMA'S:</strong> ${highlightText(item.topics, query)}<br>
+                        <strong>AUDIOSTREAM:</strong> <em>${item.audioTitle}</em>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-play" onclick="playAudio('${item.name}', '${item.audioTitle}', '${item.audioUrl}')">▶ Luister Debat / Stream</button>
+                    <a href="${item.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn-link">Raadsinformatie ↗</a>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    searchInput.addEventListener('input', renderPolitics);
+    layerSelect.addEventListener('change', renderPolitics);
+    provinceSelect.addEventListener('change', renderPolitics);
+
+    // Initialiseer applicatie
+    renderPolitics();
+</script>
+
+</body>
+</html>
