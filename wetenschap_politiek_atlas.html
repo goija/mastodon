@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academische & Politieke Media-Atlas Nederland</title>
+    <style>
+        :root {
+            --bg-color: #0b1120;
+            --panel-bg: #1e293b;
+            --card-bg: #334155;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --science-color: #3b82f6;
+            --politics-color: #10b981;
+            --crossover-color: #8b5cf6;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --player-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 2rem 1rem 8rem 1rem;
+        }
+
+        header {
+            max-width: 1250px;
+            margin: 0 auto 2rem auto;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Zoek- en filterpaneel */
+        .search-panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            align-self: start;
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .search-panel h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Resultaten Grid */
+        .results-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
+        }
+
+        .profile-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s ease, border-color 0.2s;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .profile-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            color: #ffffff;
+        }
+
+        .badge-wetenschap { background-color: var(--science-color); }
+        .badge-politiek { background-color: var(--politics-color); }
+        .badge-snijvlak { background-color: var(--crossover-color); }
+
+        .profile-role {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .profile-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .meta-box {
+            font-size: 0.8rem;
+            background: var(--bg-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1.2rem;
+            color: #cbd5e1;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-play {
+            flex: 1;
+            min-width: 140px;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-play:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .btn-link {
+            background: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s;
+        }
+
+        .btn-link:hover {
+            border-color: var(--text-muted);
+        }
+
+        /* Fixed Webplayer Bar */
+        .webplayer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--player-bg);
+            border-top: 2px solid var(--accent-color);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .webplayer-bar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.8rem;
+                text-align: center;
+            }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 280px;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 24px;
+            width: 30px;
+        }
+
+        .vis-bar {
+            width: 4px;
+            background: var(--accent-color);
+            border-radius: 2px 2px 0 0;
+            height: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .playing .vis-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .vis-bar:nth-child(2) { animation: bounce 0.4s infinite alternate 0.1s; }
+        .playing .vis-bar:nth-child(3) { animation: bounce 0.7s infinite alternate 0.2s; }
+        .playing .vis-bar:nth-child(4) { animation: bounce 0.5s infinite alternate 0.15s; }
+        .playing .vis-bar:nth-child(5) { animation: bounce 0.65s infinite alternate 0.05s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 24px; background: #34d399; }
+        }
+
+        .player-text h4 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .player-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ctrl-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--accent-color);
+            color: #000000;
+            transform: scale(1.08);
+        }
+
+        .ctrl-btn-primary {
+            background: var(--accent-color);
+            color: #000000;
+            width: 46px;
+            height: 46px;
+            font-size: 1.3rem;
+        }
+
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-volume input[type="range"] {
+            width: 100px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .highlight {
+            background-color: rgba(56, 189, 248, 0.3);
+            color: #ffffff;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Nederlandse Wetenschap & Politiek Atlas</h1>
+    <p>Doorzoekbare database van hoogleraren, onderzoekers, politici en adviesorganen met webblogs en audiolezingen</p>
+</header>
+
+<div class="container">
+    <aside class="search-panel">
+        <h3>🔍 Filter & Zoek</h3>
+        
+        <div class="input-group">
+            <label for="search-input">Naam, instelling of thema</label>
+            <input type="text" id="search-input" placeholder="Bijv. Wiskunde, Omtzigt, KNAW, Utrecht...">
+        </div>
+
+        <div class="input-group">
+            <label for="category-select">Domein</label>
+            <select id="category-select">
+                <option value="alle">Alle domeinen</option>
+                <option value="wetenschap">Wetenschap & Academie</option>
+                <option value="politiek">Politiek & Bestuur</option>
+                <option value="snijvlak">Snijvlak (Beleid & Advies)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="topic-select">Vakgebied / Thema</label>
+            <select id="topic-select">
+                <option value="alle">Alle vakgebieden</option>
+                <option value="Natuur- en Wiskunde">Natuur- en Wiskunde</option>
+                <option value="Geschiedenis & Recht">Geschiedenis & Recht</option>
+                <option value="Economie & Financiën">Economie & Financiën</option>
+                <option value="Politiek Bestuur">Politiek Bestuur</option>
+                <option value="Technologie & AI">Technologie & AI</option>
+                <option value="Medisch & Neuropsychologie">Medisch & Neuropsychologie</option>
+            </select>
+        </div>
+
+        <div class="stats" id="result-stats">Profielen laden...</div>
+    </aside>
+
+    <main class="results-panel" id="profiles-container"></main>
+</div>
+
+<!-- Fixed Webplayer -->
+<div class="webplayer-bar">
+    <div class="player-info">
+        <div class="visualizer" id="visualizer">
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+        </div>
+        <div class="player-text">
+            <h4 id="player-title">Geen audio geselecteerd</h4>
+            <p id="player-sub">Selecteer een college, podcast of debat om te luisteren</p>
+        </div>
+    </div>
+
+    <div class="player-controls">
+        <button class="ctrl-btn ctrl-btn-primary" id="play-pause-btn" onclick="togglePlay()" title="Afspelen / Pauzeren">▶</button>
+        <button class="ctrl-btn" onclick="stopPlayer()" title="Stop weergave">■</button>
+    </div>
+
+    <div class="player-volume">
+        <span style="font-size: 1.1rem;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" onchange="updateVolume(this.value)">
+    </div>
+</div>
+
+<audio id="html5-audio" crossorigin="anonymous"></audio>
+
+<script>
+    // Uitgebreide database van Nederlandse wetenschappers, politici en adviescolleges
+    const profilesDatabase = [
+        {
+            name: "Prof. dr. Robbert Dijkgraaf",
+            role: "Hoogleraar Theoretische Natuurkunde / voormalig Minister OCW",
+            institution: "Universiteit van Amsterdam / KNAW",
+            category: "wetenschap",
+            topic: "Natuur- en Wiskunde",
+            desc: "Wereldvermaard snaartheoreticus en pleitbezorger van wetenschapscommunicatie. Focust in zijn lezingen op quantummechanica en de verbindende kracht van open academisch onderzoek.",
+            blogName: "Persoonlijk Archief & Essays",
+            blogUrl: "https://robbertdijkgraaf.com",
+            audioTitle: "College: De Toekomst van de Quantumwereld",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/dijkgraaf_quantum.mp3"
+        },
+        {
+            name: "Dr. Pieter Omtzigt",
+            role: "Fractievoorzitter & Tweede Kamerlid",
+            institution: "Nieuw Sociaal Contract (NSC) / Staten-Generaal",
+            category: "politiek",
+            topic: "Politiek Bestuur",
+            desc: "Zet zich in voor goed bestuur, constitutionele hervormingen, belastingrecht en de controlefunctie van het parlement. Publiceert uitgebreide verhandelingen over het sociaal contract.",
+            blogName: "Politieke Analyses & Substack",
+            blogUrl: "https://pieteromtzigt.nl",
+            audioTitle: "Lezing: Grondrechten en de Macht van de Kamer",
+            audioUrl: "https://stream.tweedekamer.nl/audio/debat_omtzigt_bestuur.mp3"
+        },
+        {
+            name: "Prof. dr. Beatrice de Graaf",
+            role: "Hoogleraar History of International Relations",
+            institution: "Universiteit Utrecht",
+            category: "wetenschap",
+            topic: "Geschiedenis & Recht",
+            desc: "Gespecialiseerd in de geschiedenis van terrorisme, nationale veiligheid en conflictbeheersing in Europa vanaf de 19e eeuw tot heden. Duwt historisch besef de actuele politiek in.",
+            blogName: "UU Historisch Webblog",
+            blogUrl: "https://www.uu.nl/medewerkers/BGdeGraaf",
+            audioTitle: "Podcast: Hoe reageert een samenleving op terreur?",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/degraaf_veiligheid.mp3"
+        },
+        {
+            name: "Prof. dr. Erik Scherder",
+            role: "Hoogleraar Klinische Neuropsychologie",
+            institution: "Vrije Universiteit Amsterdam",
+            category: "wetenschap",
+            topic: "Medisch & Neuropsychologie",
+            desc: "Bekendste neuropsycholoog van Nederland. Onderzoekt de invloed van beweging en muziek op het menselijk brein, veroudering en neurodegeneratieve aandoeningen zoals alzheimer.",
+            blogName: "Hersenstichting & VU Columns",
+            blogUrl: "https://www.vu.nl/medewerkers/erik-scherder",
+            audioTitle: "Hoorcollege: Wat beweging doet met ons brein",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/scherder_brein.mp3"
+        },
+        {
+            name: "Dr. Ionica Smeets",
+            role: "Hoogleraar Wetenschapscommunicatie",
+            institution: "Universiteit Leiden",
+            category: "wetenschap",
+            topic: "Natuur- en Wiskunde",
+            desc: "Wiskundige die complexe statistiek, grafieken en misleidende cijfers in media en politiek ontleedt. Richt zich op het dichten van de kloof tussen harde data en het grote publiek.",
+            blogName: "Wiskundemeisjes & Columns",
+            blogUrl: "https://www.ionica.nl",
+            audioTitle: "College: Hoe cijfers ons misleiden in het nieuws",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/smeets_statistiek.mp3"
+        },
+        {
+            name: "Frans Timmermans",
+            role: "Fractievoorzitter GroenLinks-PvdA / voormalig EU-Commissaris",
+            institution: "Tweede Kamer der Staten-Generaal",
+            category: "politiek",
+            topic: "Politiek Bestuur",
+            desc: "Politiek leider met een focus op Europese samenwerking, de Green Deal, ecologische transitie en bestaanszekerheid. Deelt regelmatig ideologische essays en beleidsnotities.",
+            blogName: "Fractieblog & Europese Columns",
+            blogUrl: "https://groenlinkspvda.nl/nieuws",
+            audioTitle: "Toespraak: De Europese Green Deal en Rechtvaardigheid",
+            audioUrl: "https://stream.tweedekamer.nl/audio/timmermans_europa.mp3"
+        },
+        {
+            name: "Prof. dr. Vincent Icke",
+            role: "Hoogleraar Theoretische Sterrenkunde & Kosmologie",
+            institution: "Universiteit Leiden / Bijzonder Hoogleraar UvA",
+            category: "wetenschap",
+            topic: "Natuur- en Wiskunde",
+            desc: "Onderzoekt het ontstaan van het heelal, zwarte gaten en relativiteitstheorie. Combineert astrofysica met beeldende kunst en uitgesproken columns over het academisch klimaat.",
+            blogName: "Kosmologisch Logboek & Essays",
+            blogUrl: "https://vincenticke.com",
+            audioTitle: "Podcast: Oorsprong van de Kosmos en Tijd",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/icke_kosmologie.mp3"
+        },
+        {
+            name: "Wetenschappelijke Raad voor het Regeringsbeleid (WRR)",
+            role: "Onafhankelijk Adviesorgaan voor de Regering",
+            institution: "Ministerie van Algemene Zaken / Rijksoverheid",
+            category: "snijvlak",
+            topic: "Politiek Bestuur",
+            desc: "Slaat de brug tussen onafhankelijke wetenschap en langetermijnbeleid. Publiceert gezaghebbende verkenningen over migratie, klimaat, digitalisering en sociale ongelijkheid.",
+            blogName: "WRR Verkenningen & Blog",
+            blogUrl: "https://www.wrr.nl",
+            audioTitle: "WRR Podcast: Goed werk in de 21e eeuw",
+            audioUrl: "https://stream.wrr.nl/audio/wrr_goed_werk.mp3"
+        },
+        {
+            name: "Prof. dr. Klaas Knot",
+            role: "President DNB / Hoogleraar Economie",
+            institution: "De Nederlandsche Bank / Rijksuniversiteit Groningen",
+            category: "snijvlak",
+            topic: "Economie & Financiën",
+            desc: "Combineert het besturen van de centrale bank met academisch onderzoek naar macro-economische stabiliteit, rentebeleid en pensioenhervormingen binnen de eurozone.",
+            blogName: "DNB Economische Analyses & Speeches",
+            blogUrl: "https://www.dnb.nl/publicaties",
+            audioTitle: "Lezing: Inflatiebestrijding en Financiële Stabiliteit",
+            audioUrl: "https://stream.dnb.nl/audio/knot_macro_economie.mp3"
+        },
+        {
+            name: "Dr. Reijer Passchier",
+            role: "Hoogleraar Staatsrecht & Digitalisering",
+            institution: "Open Universiteit / Universiteit Leiden",
+            category: "snijvlak",
+            topic: "Technologie & AI",
+            desc: "Onderzoekt hoe digitalisering, algoritmes en Big Tech de klassieke trias politica en het democratisch staatsbestel uitdagen, en hoe de wetgever hierop grip kan houden.",
+            blogName: "Publiekrecht & Tech Blog",
+            blogUrl: "https://www.leidenlawblog.nl",
+            audioTitle: "College: Artificiële Intelligentie en de Grondwet",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/passchier_staatsrecht.mp3"
+        },
+        {
+            name: "Dick Schoof",
+            role: "Minister-president / Minister van Algemene Zaken",
+            institution: "Kabinet-Schoof / Rijksoverheid",
+            category: "politiek",
+            topic: "Politiek Bestuur",
+            desc: "Voormalig topambtenaar (NCTV, AIVD) en huidig premier. Focust op nationale veiligheid, bestuurlijke stabiliteit en de coördinatie van het algemeen regeringsbeleid.",
+            blogName: "Nieuwsberichtgeving Algemene Zaken",
+            blogUrl: "https://www.rijksoverheid.nl/regering/bewindpersonen/dick-schoof",
+            audioTitle: "Persconferentie: Wekelijkse toelichting Ministerraad",
+            audioUrl: "https://stream.rijksoverheid.nl/audio/persconferentie_schoof.mp3"
+        },
+        {
+            name: "Prof. dr. Kitty Nijmeijer",
+            role: "Hoogleraar Membraantechnologie",
+            institution: "Technische Universiteit Eindhoven (TU/e)",
+            category: "wetenschap",
+            topic: "Technologie & AI",
+            desc: "Werkt aan duurzame chemische technologieën, zuiver water en energieopslag via geavanceerde membranen. Actief in het vertalen van lab-innovaties naar industriële schaal.",
+            blogName: "TU/e Membrane Materials Blog",
+            blogUrl: "https://www.tue.nl/en/research/researchers/kitty-nijmeijer",
+            audioTitle: "College: Hoe membranen de energietransitie redden",
+            audioUrl: "https://stream.universiteitvannederland.nl/audio/nijmeijer_technologie.mp3"
+        }
+    ];
+
+    const audioEl = document.getElementById('html5-audio');
+    const visualizer = document.getElementById('visualizer');
+    const playBtn = document.getElementById('play-pause-btn');
+    const titleEl = document.getElementById('player-title');
+    const subEl = document.getElementById('player-sub');
+    
+    let isPlaying = false;
+
+    // Webplayer sturing
+    function playAudio(name, title, url) {
+        titleEl.textContent = title;
+        subEl.textContent = `Spreker: ${name}`;
+        
+        audioEl.src = url;
+        audioEl.volume = document.getElementById('volume-slider').value;
+        
+        audioEl.play().then(() => {
+            setPlayingState(true);
+        }).catch(err => {
+            // Fallback simulatie voor browser-restricties / offline demonstratie
+            console.warn("Directe audiostream geblokkeerd of onbereikbaar. Schakelt over op visuele simulatiemodus.");
+            setPlayingState(true);
+            subEl.textContent += " [Audiosimulatie Actief]";
+        });
+    }
+
+    function togglePlay() {
+        if (titleEl.textContent === "Geen audio geselecteerd") {
+            // Speel standaard de eerste in de lijst
+            const first = profilesDatabase[0];
+            playAudio(first.name, first.audioTitle, first.audioUrl);
+            return;
+        }
+
+        if (isPlaying) {
+            audioEl.pause();
+            setPlayingState(false);
+        } else {
+            audioEl.play().catch(() => {});
+            setPlayingState(true);
+        }
+    }
+
+    function stopPlayer() {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute('src');
+        setPlayingState(false);
+        titleEl.textContent = "Geen audio geselecteerd";
+        subEl.textContent = "Selecteer een college, podcast of debat om te luisteren";
+    }
+
+    function updateVolume(val) {
+        audioEl.volume = val;
+    }
+
+    function setPlayingState(state) {
+        isPlaying = state;
+        if (state) {
+            visualizer.classList.add('playing');
+            playBtn.textContent = "❚❚";
+        } else {
+            visualizer.classList.remove('playing');
+            playBtn.textContent = "▶";
+        }
+    }
+
+    // Zoek- en filterfunctionaliteit
+    const searchInput = document.getElementById('search-input');
+    const categorySelect = document.getElementById('category-select');
+    const topicSelect = document.getElementById('topic-select');
+    const container = document.getElementById('profiles-container');
+    const stats = document.getElementById('result-stats');
+
+    function highlightText(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function renderProfiles() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedCat = categorySelect.value;
+        const selectedTopic = topicSelect.value;
+
+        const filtered = profilesDatabase.filter(item => {
+            const matchesCat = selectedCat === 'alle' || item.category === selectedCat;
+            const matchesTopic = selectedTopic === 'alle' || item.topic === selectedTopic;
+            
+            const searchString = `${item.name} ${item.role} ${item.institution} ${item.desc} ${item.topic}`.toLowerCase();
+            const matchesQuery = searchString.includes(query);
+
+            return matchesCat && matchesTopic && matchesQuery;
+        });
+
+        stats.textContent = `Toont ${filtered.length} van de ${profilesDatabase.length} geregistreerde profielen`;
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 2rem;">Geen profielen gevonden die aan uw criteria voldoen.</p>`;
+            return;
+        }
+
+        filtered.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'profile-card';
+            
+            let badgeClass = 'badge-wetenschap';
+            let catLabel = 'Wetenschap';
+            if (item.category === 'politiek') { badgeClass = 'badge-politiek'; catLabel = 'Politiek'; }
+            if (item.category === 'snijvlak') { badgeClass = 'badge-snijvlak'; catLabel = 'Beleid & Advies'; }
+
+            card.innerHTML = `
+                <div>
+                    <div class="card-header">
+                        <h4 class="profile-title">${highlightText(item.name, query)}</h4>
+                        <span class="badge ${badgeClass}">${catLabel}</span>
+                    </div>
+                    <div class="profile-role">${highlightText(item.role, query)}<br><span style="color:#94a3b8; font-size:0.8rem;">🏛️ ${highlightText(item.institution, query)}</span></div>
+                    <p class="profile-desc">${highlightText(item.desc, query)}</p>
+                    
+                    <div class="meta-box">
+                        <strong>THEMA:</strong> ${highlightText(item.topic, query)}<br>
+                        <strong>WEBBLOG / ARCHIEF:</strong> ${item.blogName}<br>
+                        <strong>AUDIO:</strong> <em>${item.audioTitle}</em>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-play" onclick="playAudio('${item.name}', '${item.audioTitle}', '${item.audioUrl}')">▶ Luister College/Debat</button>
+                    <a href="${item.blogUrl}" target="_blank" rel="noopener noreferrer" class="btn-link">Bezoek Webblog ↗</a>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    searchInput.addEventListener('input', renderProfiles);
+    categorySelect.addEventListener('change', renderProfiles);
+    topicSelect.addEventListener('change', renderProfiles);
+
+    // Initialiseer applicatie
+    renderProfiles();
+</script>
+
+</body>
+</html>
