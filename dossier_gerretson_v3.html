@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koloniaal Machtsnetwerk v3.0 — WebRTC & P2P DataChannels</title>
+    <!-- D3.js v7 CDN -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #f59e0b;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --border: #374151;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        #graph-container {
+            flex: 1; height: 100%; position: relative;
+            background: radial-gradient(circle at 50% 50%, #172033 0%, var(--bg-dark) 100%);
+        }
+        svg { width: 100%; height: 100%; cursor: grab; }
+        svg:active { cursor: grabbing; }
+
+        /* Zijbalk & Tabs */
+        #sidebar {
+            width: 540px; background-color: var(--panel-bg); border-left: 1px solid var(--border);
+            display: flex; flex-direction: column; height: 100%; z-index: 10;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+        }
+        .sidebar-header { padding: 16px 20px; background-color: #0d131f; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h1 { font-size: 1.15rem; color: var(--accent-blue); }
+        
+        #rtc-status-badge {
+            font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 9999px;
+            background: #374151; color: var(--text-muted); display: flex; align-items: center; gap: 6px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+        .status-dot.connected { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+
+        .tab-nav { display: flex; background: #0f172a; border-bottom: 1px solid var(--border); }
+        .tab-btn {
+            flex: 1; padding: 12px 6px; background: none; border: none; color: var(--text-muted);
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            border-bottom: 2px solid transparent; text-align: center;
+        }
+        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: var(--panel-bg); }
+        
+        #panel-content { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+        .tab-pane { display: none; flex-direction: column; gap: 16px; }
+        .tab-pane.active { display: flex; }
+
+        /* Formulier & Controls */
+        label { font-size: 0.75rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; }
+        textarea, select, input[type="text"] {
+            width: 100%; background: #0f172a; border: 1px solid var(--border); border-radius: 6px;
+            padding: 8px 10px; color: #fff; font-size: 0.8rem; font-family: inherit; margin-top: 4px;
+        }
+        textarea { height: 90px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; }
+        
+        .btn {
+            background: #2563eb; color: white; border: none; padding: 10px 14px; border-radius: 6px;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+        }
+        .btn:hover { background: #1d4ed8; }
+        .btn-gold { background: var(--accent-gold); color: #000; }
+        .btn-gold:hover { background: #d97706; }
+        .btn-green { background: #059669; color: #fff; }
+        .btn-green:hover { background: #047857; }
+
+        /* Resultaat kaarten */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+        .card h4 { font-size: 0.9rem; color: var(--accent-blue); margin-bottom: 6px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; background: #374151; margin: 2px; }
+
+        /* Controls / Legend Overlay */
+        .controls {
+            position: absolute; top: 20px; left: 20px; background: rgba(17, 24, 39, 0.9);
+            padding: 14px; border-radius: 8px; border: 1px solid var(--border); backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; gap: 8px; z-index: 5;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Graph Stijlen */
+        .link { stroke: #475569; stroke-opacity: 0.5; stroke-width: 2px; transition: all 0.3s; }
+        .link.highlight-path { stroke: var(--accent-gold) !important; stroke-opacity: 1 !important; stroke-width: 4px !important; }
+        .node circle { stroke: #fff; stroke-width: 2px; transition: all 0.3s; }
+        .node:hover circle { transform: scale(1.15); stroke-width: 3px; }
+        .node text { font-size: 11px; font-weight: 600; fill: #e2e8f0; pointer-events: none; text-shadow: 0 1px 4px #000, 0 0 8px #000; }
+    </style>
+</head>
+<body>
+
+    <div id="graph-container">
+        <div class="controls">
+            <strong style="font-size: 0.85rem; color: #fff;">Algoritme Filters & Weergave</strong>
+            <div class="legend-item" onclick="resetGraph()"><span class="legend-color" style="background: #fff;"></span><span>🔄 Reset Weergave</span></div>
+            <div class="legend-item" onclick="runPageRank()"><span class="legend-color" style="background: var(--accent-gold);"></span><span>📊 PageRank Centraliteit</span></div>
+            <hr style="border-color: var(--border); margin: 4px 0;">
+            <div class="legend-item"><span class="legend-color" style="background: var(--accent-gold);"></span><span>Kapitaal & Olie</span></div>
+            <div class="legend-item"><span class="legend-color" style="background: var(--accent-blue);"></span><span>Politiek & Militair</span></div>
+            <div class="legend-item"><span class="legend-color" style="background: var(--accent-purple);"></span><span>Conservatieve Academie</span></div>
+            <div class="legend-item"><span class="legend-color" style="background: var(--accent-green);"></span><span>Reformistische Academie</span></div>
+        </div>
+        <svg id="network"></svg>
+    </div>
+
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <div>
+                <h1>Koloniaal Machtsnetwerk v3.0</h1>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Met WebRTC DataChannels & P2P Live Sync</p>
+            </div>
+            <div id="rtc-status-badge">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">Offline</span>
+            </div>
+        </div>
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-dossier')">🏛️ Dossier</button>
+            <button class="tab-btn" onclick="switchTab('tab-ocr')">⚡ OCR NLP</button>
+            <button class="tab-btn" onclick="switchTab('tab-algo')">🧭 Algoritmen</button>
+            <button class="tab-btn" style="color: var(--accent-gold);" onclick="switchTab('tab-webrtc')">📡 WebRTC P2P</button>
+        </div>
+        <div id="panel-content">
+            
+            <!-- TAB 1: DOSSIER -->
+            <div id="tab-dossier" class="tab-pane active">
+                <div id="dossier-info" style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: 30px;">
+                    👈 Klik op een actor in het netwerk om archiefinventarissen, historische rollen en dorks in te zien.
+                </div>
+            </div>
+
+            <!-- TAB 2: OCR TEXT EXTRACTOR -->
+            <div id="tab-ocr" class="tab-pane">
+                <div class="card">
+                    <h4>⚙️ NLP Entiteit-Extractie Engine</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
+                        Plak een Delpher archieftekst. Geëxtraheerde entiteiten worden direct als knooppunten toegevoegd en <strong>live gesynchroniseerd met verbonden P2P-peers</strong>.
+                    </p>
+                    <label>Delpher Archieftekst:</label>
+                    <textarea id="ocr-input" style="height: 110px;">Batavia. Het Bat. Nbl. meldt, dat de regeering heeft beslist, dat het Suikersyndicaat voortaan wederom zal worden geraadpleegd over alle aangelegenheden. Treub en mr. dr. H. Colijn spraken zich uit over de adviesrol van de Ondernemersraad en de B.P.M.</textarea>
+                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="processOCRText()">⚡ Run Extractie & Sync via WebRTC</button>
+                </div>
+                <div id="ocr-results" class="card" style="display: none;">
+                    <h4>🔍 Geëxtraheerde Entiteiten:</h4>
+                    <div id="ocr-badges" style="margin-top: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: GRAAF ALGORITMEN -->
+            <div id="tab-algo" class="tab-pane">
+                <div class="card">
+                    <h4>🧭 Kortsestraat-Algoritme (Dijkstra)</h4>
+                    <label>Van Actor:</label>
+                    <select id="source-select"></select>
+                    <label style="margin-top: 8px; display: block;">Naar Actor:</label>
+                    <select id="target-select"></select>
+                    <button class="btn" style="margin-top: 12px;" onclick="findShortestPath()">🔍 Bereken & Highlight Pad</button>
+                </div>
+                
+                <div class="card">
+                    <h4>📊 PageRank Centraliteits-Analyse</h4>
+                    <button class="btn btn-gold" onclick="runPageRank()">⚡ Bereken Machtscores (PageRank)</button>
+                    <div id="pagerank-results" style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: WEBRTC P2P SAMENWERKING -->
+            <div id="tab-webrtc" class="tab-pane">
+                <div class="card" style="border-color: var(--accent-gold);">
+                    <h4>📡 Serverless WebRTC DataChannel Room</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+                        Verbind twee browsers direct via P2P (zonder server) om grafiekwijzigingen en archiefvondsten in realtime te delen.
+                    </p>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <button class="btn" style="flex:1;" onclick="createOffer()">1. Maak Sessie (Offer)</button>
+                        <button class="btn btn-green" style="flex:1;" onclick="createAnswer()">2. Beantwoord (Answer)</button>
+                    </div>
+
+                    <label>Stap A: Jouw Lokale Sessie-code (Stuur naar P2P Partner):</label>
+                    <textarea id="local-sdp" readonly placeholder="Klik op 'Maak Sessie' of 'Beantwoord' om code te genereren..."></textarea>
+                    
+                    <label style="margin-top: 10px; display: block;">Stap B: Ontvangen Partner-code (Plak hier):</label>
+                    <textarea id="remote-sdp" placeholder="Plak hier de Offer of Answer code van je partner..."></textarea>
+                    
+                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="connectRemote()">3. 🚀 Bevestig & Open DataChannel</button>
+                </div>
+
+                <div class="card" id="rtc-chat-card" style="display: none;">
+                    <h4>💬 P2P Onderzoeks-log & Live Sync</h4>
+                    <div id="rtc-log" style="height: 120px; overflow-y: auto; background: #0f172a; padding: 8px; border-radius: 4px; font-size: 0.75rem; font-family: monospace; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); margin-bottom: 8px;">
+                        <span style="color: var(--text-muted);">Systeem: Wachten op DataChannel verbinding...</span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" id="rtc-msg-input" placeholder="Stuur bericht of notitie naar peer...">
+                        <button class="btn" style="width: auto; padding: 8px 14px;" onclick="sendChatMessage()">Verzend</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. INITIAL DATA & D3 SETUP
+        // ==========================================
+        let graphData = {
+            nodes: [
+                { id: 'gerretson', label: 'F.C. Gerretson', group: 'academie', radius: 24, role: 'Secretaris bij BPM, dichter en hoogleraar aan de Utrechtse olie-faculteit.' },
+                { id: 'bpm', label: 'BPM / Koninklijke Olie', group: 'kapitaal', radius: 30, role: 'De motor achter extractie in Indië en geldschieter voor behoudend bestuurskader.' },
+                { id: 'colijn', label: 'H. Colijn', group: 'politiek', radius: 28, role: 'Ex-KNIL officier, minister van Oorlog, directeur BPM en minister-president.' },
+                { id: 'utrecht', label: 'Universiteit Utrecht', group: 'academie', radius: 24, role: 'De in 1925 door petroleum en suikerkapitaal gefinancierde Indologische Faculteit.' },
+                { id: 'leiden', label: 'Universiteit Leiden', group: 'ethisch', radius: 24, role: 'Het reformistische bolwerk voor Indische ambtenaren (Van Vollenhoven, Adatrecht).' },
+                { id: 'deterding', label: 'Henri Deterding', group: 'kapitaal', radius: 20, role: 'Algemeen directeur Koninklijke Olie ("The Napoleon of Oil").' },
+                { id: 'treub', label: 'M.W.F. Treub', group: 'kapitaal', radius: 20, role: 'Voorzitter van de Ondernemersraad voor Nederlandsch-Indië.' },
+                { id: 'knil', label: 'KNIL & Gezag', group: 'politiek', radius: 20, role: 'Het militaire en ambtelijke apparaat in Batavia voor rust en orde.' },
+                { id: 'suiker', label: 'Suikersyndicaat', group: 'kapitaal', radius: 22, role: 'De Bond van Suikerondernemingen die rebelleerde tegen de almacht van Treub en BPM.' }
+            ],
+            links: [
+                { source: 'deterding', target: 'bpm', relation: 'Leiding & Oprichting' },
+                { source: 'treub', target: 'bpm', relation: 'Lobby & Belangenbehartiging' },
+                { source: 'colijn', target: 'bpm', relation: 'Directeur & Adviseur' },
+                { source: 'colijn', target: 'knil', relation: 'Oud-officier & Minister' },
+                { source: 'colijn', target: 'gerretson', relation: 'Politiek mentor' },
+                { source: 'deterding', target: 'gerretson', relation: 'Opdrachtgever geschiedschrijving' },
+                { source: 'gerretson', target: 'utrecht', relation: 'Hoogleraar Koloniale Geschiedenis' },
+                { source: 'bpm', target: 'utrecht', relation: 'Financiering Indologisch Fonds' },
+                { source: 'knil', target: 'bpm', relation: 'Beveiliging olie-infrastructuur' },
+                { source: 'utrecht', target: 'leiden', relation: 'Ideologische strijd' },
+                { source: 'treub', target: 'suiker', relation: 'Schisma over adviesrecht Regeering' },
+                { source: 'suiker', target: 'utrecht', relation: 'Mede-financiering faculteit' }
+            ]
+        };
+
+        const colorMap = { kapitaal: '#f59e0b', politiek: '#38bdf8', academie: '#c084fc', ethisch: '#34d399', ocr: '#f87171' };
+        const container = document.getElementById('graph-container');
+        const svg = d3.select('#network').attr('viewBox', `0 0 ${container.clientWidth} ${container.clientHeight}`);
+        const g = svg.append('g');
+        svg.call(d3.zoom().extent([[0, 0], [container.clientWidth, container.clientHeight]]).scaleExtent([0.4, 3]).on('zoom', (e) => g.attr('transform', e.transform)));
+
+        let simulation = d3.forceSimulation()
+            .force('link', d3.forceLink().id(d => d.id).distance(130))
+            .force('charge', d3.forceManyBody().strength(-600))
+            .force('center', d3.forceCenter(container.clientWidth / 2, container.clientHeight / 2))
+            .force('collision', d3.forceCollide().radius(d => d.radius + 15));
+
+        let link, node;
+        updateGraph();
+        populateSelects();
+
+        function updateGraph() {
+            link = g.selectAll('line').data(graphData.links, d => `${d.source.id || d.source}-${d.target.id || d.target}`)
+                .join('line').attr('class', 'link');
+
+            node = g.selectAll('g.node').data(graphData.nodes, d => d.id)
+                .join(
+                    enter => {
+                        const nodeGroup = enter.append('g').attr('class', 'node')
+                            .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
+                            .on('click', handleNodeClick);
+                        nodeGroup.append('circle').attr('r', d => d.radius).attr('fill', d => colorMap[d.group] || '#94a3b8');
+                        nodeGroup.append('text').attr('x', d => d.radius + 6).attr('y', 4).text(d => d.label);
+                        return nodeGroup;
+                    }
+                );
+
+            simulation.nodes(graphData.nodes);
+            simulation.force('link').links(graphData.links);
+            simulation.alpha(0.8).restart();
+
+            simulation.on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+            populateSelects();
+        }
+
+        // ==========================================
+        // 2. WEBRTC & DATACHANNEL ENGINE
+        // ==========================================
+        let peerConnection;
+        let dataChannel;
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        function initPeerConnection() {
+            peerConnection = new RTCPeerConnection(rtcConfig);
+            
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate === null) {
+                    // ICE gathering compleet, toon volledige SDP inclusief kandidaten
+                    document.getElementById('local-sdp').value = JSON.stringify(peerConnection.localDescription);
+                }
+            };
+
+            peerConnection.onconnectionstatechange = () => {
+                const state = peerConnection.connectionState;
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                if (state === 'connected') {
+                    dot.classList.add('connected');
+                    text.innerText = '🟢 P2P Verbonden';
+                    text.style.color = 'var(--accent-green)';
+                    document.getElementById('rtc-chat-card').style.display = 'block';
+                    logRTC('⚡ P2P DataChannel open en gereed voor realtime archief-sync!');
+                } else if (state === 'disconnected' || state === 'failed') {
+                    dot.classList.remove('connected');
+                    text.innerText = '🔴 Verbroken';
+                    text.style.color = 'var(--accent-red)';
+                    logRTC('⚠️ Verbinding met partner verbroken.');
+                }
+            };
+
+            peerConnection.ondatachannel = (event) => {
+                dataChannel = event.channel;
+                setupDataChannelListeners();
+            };
+        }
+
+        function setupDataChannelListeners() {
+            dataChannel.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleIncomingRTCData(message);
+            };
+        }
+
+        async function createOffer() {
+            initPeerConnection();
+            dataChannel = peerConnection.createDataChannel('research-channel');
+            setupDataChannelListeners();
+
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            logRTC('Sessie (Offer) aangemaakt. Wachten op ICE kandidaten...');
+        }
+
+        async function createAnswer() {
+            initPeerConnection();
+            const remoteSdpStr = document.getElementById('remote-sdp').value.trim();
+            if (!remoteSdpStr) return alert('Plak eerst de Offer-code van je partner in Stap B!');
+
+            const remoteDesc = new RTCSessionDescription(JSON.parse(remoteSdpStr));
+            await peerConnection.setRemoteDescription(remoteDesc);
+
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            logRTC('Answer gegenereerd. Kopieer jouw code uit Stap A en stuur terug!');
+        }
+
+        async function connectRemote() {
+            const remoteSdpStr = document.getElementById('remote-sdp').value.trim();
+            if (!remoteSdpStr) return alert('Plak de code van je partner in Stap B!');
+
+            const remoteDesc = new RTCSessionDescription(JSON.parse(remoteSdpStr));
+            if (peerConnection.signalingState === 'have-local-offer') {
+                await peerConnection.setRemoteDescription(remoteDesc);
+                logRTC('Partner Answer ontvangen. Verbinding wordt nu opgebouwd...');
+            } else {
+                alert('Fout in status. Begin opnieuw met Maak Sessie of Beantwoord.');
+            }
+        }
+
+        function sendDataChannelMessage(type, payload) {
+            if (dataChannel && dataChannel.readyState === 'open') {
+                const msg = JSON.stringify({ type, payload, timestamp: Date.now() });
+                dataChannel.send(msg);
+            }
+        }
+
+        function handleIncomingRTCData(message) {
+            switch(message.type) {
+                case 'CHAT':
+                    logRTC(`[Peer]: ${message.payload}`, '#38bdf8');
+                    break;
+                case 'SYNC_NODES':
+                    logRTC(`⚡ Ontvangen live netwerk-update (${message.payload.addedNodes.length} nieuwe entiteiten)...`, '#f59e0b');
+                    message.payload.addedNodes.forEach(newNode => {
+                        if (!graphData.nodes.some(n => n.id === newNode.id)) graphData.nodes.push(newNode);
+                    });
+                    message.payload.addedLinks.forEach(newLink => {
+                        if (!graphData.links.some(l => (l.source === newLink.source && l.target === newLink.target))) {
+                            graphData.links.push(newLink);
+                        }
+                    });
+                    updateGraph();
+                    break;
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('rtc-msg-input');
+            if (!input.value) return;
+            logRTC(`[Jij]: ${input.value}`, '#34d399');
+            sendDataChannelMessage('CHAT', input.value);
+            input.value = '';
+        }
+
+        function logRTC(msg, color = '#cbd5e1') {
+            const log = document.getElementById('rtc-log');
+            log.innerHTML += `<div style="color:${color};">> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // ==========================================
+        // 3. OCR EXTRACTION & P2P SYNC
+        // ==========================================
+        function processOCRText() {
+            const text = document.getElementById('ocr-input').value;
+            if (!text) return;
+
+            const personRegex = /\b(?:(?:prof|dr|mr|jhr|mevr|mr\.? dr)\.\s*)*(?:[A-Z]\.\s*){1,4}[A-Z][a-zëïéèt\-]+/g;
+            const orgRegex = /\b(?:[A-Z][a-zëïéèt\-]+\s+){0,3}(?:Maatschappij|Syndicaat|Ondernemersraad|Bond|Fonds|Faculteit|Regeering|B\.?P\.?M\.?|K\.?N\.?I\.?L\.?)\b/g;
+
+            const foundPersons = [...new Set(text.match(personRegex) || [])].map(p => p.trim()).filter(p => p.length > 3);
+            const foundOrgs = [...new Set(text.match(orgRegex) || [])].map(o => o.trim()).filter(o => o.length > 3);
+            const allEntities = [...foundPersons, ...foundOrgs];
+
+            const badgesContainer = document.getElementById('ocr-badges');
+            badgesContainer.innerHTML = allEntities.map(e => `<span class="badge" style="background: var(--accent-gold); color: #000;">+ ${e}</span>`).join('');
+            document.getElementById('ocr-results').style.display = 'block';
+
+            let addedNodes = [];
+            let addedLinks = [];
+
+            allEntities.forEach(ent => {
+                const id = ent.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!graphData.nodes.some(n => n.id === id)) {
+                    const newNode = { id: id, label: ent, group: foundPersons.includes(ent) ? 'politiek' : 'kapitaal', radius: 18, role: 'Geïdentificeerd uit Delpher OCR-tekst.' };
+                    graphData.nodes.push(newNode);
+                    addedNodes.push(newNode);
+                }
+            });
+
+            addedNodes.forEach(newNode => {
+                graphData.nodes.forEach(existingNode => {
+                    if (existingNode.id !== newNode.id && text.toLowerCase().includes(existingNode.label.toLowerCase().split(' ')[0])) {
+                        if (!graphData.links.some(l => (l.source === newNode.id && l.target === existingNode.id) || (l.source === existingNode.id && l.target === newNode.id))) {
+                            const newLink = { source: newNode.id, target: existingNode.id, relation: 'Co-occurrence (OCR)' };
+                            graphData.links.push(newLink);
+                            addedLinks.push(newLink);
+                        }
+                    }
+                });
+            });
+
+            updateGraph();
+            
+            // WEB-RTC P2P BROADCAST
+            if (addedNodes.length > 0 && dataChannel && dataChannel.readyState === 'open') {
+                sendDataChannelMessage('SYNC_NODES', { addedNodes, addedLinks });
+                logRTC(`⚡ Live gesynchroniseerd met peer: ${addedNodes.length} entiteiten verzonden!`, '#f59e0b');
+            }
+
+            switchTab('tab-dossier');
+            document.getElementById('dossier-info').innerHTML = `<div class="card" style="border-color: var(--accent-gold);"><h4>⚡ Algoritme & Sync Uitgevoerd</h4><p>Er zijn <strong>${addedNodes.length}</strong> nieuwe entiteiten aan het netwerk toegevoegd${dataChannel && dataChannel.readyState === 'open' ? ' en live gedeeld met je P2P partner!' : '.'}</p></div>`;
+        }
+
+        // ==========================================
+        // 4. ALGORITMEN (PAGERANK & DIJKSTRA)
+        // ==========================================
+        function runPageRank() {
+            const d = 0.85; const numIterations = 20; const N = graphData.nodes.length;
+            let scores = {}; graphData.nodes.forEach(n => scores[n.id] = 1 / N);
+
+            for (let iter = 0; iter < numIterations; iter++) {
+                let newScores = {};
+                graphData.nodes.forEach(n => {
+                    let sum = 0;
+                    graphData.links.forEach(l => {
+                        const sourceId = l.source.id || l.source; const targetId = l.target.id || l.target;
+                        if (targetId === n.id || sourceId === n.id) {
+                            const neighborId = targetId === n.id ? sourceId : targetId;
+                            const neighborDegree = graphData.links.filter(edge => (edge.source.id || edge.source) === neighborId || (edge.target.id || edge.target) === neighborId).length;
+                            sum += scores[neighborId] / (neighborDegree || 1);
+                        }
+                    });
+                    newScores[n.id] = ((1 - d) / N) + (d * sum);
+                });
+                scores = newScores;
+            }
+
+            const maxScore = Math.max(...Object.values(scores));
+            graphData.nodes.forEach(n => {
+                n.pageRank = (scores[n.id] / maxScore);
+                n.radius = Math.max(16, Math.min(42, n.pageRank * 40));
+            });
+
+            d3.selectAll('g.node circle').transition().duration(500).attr('r', d => d.radius);
+            d3.selectAll('g.node text').transition().duration(500).attr('x', d => d.radius + 6);
+            simulation.force('collision', d3.forceCollide().radius(d => d.radius + 15)).alpha(0.3).restart();
+
+            const sortedNodes = [...graphData.nodes].sort((a, b) => b.pageRank - a.pageRank);
+            const resultsContainer = document.getElementById('pagerank-results');
+            resultsContainer.innerHTML = sortedNodes.map((n, i) => `
+                <div style="display:flex; justify-content:space-between; background:#0f172a; padding:6px 10px; border-radius:4px; font-size:0.8rem; border-left: 3px solid ${colorMap[n.group]}">
+                    <span><strong>#${i+1} ${n.label}</strong></span>
+                    <span style="color:var(--accent-gold); font-weight:700;">Score: ${(n.pageRank * 100).toFixed(1)}</span>
+                </div>
+            `).join('');
+            switchTab('tab-algo');
+        }
+
+        function findShortestPath() {
+            const sourceId = document.getElementById('source-select').value;
+            const targetId = document.getElementById('target-select').value;
+            if (sourceId === targetId) return;
+
+            let queue = [[sourceId]]; let visited = new Set([sourceId]); let path = null;
+            while (queue.length > 0) {
+                let currentPath = queue.shift(); let currentNode = currentPath[currentPath.length - 1];
+                if (currentNode === targetId) { path = currentPath; break; }
+                graphData.links.forEach(l => {
+                    const u = l.source.id || l.source; const v = l.target.id || l.target; let neighbor = null;
+                    if (u === currentNode) neighbor = v; if (v === currentNode) neighbor = u;
+                    if (neighbor && !visited.has(neighbor)) { visited.add(neighbor); queue.push([...currentPath, neighbor]); }
+                });
+            }
+
+            d3.selectAll('.link').classed('highlight-path', false).attr('stroke-opacity', 0.1);
+            d3.selectAll('g.node circle').attr('stroke', '#fff').style('opacity', 0.2);
+
+            if (path) {
+                path.forEach(nodeId => d3.selectAll('g.node').filter(d => d.id === nodeId).select('circle').attr('stroke', 'var(--accent-gold)').attr('stroke-width', 4).style('opacity', 1));
+                for (let i = 0; i < path.length - 1; i++) {
+                    const u = path[i], v = path[i+1];
+                    d3.selectAll('.link').filter(l => {
+                        const s = l.source.id || l.source; const t = l.target.id || l.target;
+                        return (s === u && t === v) || (s === v && t === u);
+                    }).classed('highlight-path', true);
+                }
+            }
+        }
+
+        function resetGraph() {
+            d3.selectAll('.link').classed('highlight-path', false).attr('stroke-opacity', 0.5).attr('stroke', '#475569').attr('stroke-width', 2);
+            d3.selectAll('g.node circle').attr('stroke', '#fff').attr('stroke-width', 2).style('opacity', 1);
+        }
+
+        // ==========================================
+        // 5. HELPER FUNCTIES & UI
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function populateSelects() {
+            const sSelect = document.getElementById('source-select');
+            const tSelect = document.getElementById('target-select');
+            const options = graphData.nodes.map(n => `<option value="${n.id}">${n.label}</option>`).join('');
+            sSelect.innerHTML = options; tSelect.innerHTML = options;
+            if (graphData.nodes.length > 1) tSelect.selectedIndex = 1;
+        }
+
+        function handleNodeClick(event, d) {
+            switchTab('tab-dossier');
+            const connectedLinks = graphData.links.filter(l => (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id);
+            const panel = document.getElementById('tab-dossier');
+            panel.innerHTML = `
+                <div class="card" style="margin-top:10px;">
+                    <span class="badge" style="background:${colorMap[d.group]}">${d.group.toUpperCase()}</span>
+                    <h3 style="font-size:1.3rem; color:#fff; margin:6px 0;">${d.label}</h3>
+                    <p style="font-size:0.8rem; color:#cbd5e1; line-height:1.5;">${d.role}</p>
+                    ${d.pageRank ? `<p style="margin-top:8px; font-size:0.8rem; color:var(--accent-gold);"><strong>PageRank Machtscore:</strong> ${(d.pageRank*100).toFixed(1)}</p>` : ''}
+                </div>
+                <div class="card">
+                    <h4>🔗 Connecties (${connectedLinks.length})</h4>
+                    <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:0.8rem; margin-top:8px;">
+                        ${connectedLinks.map(l => {
+                            const otherId = (l.source.id || l.source) === d.id ? (l.target.id || l.target) : (l.source.id || l.source);
+                            const otherNode = graphData.nodes.find(n => n.id === otherId) || { label: otherId };
+                            return `<li style="background:#0f172a; padding:6px 8px; border-radius:4px;"><strong>${otherNode.label}:</strong> ${l.relation}</li>`;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function dragstarted(e, d) { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+        function dragged(e, d) { d.fx = e.x; d.fy = e.y; }
+        function dragended(e, d) { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+    </script>
+</body>
+</html>
