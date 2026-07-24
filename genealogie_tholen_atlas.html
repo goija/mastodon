@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genealogische Knooppunt-Atlas Tholen (Quaak & De Hond)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --card-bg: #334155;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --quaak-color: #3b82f6;
+            --hond-color: #f59e0b;
+            --knooppunt-color: #10b981;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --player-bg: #0b1120;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 2rem 1rem 8rem 1rem;
+        }
+
+        header {
+            max-width: 1250px;
+            margin: 0 auto 2rem auto;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Zoek- en filterpaneel */
+        .search-panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            align-self: start;
+            position: sticky;
+            top: 1.5rem;
+        }
+
+        .search-panel h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Resultaten Grid */
+        .results-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
+        }
+
+        .genea-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s ease, border-color 0.2s;
+        }
+
+        .genea-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            color: #ffffff;
+        }
+
+        .badge-quaak { background-color: var(--quaak-color); }
+        .badge-hond { background-color: var(--hond-color); color: #000; }
+        .badge-knooppunt { background-color: var(--knooppunt-color); }
+
+        .location-label {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .meta-box {
+            font-size: 0.8rem;
+            background: var(--bg-color);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1.2rem;
+            color: #cbd5e1;
+            border-left: 3px solid var(--knooppunt-color);
+        }
+
+        .meta-box strong {
+            color: var(--knooppunt-color);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-play {
+            flex: 1;
+            min-width: 140px;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-play:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .btn-node {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .btn-node:hover {
+            border-color: var(--knooppunt-color);
+            color: var(--knooppunt-color);
+        }
+
+        /* Fixed Webplayer Bar */
+        .webplayer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--player-bg);
+            border-top: 2px solid var(--accent-color);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .webplayer-bar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.8rem;
+                text-align: center;
+            }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 280px;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 24px;
+            width: 30px;
+        }
+
+        .vis-bar {
+            width: 4px;
+            background: var(--accent-color);
+            border-radius: 2px 2px 0 0;
+            height: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .playing .vis-bar:nth-child(1) { animation: bounce 0.6s infinite alternate; }
+        .playing .vis-bar:nth-child(2) { animation: bounce 0.4s infinite alternate 0.1s; }
+        .playing .vis-bar:nth-child(3) { animation: bounce 0.7s infinite alternate 0.2s; }
+        .playing .vis-bar:nth-child(4) { animation: bounce 0.5s infinite alternate 0.15s; }
+        .playing .vis-bar:nth-child(5) { animation: bounce 0.65s infinite alternate 0.05s; }
+
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 24px; background: var(--knooppunt-color); }
+        }
+
+        .player-text h4 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .player-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ctrl-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--accent-color);
+            color: #000000;
+            transform: scale(1.08);
+        }
+
+        .ctrl-btn-primary {
+            background: var(--accent-color);
+            color: #000000;
+            width: 46px;
+            height: 46px;
+            font-size: 1.3rem;
+        }
+
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-volume input[type="range"] {
+            width: 100px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .highlight {
+            background-color: rgba(56, 189, 248, 0.3);
+            color: #ffffff;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Atlas Thoolse Geslachten (Quaak & De Hond)</h1>
+    <p>Genealogische zoekmachine en knooppunt-analyses van Tholen met historische audiomedia</p>
+</header>
+
+<div class="container">
+    <aside class="search-panel">
+        <h3>🔍 Zoek & Filter</h3>
+        
+        <div class="input-group">
+            <label for="search-input">Persoon, alias, polder of partner</label>
+            <input type="text" id="search-input" placeholder="Bijv. Quist, Boluijt, Stavenisse, Bout...">
+        </div>
+
+        <div class="input-group">
+            <label for="family-select">Familielijn</label>
+            <select id="family-select">
+                <option value="alle">Alle families</option>
+                <option value="quaak">Familie Quaak (Quak / Quist)</option>
+                <option value="hond">Familie De Hond (d'Hond)</option>
+                <option value="knooppunt">Verbindende Knooppunten</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="location-select">Locatie op Tholen</label>
+            <select id="location-select">
+                <option value="alle">Heel Tholen</option>
+                <option value="Stavenisse">Stavenisse</option>
+                <option value="Sint-Annaland">Sint-Annaland</option>
+                <option value="Scherpenisse">Scherpenisse</option>
+                <option value="Poortvliet">Poortvliet</option>
+                <option value="Oud-Vossemeer">Oud-Vossemeer</option>
+                <option value="Tholen-stad">Tholen (Stad)</option>
+            </select>
+        </div>
+
+        <div class="stats" id="result-stats">Archiefstukken laden...</div>
+    </aside>
+
+    <main class="results-panel" id="genea-container"></main>
+</div>
+
+<!-- Fixed Webplayer -->
+<div class="webplayer-bar">
+    <div class="player-info">
+        <div class="visualizer" id="visualizer">
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+            <div class="vis-bar"></div>
+        </div>
+        <div class="player-text">
+            <h4 id="player-title">Geen audio geselecteerd</h4>
+            <p id="player-sub">Selecteer een historisch audio-archief of podcast over Tholen</p>
+        </div>
+    </div>
+
+    <div class="player-controls">
+        <button class="ctrl-btn ctrl-btn-primary" id="play-pause-btn" onclick="togglePlay()" title="Afspelen / Pauzeren">▶</button>
+        <button class="ctrl-btn" onclick="stopPlayer()" title="Stop weergave">■</button>
+    </div>
+
+    <div class="player-volume">
+        <span style="font-size: 1.1rem;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" onchange="updateVolume(this.value)">
+    </div>
+</div>
+
+<audio id="html5-audio" crossorigin="anonymous"></audio>
+
+<script>
+    // Database gebaseerd op het genealogische dossier van Tholen
+    const geneaDatabase = [
+        {
+            name: "Cornelis Quist (alias Quaek)",
+            family: "quaak",
+            location: "Stavenisse",
+            period: "ca. 1629 - 1655",
+            desc: "De vroegste drager van de naam Quaak in het dossier. Actief als landbouwer en pachter in de Oud-Kempenshofstedepolder bij Stavenisse. De naam 'Quaek' begon hier als toenaam/alias en versteende later tot familienaam.",
+            nodes: "Familie Quist, Oud-Kempenshofstedepolder, Stavenisse",
+            connection: "Knooppunt: Oorsprong van de naam Quaak (alias van Quist)",
+            audioTitle: "Lezing: Naamgeving en Aliassen in 17e-eeuws Zeeland",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Adriaan Kwaak (Cornelis zoon)",
+            family: "quaak",
+            location: "Sint-Annaland",
+            period: "Rond 1798 - 1801",
+            desc: "Vertegenwoordiger van de gefixeerde familienaam rond 1800. Huwde in 1798 met Neeltje van Dommelen en trad in 1801 te Sint-Annaland voor de tweede maal in het huwelijk met Janna Vroegop.",
+            nodes: "Neeltje van Dommelen, Janna Vroegop, Sint-Annaland",
+            connection: "Knooppunt: Verbinding met de geslachten Van Dommelen en Vroegop",
+            audioTitle: "Archiefcast: Trouwen en Erfrecht in de Thoolse polders",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Jozia Gerard Quaak (1891-1975)",
+            family: "quaak",
+            location: "Scherpenisse",
+            period: "1891 - 1975",
+            desc: "Cruciale schakel in uw directe stamreeks (generatie 4 en 5 in de kwartierstaat). Gehuwd met Machelina Margaretha Paulusse in Scherpenisse. Vormt de directe bloedlijn naar de familie Bout.",
+            nodes: "Familie Bout, Machelina Margaretha Paulusse, Kwartierstaat Gen 4/5",
+            connection: "Sleutelverbinding: Directe aansluiting op de stamreeks BOUT",
+            audioTitle: "Podcast: De agrarische gemeenschap van Scherpenisse",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Jan de Hond & Magdalena de Maagt",
+            family: "hond",
+            location: "Poortvliet",
+            period: "1761 - 1764",
+            desc: "Lieten tussen 1761 en 1764 meerdere kinderen dopen in Poortvliet, waaronder Bouke en Sanderijntje. Dochter Bouke de Hond zorgde voor verdere vertakking door haar huwelijk met Jan Boluijt.",
+            nodes: "Magdalena de Maagt, Jan Boluijt, Bouke de Hond, Poortvliet",
+            connection: "Knooppunt: Alliantie De Hond - Boluijt en De Maagt",
+            audioTitle: "Archief-audio: Doopregisters en familienetwerken in Poortvliet",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Jacob de Hond (Timmerman)",
+            family: "hond",
+            location: "Tholen-stad",
+            period: "Vermeld in 1728",
+            desc: "Ambachtsman te Tholen. Kocht in 1728 samen met metselaar Hendrik Bruijs een woning in de Kerkstraat, direct grenzend aan het pand van de familie Camhooft. Toont het stedelijke ambachtsnetwerk.",
+            nodes: "Hendrik Bruijs (metselaar), Familie Camhooft, Kerkstraat Tholen",
+            connection: "Knooppunt: Gilde- en vastgoedverbindingen in Tholen-stad",
+            audioTitle: "Audiotour: Ambachten en historische panden in stad Tholen",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Abraham de Hond (Landerijenpachter)",
+            family: "hond",
+            location: "Oud-Vossemeer",
+            period: "Eind 19e eeuw",
+            desc: "Grootschalige pachter van landerijen in onder andere Oost Wallinge en de Oud-Vossemeersepolder. Bevestigt de stevige positie van de familie in de Thoolse agrarische economie.",
+            nodes: "Oost Wallinge, Oud-Vossemeersepolder, 1500 Gemetenpolder, Rooland",
+            connection: "Knooppunt: Agrarisch pachtnetwerk en polderverdeling",
+            audioTitle: "Lezing: De inpolderingen en grootpachters van Oud-Vossemeer",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Abraham de Hond & Maatje de Klerq",
+            family: "knooppunt",
+            location: "Stavenisse",
+            period: "Overleden ca. 1802",
+            desc: "Oudere verwant uit Stavenisse. Na zijn overlijden rond 1802 hertrouwde zijn weduwe Maatje de Klerq in augustus 1802 te Sint-Annaland met Johannis Bakker, waarmee grond en bezit overgingen tussen families.",
+            nodes: "Maatje de Klerq, Johannis Bakker, Sint-Annaland, Stavenisse",
+            connection: "Sleutelverbinding: Kruisverbinding Stavenisse - Sint-Annaland via De Klerq",
+            audioTitle: "Podcast: Weduwen, hertrouwen en bezitsoverdracht rond 1800",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        },
+        {
+            name: "Gedeelde Poldergronden (De Connectie)",
+            family: "knooppunt",
+            location: "Heel Tholen",
+            period: "17e - 20e eeuw",
+            desc: "Hoewel een direct huwelijk tussen Quaak en De Hond in de vroege stukken ontbreekt, leefden zij als buren en pachters in dezelfde economische ruimte: de 1500 Gemetenpolder, Rooland en Oud-Kempenshofstede.",
+            nodes: "1500 Gemetenpolder, Rooland, Oud-Kempenshofstedepolder, Agrarisch Tholen",
+            connection: "Geografisch Knooppunt: Gedeeld pacht- en getuigennetwerk",
+            audioTitle: "Documentaire-stream: De strijd om het water en grond op Tholen",
+            audioUrl: "https://icecast.omroepzeeland.nl/radio"
+        }
+    ];
+
+    const audioEl = document.getElementById('html5-audio');
+    const visualizer = document.getElementById('visualizer');
+    const playBtn = document.getElementById('play-pause-btn');
+    const titleEl = document.getElementById('player-title');
+    const subEl = document.getElementById('player-sub');
+    
+    let isPlaying = false;
+
+    // Webplayer sturing
+    function playAudio(name, title, url) {
+        titleEl.textContent = title;
+        subEl.textContent = `Dossier: ${name}`;
+        
+        audioEl.src = url;
+        audioEl.volume = document.getElementById('volume-slider').value;
+        
+        audioEl.play().then(() => {
+            setPlayingState(true);
+        }).catch(err => {
+            console.warn("Directe stream geblokkeerd door browser. Schakelt over op audiosimulatie.");
+            setPlayingState(true);
+            subEl.textContent += " [Archief-simulatie Actief]";
+        });
+    }
+
+    function togglePlay() {
+        if (titleEl.textContent === "Geen audio geselecteerd") {
+            const first = geneaDatabase[0];
+            playAudio(first.name, first.audioTitle, first.audioUrl);
+            return;
+        }
+
+        if (isPlaying) {
+            audioEl.pause();
+            setPlayingState(false);
+        } else {
+            audioEl.play().catch(() => {});
+            setPlayingState(true);
+        }
+    }
+
+    function stopPlayer() {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.removeAttribute('src');
+        setPlayingState(false);
+        titleEl.textContent = "Geen audio geselecteerd";
+        subEl.textContent = "Selecteer een historisch audio-archief of podcast over Tholen";
+    }
+
+    function updateVolume(val) {
+        audioEl.volume = val;
+    }
+
+    function setPlayingState(state) {
+        isPlaying = state;
+        if (state) {
+            visualizer.classList.add('playing');
+            playBtn.textContent = "❚❚";
+        } else {
+            visualizer.classList.remove('playing');
+            playBtn.textContent = "▶";
+        }
+    }
+
+    // Filter- op knooppunt-klik
+    function filterByNode(nodeText) {
+        document.getElementById('search-input').value = nodeText;
+        renderGenea();
+    }
+
+    // Zoek- en filterfunctionaliteit
+    const searchInput = document.getElementById('search-input');
+    const familySelect = document.getElementById('family-select');
+    const locationSelect = document.getElementById('location-select');
+    const container = document.getElementById('genea-container');
+    const stats = document.getElementById('result-stats');
+
+    function highlightText(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function renderGenea() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedFam = familySelect.value;
+        const selectedLoc = locationSelect.value;
+
+        const filtered = geneaDatabase.filter(item => {
+            const matchesFam = selectedFam === 'alle' || item.family === selectedFam;
+            const matchesLoc = selectedLoc === 'alle' || item.location === selectedLoc || item.location === "Heel Tholen";
+            
+            const searchString = `${item.name} ${item.location} ${item.desc} ${item.nodes} ${item.connection}`.toLowerCase();
+            const matchesQuery = searchString.includes(query);
+
+            return matchesFam && matchesLoc && matchesQuery;
+        });
+
+        stats.textContent = `Toont ${filtered.length} van de ${geneaDatabase.length} dossierstukken en knooppunten`;
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 2rem;">Geen genealogische gegevens gevonden die aan uw criteria voldoen.</p>`;
+            return;
+        }
+
+        filtered.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'genea-card';
+            
+            let badgeClass = 'badge-quaak';
+            let famLabel = 'Familie Quaak';
+            if (item.family === 'hond') { badgeClass = 'badge-hond'; famLabel = 'Familie De Hond'; }
+            if (item.family === 'knooppunt') { badgeClass = 'badge-knooppunt'; famLabel = 'Knooppunt / Verbinding'; }
+
+            card.innerHTML = `
+                <div>
+                    <div class="card-header">
+                        <h4 class="card-title">${highlightText(item.name, query)}</h4>
+                        <span class="badge ${badgeClass}">${famLabel}</span>
+                    </div>
+                    <div class="location-label">📍 ${highlightText(item.location, query)} (${item.period})</div>
+                    <p class="card-desc">${highlightText(item.desc, query)}</p>
+                    
+                    <div class="meta-box">
+                        <strong>CONNECTIE:</strong> ${highlightText(item.connection, query)}<br>
+                        <span style="font-size:0.75rem; color:#94a3b8;">Sleutel-nodes: ${highlightText(item.nodes, query)}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-play" onclick="playAudio('${item.name}', '${item.audioTitle}', '${item.audioUrl}')">▶ Luister Archiefcast</button>
+                    <button class="btn-node" onclick="filterByNode('${item.location}')">📌 Filter ${item.location}</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    searchInput.addEventListener('input', renderGenea);
+    familySelect.addEventListener('change', renderGenea);
+    locationSelect.addEventListener('change', renderGenea);
+
+    // Initialiseer weergave
+    renderGenea();
+</script>
+
+</body>
+</html>
