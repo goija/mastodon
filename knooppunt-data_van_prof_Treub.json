@@ -1,0 +1,12 @@
+{
+  "engine": "Delpher Kranten",
+  "label": "Schisma Treub en het Suikersyndicaat (Bat. Nbl. / Vaderland)",
+  "query": "(\"Suikersyndicaat\" OR \"Suikerbond\") AND \"Ondernemersraad\" AND \"Treub\" AND \"advies\"",
+  "url": "https://www.delpher.nl/nl/kranten/results?query=%28%22Suikersyndicaat%22+OR+%22Suikerbond%22%29+AND+%22Ondernemersraad%22+AND+%22Treub%22+AND+%22advies%22"
+},
+{
+  "engine": "Google Scholar",
+  "label": "Studie naar koloniale lobbyoorlogen (Olie vs Suiker)",
+  "query": "\"Ondernemersraad voor Nederlandsch-Indië\" AND \"Suikersyndicaat\" AND \"Treub\"",
+  "url": "https://scholar.google.com/scholar?q=%22Ondernemersraad+voor+Nederlandsch-Indi%C3%AB%22+AND+%22Suikersyndicaat%22+AND+%22Treub%22"
+}
