@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchiefAtlas & Historisch Knooppunt Nederland</title>
+    <style>
+        :root {
+            --bg-color: #0b1120;
+            --panel-bg: #1e293b;
+            --card-bg: #334155;
+            --accent-blue: #38bdf8;
+            --accent-hover: #0284c7;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-color) 100%);
+            border-bottom: 2px solid var(--border-color);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigatie Tabbladen */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            max-width: 1200px;
+            margin: 1.5rem auto 0 auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-blue);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+        }
+
+        /* Hoofd Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Module 1: Zoekmachine & Dossiers */
+        .search-toolbar {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-toolbar { grid-template-columns: 1fr; }
+        }
+
+        .input-box label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .input-box input, .input-box select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .input-box input:focus, .input-box select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .records-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .record-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .record-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+
+        .record-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .badge-raze { background: #3b82f6; color: #fff; }
+        .badge-oat { background: #10b981; color: #fff; }
+        .badge-ndr { background: #8b5cf6; color: #fff; }
+        .badge-visserij { background: #06b6d4; color: #fff; }
+
+        .record-meta {
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .record-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .persons-tag {
+            background: var(--bg-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-bottom: 1.2rem;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .btn-action {
+            width: 100%;
+            background: var(--card-bg);
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+        }
+
+        /* Module 2: Familieverhalen & Tijdlijn */
+        .story-timeline {
+            position: relative;
+            border-left: 3px solid var(--border-color);
+            margin-left: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .story-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.8rem;
+        }
+
+        .story-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 1.8rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            border: 3px solid var(--bg-color);
+        }
+
+        .story-period {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .story-item h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Module 3: Archief API & Leges-clausule */
+        .api-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .api-panel h3 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-panel p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-row {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-row input, .form-row select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            background: var(--accent-green);
+            color: #000;
+            font-weight: 800;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #059669;
+        }
+
+        .leges-alert {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .leges-alert.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-green);
+            color: #34d399;
+            display: block;
+        }
+
+        .leges-alert.blocked {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--accent-red);
+            color: #f87171;
+            display: block;
+        }
+
+        /* Module 4: Historisch Contactcenter */
+        .kringen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .kring-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .kring-card h4 {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kring-detail {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .highlight {
+            background-color: rgba(56, 189, 248, 0.25);
+            color: #fff;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ArchiefAtlas & Historisch Knooppunt</h1>
+    <p>Doorzoekbare databank van Zuidwest-Nederland met dossiers over Zeeland, Tholen, West-Brabant en Bergen op Zoom. Geïntegreerd met digitaal leges-beheer en streekkringen.</p>
+</header>
+
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('zoeker')">🔍 Zoekmachine & Dossiers</button>
+    <button class="tab-btn" onclick="switchTab('verhalen')">📜 Familieverhalen & Biografieën</button>
+    <button class="tab-btn" onclick="switchTab('api')">⚙️ Archief API & Aanvragen</button>
+    <button class="tab-btn" onclick="switchTab('kringen')">🏛️ Contactcenter Historische Kringen</button>
+</div>
+
+<div class="container">
+    <div id="tab-zoeker" class="tab-content active">
+        <div class="search-toolbar">
+            <div class="input-box">
+                <label>Trefwoord, persoon of perceel</label>
+                <input type="text" id="search-input" placeholder="Bijv. Bout, Loncke, RAZE 5183, Kraaijer, OAT..." oninput="filterRecords()">
+            </div>
+            <div class="input-box">
+                <label>Regio / Provincie</label>
+                <select id="region-filter" onchange="filterRecords()">
+                    <option value="alle">Alle regio's</option>
+                    <option value="Tholen">Eiland Tholen</option>
+                    <option value="Zeeland">Zeeland (Overig)</option>
+                    <option value="West-Brabant">West-Brabant & Bergen op Zoom</option>
+                </select>
+            </div>
+            <div class="input-box">
+                <label>Archiefcategorie</label>
+                <select id="category-filter" onchange="filterRecords()">
+                    <option value="alle">Alle categorieën</option>
+                    <option value="RAZE">Rechterlijk & Notarieel (RAZE)</option>
+                    <option value="OAT">Kadaster & Eigendom (OAT 1832)</option>
+                    <option value="NDR">Nassause Domeinen (NDR)</option>
+                    <option value="Visserij">Visserijrechten & Stromen</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="records-container" class="records-grid">
+            </div>
+    </div>
+
+    <div id="tab-verhalen" class="tab-content">
+        <div class="story-timeline">
+            <div class="story-item">
+                <div class="story-period">1567 – 1583 • Ambachtsheerlijkheid & Bestuur</div>
+                <h3>Jan Jansen van Couwerve: Dijkgraaf en Stichter van Nieuw-Vossemeer</h3>
+                <p class="record-desc">Als dijkgraaf van Tholen speelde Jan Jansen van Couwerve (overl. 1583) een cruciale rol in de waterbeheersing en landwinning. In 1567 was hij de drijvende kracht achter de stichting en inpoldering van Nieuw-Vossemeer. Zijn huwelijk met Balbina van Bleyswyck verankerde de familie in de hoogste regentenkringen van Zeeland en West-Brabant.</p>
+                <div class="persons-tag"><strong>Sleutelfiguren:</strong> Jan Jansen van Couwerve, Balbina van Bleyswyck, familie Boeye.</div>
+            </div>
+
+            <div class="story-item">
+                <div class="story-period">ca. 1629 – 1655 • Etymologie & Agrarisch Pachtwezen</div>
+                <h3>Cornelis Quist alias Quaek en de Oud-Kempenshofstedepolder</h3>
+                <p class="record-desc">In de Oud-Kempenshofstedepolder bij Stavenisse duikt de naam Quaak voor het eerst op als toenaam. Landbouwer Cornelis Quist werd in de volksmond 'Cornelis de Quaek' genoemd, vermoedelijk verwijzend naar zijn stemgeluid of een linguïstische verbastering van 'kwiste' (betwiste grond). Deze alias versteende in de generaties daarna tot een vaste familienaam op Tholen.</p>
+                <div class="persons-tag"><strong>Sleutelfiguren:</strong> Cornelis Quist (Quaek), Adriaan Kwaak, Jozia Gerard Quaak.</div>
+            </div>
+
+            <div class="story-item">
+                <div class="story-period">1657 – 1715 • Maritieme Logistiek & Herbergwezen</div>
+                <h3>Bastiaen Dirckse Bout en Herberg 'Het Wapen van Dort'</h3>
+                <p class="record-desc">De familie Bout vormde de logistieke ruggengraat van het eiland. Bastiaen Dirckse Bout onderhield als gezworen beurtschipper de vitale handelslijn tussen Tholen en Rotterdam. Tegelijkertijd bezat de familie aan de Kaaij in Tholen herberg 'Het Wapen van Dort', een ontmoetingsplaats waar schippers, regenten en graanhandelaren hun contracten en vrachten bespraken.</p>
+                <div class="persons-tag"><strong>Sleutelfiguren:</strong> Bastiaen Dirckse Bout, Maitge Cornelis, Willem Jacobsen Moeijelijcker.</div>
+            </div>
+
+            <div class="story-item">
+                <div class="story-period">1702 • Democratisch Verzet & Gilden</div>
+                <h3>De Thoolse Oproer: Burgerverzet in het Tweede Stadhouderloze Tijdperk</h3>
+                <p class="record-desc">Na het overlijden van stadhouder Willem III brak in 1702 op Tholen een felle opstand uit. De lokale gilden en burgerij kwamen in verzet tegen de regentenkliek. Zij eisten democratische controle op de stadsfinanciën en de verkiezing van schepenen. Talloze ambachtslieden uit de schippers- en timmergilden steunden dit verzoekschrift om transparantie en zelfbestuur.</p>
+                <div class="persons-tag"><strong>Sleutelfiguren:</strong> Jacob Wouters, Jan Snoeck, regenten van de Gecommitteerde Raden.</div>
+            </div>
+
+            <div class="story-item">
+                <div class="story-period">19e Eeuw – Heden • Oude Zakelijke Rechten & Visserij</div>
+                <h3>De Weervissers van Bergen op Zoom en de Oosterschelde</h3>
+                <p class="record-desc">Op de ondiepe zandplaten van de Oosterschelde (de Lage en Hooge Kraaijer) werd eeuwenlang weervisserij bedreven op ansjovis. Bij de invoering van de Visserijwetten trachtte de Staat deze oude gilde-aanspraken om te zetten in tijdelijke huurcontracten. Voor de Brabantse en Thoolse vissersfamilies vormen de kadastrale leggers en pachtkaarten van 1882 het harde bewijs van hun eeuwenoude, watervaste visrechten.</p>
+                <div class="persons-tag"><strong>Sleutelfiguren:</strong> Familie Schot, familie Bout, Bestuur der Visserijen op de Zeeuwse Stromen.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-api" class="tab-content">
+        <div class="api-panel">
+            <h3>Digitale Archiefbalie & Leges-Toets</h3>
+            <p>Vraag hier rechtstreeks afschriften of scans aan uit de collecties van het Zeeuws Archief, West-Brabants Archief of Gemeentearchief Tholen. Het systeem controleert automatisch of de aanvraag onder kosteloze Open Data valt, of dat de gemeentelijke legesclausule van kracht is.</p>
+            
+            <div class="form-row">
+                <label>Archiefinstelling & Depot</label>
+                <select id="api-instelling">
+                    <option value="ZA">Zeeuws Archief (Middelburg) — RAZE & Statenarchieven</option>
+                    <option value="WBA">West-Brabants Archief (Bergen op Zoom) — Schepenbanken & Weeskamer</option>
+                    <option value="GAT">Gemeentearchief Tholen — BS, DTB & Oud-Archief</option>
+                    <option value="NA">Nationaal Archief (Den Haag) — Nassause Domeinraad (1.08.11)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Inventaris- of Perceelnummer</label>
+                <input type="text" id="api-invnr" placeholder="Bijv. RAZE 5183, fol. 253 of OAT 1832 Scherpenisse Sectie B nr. 281">
+            </div>
+
+            <div class="form-row">
+                <label>Type Aanvraag & Autorisatie</label>
+                <select id="api-type">
+                    <option value="opendata">Digitale CC0 Scan / Open Data (Via OAI-PMH Harvester) — Gratis</option>
+                    <option value="afschrift">Gecertificeerd Afschrift (Burgerlijke Stand / Notarieel) — Legesplichtig</option>
+                    <option value="onderzoek">Fysiek Archiefonderzoek door Medewerker / Weeskamerdossier — Leges- & Uurtarief</option>
+                </select>
+            </div>
+
+            <button class="btn-submit" onclick="submitApiRequest()">Verstuur Aanvraag naar Archiefsysteem</button>
+
+            <div id="api-response" class="leges-alert"></div>
+        </div>
+    </div>
+
+    <div id="tab-kringen" class="tab-content">
+        <div class="kringen-grid">
+            <div class="kring-card">
+                <h4>Heemkundekring Stad en Lande van Tholen</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Oude Stadhuis, Hoogstraat 12, Tholen</div>
+                <div class="kring-detail"><strong>Expertise:</strong> Streekgeschiedenis, polders, Thoolse regenten, genealogie eiland Tholen.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Bibliotheek, fotobeeldbank, transcripties DTB en weeskamer.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met secretariaat Stad en Lande van Tholen wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+
+            <div class="kring-card">
+                <h4>Geschiedkundige Kring De Ghulden Roos</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Museum Tongerlohuys, Roosendaal</div>
+                <div class="kring-detail"><strong>Expertise:</strong> West-Brabantse adel, turfwinning, vaarwegen (Roosendaalse Vliet), familie Loncke.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Jaarboeken De Ghulden Roos, scheepvaartdossiers 19e eeuw.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met redactie De Ghulden Roos wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+
+            <div class="kring-card">
+                <h4>Stichting Behoud Weervisserij</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Bouwmanlaan 4, Bergen op Zoom</div>
+                <div class="kring-detail"><strong>Expertise:</strong> Immaterieel erfgoed, traditionele vangsttechnieken Oosterschelde, ansjovisvisserij.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Historische pachtovereenkomsten 1882, kaartmateriaal Kraaijer-platen.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met Stichting Behoud Weervisserij wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+
+            <div class="kring-card">
+                <h4>Heemkundekring Philippuslandt</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Dorpshuis De Wimpel, Sint Philipsland</div>
+                <div class="kring-detail"><strong>Expertise:</strong> Bedijking Sint Philipsland, Watersnoodramp 1953, agrarische genealogie.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Cronicke van den lande van Philippuslandt, kadastrale atlas.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met werkgroep Genealogie Philippuslandt wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+
+            <div class="kring-card">
+                <h4>Stichting Visserij Historie Middelharnis</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Middelharnis / Goeree-Overflakkee</div>
+                <div class="kring-detail"><strong>Expertise:</strong> Maritieme genealogie, beurtvaart, scheepsregisters, visserijstromen Zuidwest-Nederland.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Scheepslogs, monsterrollen, bemanningslijsten 18e en 19e eeuw.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met Stichting Visserij Historie wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+
+            <div class="kring-card">
+                <h4>Centraal Bureau voor Genealogie (CBG)</h4>
+                <div class="kring-detail"><strong>Bezoekadres:</strong> Prins Willem-Alexanderhof 24, Den Haag</div>
+                <div class="kring-detail"><strong>Expertise:</strong> Nationaal Register Overledenen (NRO), familiearchieven, heraldiek, Nederland's Patriciaat.</div>
+                <div class="kring-detail"><strong>Collectie:</strong> Persoonskaarten- en lijsten, CBG Verzamelingen, WieWasWie knooppunt.</div>
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <button class="btn-action" onclick="alert('Verbinding met CBG Centrum voor familiegeschiedenis wordt geopend...')">Neem Contact Op ↗</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dataset met historische dossiers en archiefbronnen
+    const archiveRecords = [
+        {
+            id: "RAZE-5183",
+            title: "Transportakte Herberg 'Het Wapen van Dort'",
+            category: "RAZE",
+            region: "Tholen",
+            code: "RAZE inv.nr. 5183, fol. 253",
+            desc: "Verkoopakte van een huis en erf aan de Kaaij te Tholen door de erfgenamen van Willem Jacobsen Moeijelijcker. Betreft de herberg 'Het Wapen van Dort', een logistiek knooppunt voor beurtschippers.",
+            persons: "Bastiaen Dirckse Bout, Willem Jacobsen Moeijelijcker, familie Moeliker.",
+            badge: "badge-raze"
+        },
+        {
+            id: "OAT-1832-SPN",
+            title: "Kadastrale Legger Scherpenisse Sectie B",
+            category: "OAT",
+            region: "Tholen",
+            code: "OAT 1832, Sectie B, nr. 281-282",
+            desc: "Oorspronkelijk Aanwijzende Tafel van Scherpenisse. Registratie van weiland en bouwland in eigendom van J.C. Dorst & Mede Landbouwers, grenzend aan percelen van Christiaan Kleppe en Krijn van der Werf.",
+            persons: "J.C. Dorst, Christiaan Kleppe, Krijn van der Werf, familie Bolier.",
+            badge: "badge-oat"
+        },
+        {
+            id: "RAZE-5588",
+            title: "Weeskamerprotocol Oud-Vossemeer",
+            category: "RAZE",
+            region: "Tholen",
+            code: "RAZE inv.nr. 5588 (1689-1707)",
+            desc: "Register van weesakten en boedelscheidingen van de Ambachtsheerlijkheid Oud-Vossemeer. Bevat cruciale akten over voogdijstellingen en bezitsoverdrachten na overlijden van lokale landbouwers.",
+            persons: "Familie Van 't Rosevelt, Jan Jansen van Couwerve, notaris Pieter van Levendale.",
+            badge: "badge-raze"
+        },
+        {
+            id: "NDR-13854",
+            title: "Rekening Rentmeester Sint-Maartensdijk",
+            category: "NDR",
+            region: "Tholen",
+            code: "NDR 1.08.11, inv.nr. 13854 (1575)",
+            desc: "Financiële verantwoording van het beheer van de Nassause domeinen door de rentmeester van de Oranjes. Bevat gedetailleerde lijsten van pachtsommen, tiendheffingen en inkomsten uit de meekrapcultuur.",
+            persons: "Prins van Oranje, rentmeester van Sint-Maartensdijk, Marcus Faasse.",
+            badge: "badge-ndr"
+        },
+        {
+            id: "BVZS-779",
+            title: "Leggers Verpachte Weervisserijpercelen",
+            category: "Visserij",
+            region: "Zeeland",
+            code: "BVZS inv.nr. 779/780 (1825-1865)",
+            desc: "Registratie van vergunningen en pachtcontracten voor weervisserij en mosselpercelen op de Zeeuwse stromen. Documenteert de overgang van oude zakelijke visrechten naar administratieve rijkspacht.",
+            persons: "Familie Schot, familie Bout, Bestuur der Visserijen op de Zeeuwse Stromen.",
+            badge: "badge-visserij"
+        },
+        {
+            id: "WBA-LONCKE",
+            title: "Schepenprotocol Roosendaal & Vliet",
+            category: "RAZE",
+            region: "West-Brabant",
+            code: "WBA Schepenbank Roosendaal, 16e eeuw",
+            desc: "Oud-rechterlijke akten inzake eigendom en handel langs de Roosendaalse Vliet. Documenteert de maritieme en commerciële activiteiten van de familie Loncke en hun verbindingen met Tholen.",
+            persons: "Lambrecht Pieters Loncke, Pieter Lambrechtse Lonke, Hendrick Lonck.",
+            badge: "badge-raze"
+        },
+        {
+            id: "RAZE-2038",
+            title: "Notarieel Protocol Pieter van Levendale",
+            category: "RAZE",
+            region: "Zeeland",
+            code: "RAZE inv.nr. 2038, fol. 102 (1582)",
+            desc: "Minuutakten opgemaakt te Goes en Heinkenszand tijdens de troebele jaren van de Opstand. Bevat uitgebreide getuigenissen van Lijnken Pieters over Thoolse schippers en families.",
+            persons: "Notaris Pieter van Levendale, Lijnken Pieters, Cornelis Wisse.",
+            badge: "badge-raze"
+        },
+        {
+            id: "OAT-1832-ZVL",
+            title: "Kadaster & Polders Zeeuws-Vlaanderen",
+            category: "OAT",
+            region: "Zeeland",
+            code: "OAT 1832 Groede / IJzendijke / Axel",
+            desc: "Oorspronkelijk Aanwijzende Tafels van West- en Oost-Zeeuws-Vlaanderen. Bevat perceelsregistraties van agrarische hoeven en dijkagerechten in de Kieldrechtpolders en rond Axel.",
+            persons: "Familie Goossen, familie Suijs, rentambt Hulst.",
+            badge: "badge-oat"
+        }
+    ];
+
+    // Functie om tabbladen te wisselen
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // Functie om records te filteren en renderen
+    function filterRecords() {
+        const query = document.getElementById('search-input').value.toLowerCase().trim();
+        const region = document.getElementById('region-filter').value;
+        const category = document.getElementById('category-filter').value;
+        const container = document.getElementById('records-container');
+
+        const filtered = archiveRecords.filter(rec => {
+            const matchQuery = !query || `${rec.title} ${rec.code} ${rec.desc} ${rec.persons}`.toLowerCase().includes(query);
+            const matchRegion = region === 'alle' || rec.region === region;
+            const matchCat = category === 'alle' || rec.category === category;
+            return matchQuery && matchRegion && matchCat;
+        });
+
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">Geen archiefdossiers gevonden die aan deze filtercriteria voldoen.</p>`;
+            return;
+        }
+
+        filtered.forEach(rec => {
+            const card = document.createElement('div');
+            card.className = 'record-card';
+            card.innerHTML = `
+                <div>
+                    <div class="card-top">
+                        <div class="record-title">${rec.title}</div>
+                        <span class="badge ${rec.badge}">${rec.category}</span>
+                    </div>
+                    <div class="record-meta">📍 ${rec.region} — <span>${rec.code}</span></div>
+                    <p class="record-desc">${rec.desc}</p>
+                    <div class="persons-tag"><strong>Gekoppelde entiteiten:</strong> ${rec.persons}</div>
+                </div>
+                <button class="btn-action" onclick="prefillApi('${rec.code}', '${rec.category}')">Vraag Afschrift op via API ↗</button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Functie om vanuit een dossier direct naar de API tab te springen met vooraf ingevulde data
+    function prefillApi(code, category) {
+        document.querySelectorAll('.tab-btn')[2].click();
+        document.getElementById('tab-zoeker').classList.remove('active');
+        document.getElementById('tab-api').classList.add('active');
+        
+        document.getElementById('api-invnr').value = code;
+        
+        if (category === 'NDR') {
+            document.getElementById('api-instelling').value = 'NA';
+        } else if (code.includes('Roosendaal') || code.includes('Vliet')) {
+            document.getElementById('api-instelling').value = 'WBA';
+        } else {
+            document.getElementById('api-instelling').value = 'ZA';
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Functie om de Archief API aanvraag te simuleren met de Leges-clausule
+    function submitApiRequest() {
+        const invnr = document.getElementById('api-invnr').value.trim();
+        const instelling = document.getElementById('api-instelling').options[document.getElementById('api-instelling').selectedIndex].text;
+        const type = document.getElementById('api-type').value;
+        const responseBox = document.getElementById('api-response');
+
+        if (!invnr) {
+            alert('Vul alstublieft een geldig inventarisnummer of perceelcode in.');
+            return;
+        }
+
+        responseBox.className = 'leges-alert';
+        
+        if (type === 'opendata') {
+            responseBox.classList.add('success');
+            responseBox.innerHTML = `
+                <strong>[GOEDGEKEURD — OPEN DATA HARVESTING]</strong><br>
+                Het aangevraagde document (<em>${invnr}</em> bij <em>${instelling}</em>) is beschikbaar binnen de openbare CC0-datasets.<br>
+                <span style="font-size: 0.85rem; color: #fff;">✓ Geen leges verschuldigd. Digitale METS-verwijzing en scans worden direct ingeladen in uw studiezaal-omgeving.</span>
+            `;
+        } else {
+            responseBox.classList.add('blocked');
+            responseBox.innerHTML = `
+                <strong>[WAARSCHUWING — LEGES- & KOSTENCLAUSULE ACTIEF]</strong><br>
+                De aanvraag voor <em>${invnr}</em> betreft een administratieve handeling (gecertificeerd afschrift of fysiek archiefonderzoek door medewerker) waarvoor door de archiefdienst leges of uurtarieven in rekening worden gebracht.<br>
+                <span style="font-size: 0.85rem; color: #fff;">⚠️ Conform de machtigingsvoorwaarden is verdere verwerking geblokkeerd. U dient eerst een gespecificeerde prijsopgave/offerte van het archief te accorderen alvorens deze kosten mogen worden gemaakt.</span>
+            `;
+        }
+    }
+
+    // Initialiseer weergave bij het laden van de pagina
+    window.onload = () => {
+        filterRecords();
+    };
+</script>
+
+</body>
+</html>
