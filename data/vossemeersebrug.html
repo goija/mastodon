@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="nl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vossemeersebrug: Historie, Techniek & Onderhoud</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #15803d 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-bridge"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-900 leading-tight">Vossemeersebrug</h1>
+                    <p class="text-xs text-slate-500 font-medium">N656 • Zeeland ↔ Noord-Brabant</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-600">
+                <a href="#historie" class="hover:text-emerald-600 transition">Historie</a>
+                <a href="#techniek" class="hover:text-emerald-600 transition">Specificaties</a>
+                <a href="#onderhoud" class="hover:text-emerald-600 transition">Onderhoud (2026-2027)</a>
+                <a href="#omleiding" class="hover:text-emerald-600 transition">Omleidingen</a>
+            </nav>
+            <div>
+                <a href="#onderhoud" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm hover:shadow flex items-center space-x-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Actuele Afsluiting</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <span class="inline-flex items-center space-x-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-semibold mb-6 uppercase tracking-wider">
+                <i class="fa-solid fa-circle text-[8px] animate-pulse"></i>
+                <span>Dossier Schelde-Rijnkanaal</span>
+            </span>
+            <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
+                De Levensader Tussen Oud- & Nieuw-Vossemeer
+            </h2>
+            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+                Van historische middeleeuwse veerdiensten tot een cruciale stalen boogbrug: ontdek de geschiedenis, de robuuste techniek en de planning rondom het groot onderhoud in 2026-2027.
+            </p>
+
+            <!-- Quick stats bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 text-left">
+                <div>
+                    <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Totale Lengte</p>
+                    <p class="text-2xl font-bold text-white mt-1">638 m</p>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Leeftijd Brug</p>
+                    <p class="text-2xl font-bold text-white mt-1">52 Jaar <span class="text-xs font-normal text-slate-300">(sinds 1974)</span></p>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Gewichtsbeperking</p>
+                    <p class="text-2xl font-bold text-white mt-1">35 ton <span class="text-xs font-normal text-slate-300">(sinds 2022)</span></p>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Provincies</p>
+                    <p class="text-2xl font-bold text-white mt-1">Zeeland ↔ Brabant</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container with Interactive Tabs -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        
+        <!-- Tab Navigation Control -->
+        <div class="flex flex-wrap justify-center gap-2 mb-12 border-b border-slate-200 pb-6" role="tablist">
+            <button onclick="switchTab('historie')" id="btn-historie" role="tab" aria-selected="true" class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm transition bg-emerald-600 text-white shadow-sm flex items-center space-x-2">
+                <i class="fa-solid fa-ship"></i>
+                <span>Historie Veerdienst</span>
+            </button>
+            <button onclick="switchTab('techniek')" id="btn-techniek" role="tab" aria-selected="false" class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm transition bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 flex items-center space-x-2">
+                <i class="fa-solid fa-gears"></i>
+                <span>Technische Specificaties</span>
+            </button>
+            <button onclick="switchTab('onderhoud')" id="btn-onderhoud" role="tab" aria-selected="false" class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm transition bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 flex items-center space-x-2">
+                <i class="fa-solid fa-hammer"></i>
+                <span>Onderhoud & Planning</span>
+            </button>
+            <button onclick="switchTab('omleiding')" id="btn-omleiding" role="tab" aria-selected="false" class="tab-btn px-6 py-3 rounded-xl font-semibold text-sm transition bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 flex items-center space-x-2">
+                <i class="fa-solid fa-route"></i>
+                <span>Alternatieve Routes</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: HISTORIE -->
+        <div id="tab-historie" class="tab-content space-y-12">
+            <div class="bg-white rounded-3xl p-8 sm:p-12 card-shadow border border-slate-100">
+                <div class="max-w-3xl">
+                    <span class="text-emerald-600 font-semibold text-sm uppercase tracking-wider">Middeleeuwse Wortels</span>
+                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">Voordat de Brug Kwam: De Veerdienst</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                        De verbinding tussen Oud- en Nieuw-Vossemeer kent een fascinerende historie die teruggaat tot de middeleeuwen. Eeuwenlang was men voor de oversteek volledig aangewezen op veerdiensten over het water.
+                    </p>
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-2xl mb-8">
+                        <div class="flex items-start space-x-3">
+                            <i class="fa-solid fa-heart text-amber-600 text-xl mt-1"></i>
+                            <div>
+                                <h4 class="font-bold text-amber-900">Lokale Romantiek</h4>
+                                <p class="text-amber-800 text-sm mt-1">
+                                    De veerdienst speelde zelfs een rol in lokale romantiek! Volgens Omroep Brabant "bloeide de liefde tussen twee dorpen weer op dankzij een 'cupido'" nadat de brug in 1973 het veerpontje verving.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <h4 class="text-xl font-bold text-slate-900 mb-6">Tijdlijn van de Verbinding</h4>
+                <div class="relative border-l-2 border-emerald-500/30 ml-4 pl-6 space-y-8">
+                    <div class="relative">
+                        <div class="absolute -left-[35px] top-0 w-6 h-6 rounded-full bg-emerald-600 border-4 border-white shadow-sm flex items-center justify-center text-white text-xs"></div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Middeleeuwen</span>
+                        <h5 class="text-lg font-bold text-slate-900">Veerdienst Reeds Vanaf 1410</h5>
+                        <p class="text-slate-600 text-sm mt-1">In handen van de ambachtsheerlijkheid Oud en Nieuwe Vossemeer en Vrijberghe.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[35px] top-0 w-6 h-6 rounded-full bg-emerald-600 border-4 border-white shadow-sm"></div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Rond 1567</span>
+                        <h5 class="text-lg font-bold text-slate-900">Nieuw Veer Gerealiseerd</h5>
+                        <p class="text-slate-600 text-sm mt-1">Nieuw-Vossemeer werd ingepolderd, waardoor een nieuw veer enkele kilometers noordelijker ("Nieuw Veer") ontstond.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[35px] top-0 w-6 h-6 rounded-full bg-emerald-600 border-4 border-white shadow-sm"></div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">1567 – 1886</span>
+                        <h5 class="text-lg font-bold text-slate-900">Twee Veerdiensten Naast Elkaar</h5>
+                        <p class="text-slate-600 text-sm mt-1">Het oude veer bleef bestaan naast het nieuwe veer tot het in 1886 werd opgeheven.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[35px] top-0 w-6 h-6 rounded-full bg-emerald-600 border-4 border-white shadow-sm"></div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Begin Jaren '70</span>
+                        <h5 class="text-lg font-bold text-slate-900">Plannen voor Brugverbinding</h5>
+                        <p class="text-slate-600 text-sm mt-1">Plannen ontvouwd omdat het veer steeds langer deed over de overtocht door de komst van het Schelde-Rijnkanaal.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[35px] top-0 w-6 h-6 rounded-full bg-emerald-600 border-4 border-white shadow-sm"></div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">1973 – 1974</span>
+                        <h5 class="text-lg font-bold text-slate-900">Einde Veer & Opening Brug</h5>
+                        <p class="text-slate-600 text-sm mt-1">In 1973 stopte de veerpont om plaats te maken voor de Vossemeersebrug. Op 11 april 1974 werd de brug officieel geopend.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TECHNISCHE SPECIFICATIES -->
+        <div id="tab-techniek" class="tab-content hidden space-y-12">
+            <div class="bg-white rounded-3xl p-8 sm:p-12 card-shadow border border-slate-100">
+                <div class="max-w-3xl mb-10">
+                    <span class="text-emerald-600 font-semibold text-sm uppercase tracking-wider">Architectuur & Kunde</span>
+                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">Technische Specificaties & Ontwerp</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed">
+                        De Vossemeersebrug is een robuuste stalen boogbrug ontworpen om zware verkeersbelasting te dragen en tegelijkertijd voldoende doorvaarthoogte te bieden voor de scheepvaart op het Schelde-Rijnkanaal.
+                    </p>
+                </div>
+
+                <!-- Spec Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Totale Lengte</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">638 meter</p>
+                        <p class="text-xs text-slate-500 mt-2">Inclusief aanbruggen aan weerszijden.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-archway"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Hoofdoverspanning</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">140 meter</p>
+                        <p class="text-xs text-slate-500 mt-2">Plus 2× 255m zij-overspanningen.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Breedte Brug</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">12,5 meter</p>
+                        <p class="text-xs text-slate-500 mt-2">Inclusief langzaam verkeer strook.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-water"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Doorvaarthoogte</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">9,76m NAP</p>
+                        <p class="text-xs text-slate-500 mt-2">Netto 9,61m t.o.v. kanaalpeil (hoger water).</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Doorvaartbreedte</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">135 meter</p>
+                        <p class="text-xs text-slate-500 mt-2">Ruim voldoende voor moderne scheepvaart.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-truck-weight-hanging"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Gewichtsbeperking</h4>
+                        <p class="text-2xl font-extrabold text-amber-600 mt-1">35 ton</p>
+                        <p class="text-xs text-slate-500 mt-2">Ingesteld op 5 oktober 2022 uit veiligheid.</p>
+                    </div>
+                </div>
+
+                <!-- Details List -->
+                <div class="bg-slate-900 text-white p-8 rounded-3xl">
+                    <h4 class="text-xl font-bold mb-4">Belangrijke Constructiekenmerken</h4>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-300 text-sm">
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                            <span><strong>Constructietype:</strong> Stalen boogbrug voor optimale krachtverdeling.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                            <span><strong>Beheerder:</strong> Rijkswaterstaat (Staatseigendom).</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                            <span><strong>Wegnummer:</strong> N656, regionaal belangrijke verkeersader.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                            <span><strong>Langzaam Verkeer:</strong> Afgescheiden deel voor voetgangers en fietsers (geen aparte strook voor tractoren).</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ONDERHOUD & PLANNING -->
+        <div id="tab-onderhoud" class="tab-content hidden space-y-12">
+            <div class="bg-white rounded-3xl p-8 sm:p-12 card-shadow border border-slate-100">
+                <div class="max-w-3xl mb-10">
+                    <span class="text-emerald-600 font-semibold text-sm uppercase tracking-wider">Instandhouding 2026-2027</span>
+                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">Toekomstig Onderhoud & Planning</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed">
+                        Om de brug veilig te houden tot het grote onderhoud plaatsvindt, worden er tijdelijke overbruggingsmaatregelen getroffen. Rijkswaterstaat beheert hiermee meerdere bruggen over het Schelde-Rijnkanaal gelijktijdig.
+                    </p>
+                </div>
+
+                <!-- Current Phase 2026 -->
+                <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl mb-8">
+                    <h4 class="text-lg font-bold text-emerald-900 flex items-center space-x-2 mb-2">
+                        <i class="fa-solid fa-helmet-safety text-emerald-600"></i>
+                        <span>Huidige Fase (2026)</span>
+                    </h4>
+                    <p class="text-emerald-800 text-sm mb-4">
+                        Overbruggingsmaatregelen om de brug veilig te houden tot groot onderhoud:
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm font-semibold text-slate-700">
+                            <i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Vervangen opleggingen
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm font-semibold text-slate-700">
+                            <i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Vernieuwen vangrail
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm font-semibold text-slate-700">
+                            <i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Asfalt herstellen
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm font-semibold text-slate-700">
+                            <i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Voegovergangen vervangen
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MJIP Table -->
+                <h4 class="text-xl font-bold text-slate-900 mb-4">Groot Onderhoud Planning (MJIP 2025-2030)</h4>
+                <div class="overflow-x-auto mb-10">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                <th class="py-3 px-4">Jaar</th>
+                                <th class="py-3 px-4">Project / Activiteit</th>
+                                <th class="py-3 px-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <tr>
+                                <td class="py-4 px-4 font-bold text-slate-900">2026</td>
+                                <td class="py-4 px-4">Huidige afsluiting (okt-nov) & overbruggingsmaatregelen</td>
+                                <td class="py-4 px-4"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">⬤ In uitvoering</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-4 px-4 font-bold text-slate-900">2027</td>
+                                <td class="py-4 px-4">Groot onderhoud gepland</td>
+                                <td class="py-4 px-4"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">⬤ Verwacht</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-4 px-4 font-bold text-slate-900">2028</td>
+                                <td class="py-4 px-4">Mogelijke voortzetting en afronding</td>
+                                <td class="py-4 px-4"><span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">⬤ Mogelijk</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Schelde-Rijnkanaal Context -->
+                <h4 class="text-xl font-bold text-slate-900 mb-4">Brugprogramma Schelde-Rijnkanaal</h4>
+                <p class="text-slate-600 text-sm mb-6">
+                    Rijkswaterstaat onderhoudt vijf bruggen over het Schelde-Rijnkanaal in dezelfde periode om de regionale infrastructuur op peil te houden.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <p class="font-bold text-slate-900">Slaakbrug</p>
+                        <p class="text-xs text-emerald-600 font-semibold mt-1">2026-2027</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <p class="font-bold text-slate-900">Bathsebrug</p>
+                        <p class="text-xs text-emerald-600 font-semibold mt-1">nov 2026 - jun 2027</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <p class="font-bold text-slate-900">Kreekrakbrug</p>
+                        <p class="text-xs text-emerald-600 font-semibold mt-1">2026-2027</p>
+                    </div>
+                    <div class="bg-emerald-600 text-white p-4 rounded-xl shadow-md text-center">
+                        <p class="font-bold">Vossemeersebrug</p>
+                        <p class="text-xs text-emerald-200 font-semibold mt-1">2026-2027</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <p class="font-bold text-slate-900">Tholensebrug</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Later in programma</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: ALTERNATIEVE ROUTES -->
+        <div id="tab-omleiding" class="tab-content hidden space-y-12">
+            <div class="bg-white rounded-3xl p-8 sm:p-12 card-shadow border border-slate-100">
+                <div class="max-w-3xl mb-10">
+                    <span class="text-emerald-600 font-semibold text-sm uppercase tracking-wider">Mobiliteit Tijdens Werkzaamheden</span>
+                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">Alternatieve Routes & Omleidingen</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed">
+                        Tijdens de najaarsafsluiting in 2026 (57 dagen tussen 2 oktober en 27 november) is de brug afgesloten voor regulier wegverkeer. Hier is rekening mee gehouden voor automobilisten, landbouwverkeer en openbaar vervoer.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-car"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Autoverkeer</h4>
+                        <p class="text-slate-600 text-sm mt-2">Omleiding via de Slaakbrug (N257). Extra reistijd bedraagt circa <strong>5 minuten</strong>.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-tractor"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Landbouwverkeer</h4>
+                        <p class="text-slate-600 text-sm mt-2">Langere omleidingsroute via nabijgelegen secundaire wegen. Extra reistijd bedraagt circa <strong>15 minuten</strong>.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">
+                            <i class="fa-solid fa-person-biking"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-lg">Fietsers & Voetgangers</h4>
+                        <p class="text-slate-600 text-sm mt-2">Goed nieuws voor langzaam verkeer: fietsers en voetgangers kunnen de brug <strong>blijven gebruiken</strong> tijdens de werkzaamheden.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 text-white p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">Alternatief Busvervoer</h4>
+                        <p class="text-slate-300 text-sm">Er is speciaal vervangend busvervoer beschikbaar tussen Nieuw-Vossemeer en Bergen op Zoom om reizigers mobiel te houden.</p>
+                    </div>
+                    <div class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-md">
+                        <i class="fa-solid fa-bus mr-2"></i> Bekijk OV-dienstregeling
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div>
+                <p class="font-bold text-white text-lg">Vossemeersebrug Informatieportaal</p>
+                <p class="text-sm text-slate-500 mt-1">Gebaseerd op Rijkswaterstaat data en regionale historiedossiers.</p>
+            </div>
+            <p class="text-xs text-slate-500">© 2026 Vossemeersebrug Dossier. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <!-- Tab Switching Script -->
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Remove active style from all tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+                btn.setAttribute('aria-selected', 'false');
+            });
+
+            // Show selected tab content
+            const activeContent = document.getElementById('tab-' + tabName);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+            }
+
+            // Style active tab button
+            const activeBtn = document.getElementById('btn-' + tabName);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+                activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+                activeBtn.setAttribute('aria-selected', 'true');
+            }
+        }
+    </script>
+
+</body>
+</html>
